@@ -1,0 +1,5 @@
+Allocated Hash Size : 10671710
+Accuracy : 4/100(4.00%)
+Average Proc Time : 1543800 micro sec
+Average Top Vote : 46.01
+Average Diff : 1.05
