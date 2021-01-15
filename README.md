@@ -1,5 +1,8 @@
 # Source codes of Locally Likely Arrangement Hashing (LLAH) written by Tomohiro Nakai
-This repository contains the source code of the real-time camera-captured document image retrieval method named Locally Likely Arrangement Hashing (LLAH) written by Tomohiro Nakai.
+This repository contains the source codes of Locally Likely Arrangement Hashing (LLAH), a real-time camera-captured document image retrieval method, written by Tomohiro Nakai.
+
+Related papers are found in [the publication database of Intelligent Media Processing Laboratory, Department of Computer Science and Intelligent Systems
+Graduate School of Engineering, Osaka Prefecture University](http://www.m.cs.osakafu-u.ac.jp/cgi-bin/publication_public.cgi?func=search_result&research_field=17&lang=en).
  
 ## Old stable LLAH source code
 Directory: ./old_stable
