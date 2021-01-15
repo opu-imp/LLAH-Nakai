@@ -14,38 +14,38 @@ Usage:
  
 See Function *AnalyzeArgAndSetExtern2* in *init.c* for the options.
 
-Reference:
-- Hashing with Local Combinations of Feature Points and Its Application to Camera-Based Document Image Retrieval ---Retrieval in 0.14 Second from 10,000 Pages---
- Proc. First International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2005), pp.87-94 (2005-8)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
+References:
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura. Hashing with Local Combinations of Feature Points and Its Application to Camera-Based Document Image Retrieval ---Retrieval in 0.14 Second from 10,000 Pages---.
+ Proc. First International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2005), pp.87-94 (2005-8).
 
-- Camera-Based Document Image Retrieval as Voting for Partial Signatures of Projective Invariants
- Proc. 8th International Conference on Document Analysis and Recognition (ICDAR2005), pp.379-383 (2005-9)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
 
-- Use of Affine Invariants in Locally Likely Arrangement Hashing for Camera-Based Document Image Retrieval
- Lecture Notes in Computer Science (7th International Workshop DAS2006), 3872, pp.541-552, Nelson, New Zealand (2006-2)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ Camera-Based Document Image Retrieval as Voting for Partial Signatures of Projective Invariants.
+ Proc. 8th International Conference on Document Analysis and Recognition (ICDAR2005), pp.379-383 (2005-9).
+ 
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ Use of Affine Invariants in Locally Likely Arrangement Hashing for Camera-Based Document Image Retrieval.
+ Lecture Notes in Computer Science (7th International Workshop DAS2006), 3872, pp.541-552, Nelson, New Zealand (2006-2).
 
-- Camera Based Document Image Retrieval with More Time and Memory Efficient LLAH
- Proc. Second International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2007), pp.21-28 (2007-9)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ Camera Based Document Image Retrieval with More Time and Memory Efficient LLAH.
+ Proc. Second International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2007), pp.21-28 (2007-9).
 
-- Real-Time Document Image Retrieval with More Time and Memory Efficient LLAH
- Proc. Second International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2007), pp.168-169 (2007-9)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ Real-Time Document Image Retrieval with More Time and Memory Efficient LLAH.
+ Proc. Second International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2007), pp.168-169 (2007-9).
 
-- Improvement of Retrieval Speed and Required Amount of Memory for Geometric Hashing by Combining Local Invariants
- Proc. 18th British Machine Vision Conference (BMVC2007), 2, pp.1010-1019 (2007-9)
- Masakazu Iwamura, Tomohiro Nakai, and Koichi Kise
+- Masakazu Iwamura, Tomohiro Nakai, and Koichi Kise.
+ Improvement of Retrieval Speed and Required Amount of Memory for Geometric Hashing by Combining Local Invariants.
+ Proc. 18th British Machine Vision Conference (BMVC2007), 2, pp.1010-1019 (2007-9).
 
-- Real-Time Retrieval for Images of Documents in Various Languages
- Handout of 8th IAPR International Workshop on Document Analysis Systems (DAS2008), p.37 (2008-9)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ Real-Time Retrieval for Images of Documents in Various Languages.
+ Handout of 8th IAPR International Workshop on Document Analysis Systems (DAS2008), p.37 (2008-9).
 
-- Real-Time Retrieval for Images of Documents in Various Languages using a Web Camera
- Proceedings of the 10th International Conference on Document Analysis and Recognition (ICDAR2009), pp.146-150, Barcelona, Spain (2009-7)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ Real-Time Retrieval for Images of Documents in Various Languages using a Web Camera.
+ Proceedings of the 10th International Conference on Document Analysis and Recognition (ICDAR2009), pp.146-150, Barcelona, Spain (2009-7).
 
 
 
@@ -58,10 +58,9 @@ Usage: annex [option] [original image] [annotated image]
 See function *InitAnnex* in *annex.c* for the options.
 
 Reference:
-- A Method of Annotation Extraction from Paper Documents Using Alignment Based on Local Arrangements of Feature Points
- Proc. 9th International Conference on Document Analysis and Recognition (ICDAR2007), 1, pp.23-27 (2007-9)
- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura
-
+- Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.
+ A Method of Annotation Extraction from Paper Documents Using Alignment Based on Local Arrangements of Feature Points.
+ Proc. 9th International Conference on Document Analysis and Recognition (ICDAR2007), 1, pp.23-27 (2007-9).
 
 
 ## Mosaicing
@@ -73,9 +72,9 @@ Usage: llahmos [option] [image1] [image2]
 See function *AnalyzeArgAndSetExtern2* in *annex.c* for the options.
 
 Reference:
-- Camera-based document image mosaicing using LLAH
- Proc. Document Recognition and Retrieval XVI (Proc. SPIE Volume 7247), 7247-25 (2009-1)
- Tomohiro Nakai, Koichi Kise, and Masakazu Iwamura
+- Tomohiro Nakai, Koichi Kise, and Masakazu Iwamura.
+ Camera-based document image mosaicing using LLAH.
+ Proc. Document Recognition and Retrieval XVI (Proc. SPIE Volume 7247), 7247-25 (2009-1).
 
 
 
