@@ -17,15 +17,16 @@ Usage:
  
 See Function *AnalyzeArgAndSetExtern2* in *init.c* for the options.
 
-References:
+Representative references:
+<!-- 
 - Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.  
  Hashing with Local Combinations of Feature Points and Its Application to Camera-Based Document Image Retrieval Retrieval in 0.14 Second from 10,000 Pages--.  
  Proc. First International Workshop on Camera-Based Document Analysis and Recognition (CBDAR2005), pp.87-94 (2005-8).
 
-
 - Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.  
  Camera-Based Document Image Retrieval as Voting for Partial Signatures of Projective Invariants.  
  Proc. 8th International Conference on Document Analysis and Recognition (ICDAR2005), pp.379-383 (2005-9).
+ -->
  
 - Tomohiro Nakai, Koichi Kise, Masakazu Iwamura.  
  Use of Affine Invariants in Locally Likely Arrangement Hashing for Camera-Based Document Image Retrieval.  
