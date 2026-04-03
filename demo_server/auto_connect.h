@@ -1,15 +1,15 @@
 //#define	kConnectHashImageThr	(220)
-// ÅŒy—Ê‚Ì“Á’¥“_’Šo‚Ì‚½‚ß‚É•ÏX@07/06/07
+// ï¿½ÅŒyï¿½Ê‚Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½Ì‚ï¿½ï¿½ß‚É•ÏXï¿½@07/06/07
 //#define	kConnectHashImageThr	(250)
-// ƒ‚ƒXƒL[ƒgƒmƒCƒY‘Îô‚Ì‚½‚ß‚É•ÏX
+// ï¿½ï¿½ï¿½Xï¿½Lï¿½[ï¿½gï¿½mï¿½Cï¿½Yï¿½Îï¿½Ì‚ï¿½ï¿½ß‚É•ÏX
 #define	kConnectHashImageThr	(240)
 #define	kImgMaxVal	(255)
 
-IplImage *GetConnectedImage( char *fname, int mode );
-int GetConnectedImageJp( IplImage *src, IplImage *dst );
-int AutoConnectTest( char *fname, CvSize *size );
-IplImage *GetConnectedImage2( const char *fname, int mode, int gaussian_parameter );
-IplImage *GetConnectedImageJp2( const char *fname, int mode );
+cv::Mat GetConnectedImage( char *fname, int mode );
+int GetConnectedImageJp( cv::Mat src, cv::Mat dst );
+int AutoConnectTest( char *fname, cv::Size *size );
+cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter );
+cv::Mat GetConnectedImageJp2( const char *fname, int mode );
 int VariousLangMaskSize( const char *fname );
 int VariousLangMaskSizeDualChar( const char *fname );
 int VariousLangMaskSizeDualWord( const char *fname );

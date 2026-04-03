@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "disc.h"
 #include "hash.h"
 
@@ -13,7 +12,7 @@
 #endif
 #include "llahdoc_dll.h"
 #else
-// ”ñDLL‚Ìê‡‚ÉˆÈ‰º‚ÌŠÖ”‚ğg‚¤ê‡‚Ìƒwƒbƒ_ƒtƒ@ƒCƒ‹‚ğ“ü‚ê‚Ä‚¨‚­
+// ï¿½ï¿½DLLï¿½Ìê‡ï¿½ÉˆÈ‰ï¿½ï¿½ÌŠÖï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ê‡ï¿½Ìƒwï¿½bï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 #include "llahdoc_dll.h"
 #endif
 
@@ -41,20 +40,20 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 int g_var = 1;
 
 void Version( void )
-// ƒo[ƒWƒ‡ƒ“‚ğ•\¦
+// ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½
 {
 	printf( "%g\n", kLlahDocVersion );
 }
 
 char *MallocTest( int size )
-// ƒƒ‚ƒŠŠm•ÛƒeƒXƒg
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½Ûƒeï¿½Xï¿½g
 {
 	getchar();
 	return malloc( size );
 }
 
 void MemChangeTest( char *mem, int size )
-// ƒƒ‚ƒŠ‘‚«Š·‚¦E‰ğ•úƒeƒXƒg
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½eï¿½Xï¿½g
 {
 	int i;
 
@@ -76,19 +75,19 @@ int GlobalGet( void )
 }
 
 int LlahDocExtractFpRegFile( const char *fname, int *width, int *height, int **xs, int **ys )
-// “Á’¥“_’Šo
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½o
 {
 	int i, num;
 	double *areas;
-	IplImage *img;
-	CvPoint *ps;
-	CvSize size;
+	cv::Mat img;
+	cv::Point *ps;
+	cv::Size size;
 
 	eHashGaussMaskSize = kDfltHashGaussMaskSize;
 
-	img = GetConnectedImage2( fname, CONST_HASH_MODE, eHashGaussMaskSize );	// Œ‹‘œ‰æ‘œ‚ğì¬
-	if ( img == NULL )	return -1;
-	num = MakeCentresFromImage( &ps, img, &size, &areas );	// “Á’¥“_‚ğ’Šo
+	img = GetConnectedImage2( fname, CONST_HASH_MODE, eHashGaussMaskSize );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+	if (img.empty())	return -1;
+	num = MakeCentresFromImage( &ps, img, &size, &areas );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 	*width = size.width;
 	*height = size.height;
 	*xs = (int *)calloc( num, sizeof(int) );
@@ -98,8 +97,6 @@ int LlahDocExtractFpRegFile( const char *fname, int *width, int *height, int **x
 		(*ys)[i] = ps[i].y;
 	}
 
-	cvReleaseImage( &img );
-
 	return num;
 }
 
@@ -107,25 +104,25 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 {
 	strDisc disc;
 	int i, ret;
-	CvPoint **reg_pss = NULL;
-	CvSize *reg_sizes = NULL;
+	cv::Point **reg_pss = NULL;
+	cv::Size *reg_sizes = NULL;
 	int *reg_nums = NULL;
 	char **dbcors = NULL;
 	double **reg_areass = NULL;
 	// argv
 	int argc = 0;
 	char *argv[12];
-	// ƒnƒbƒVƒ…
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
 
-	// ƒpƒ‰ƒ[ƒ^‚©‚çargv‚Ìì¬
-	// ƒ_ƒ~[
+	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½argvï¿½Ìì¬
+	// ï¿½_ï¿½~ï¿½[
 	argv[argc] = (char *)calloc( strlen( "llahdoc.dll" ) + 1, sizeof( char ) );
 	strcpy( argv[argc], "llahdoc.dll" );
 	argc++;
-	// •s•Ï—Êƒ^ƒCƒv
+	// ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½v
 	if ( inv == 'r' || inv == 'a' || inv == 's' ) {
 		argv[argc] = (char *)calloc( 3, sizeof(char) );
 		sprintf( argv[argc], "-%c", inv );
@@ -155,33 +152,33 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 		sprintf( argv[argc], "%d", d );
 		argc++;
 	}
-	// “o˜^‰æ‘œ
+	// ï¿½oï¿½^ï¿½æ‘œ
 	// -c
 	argv[argc] = (char *)calloc( 3, sizeof(char) );
 	strcpy( argv[argc], "-c" );
 	argc++;
-	// ƒfƒBƒŒƒNƒgƒŠ
-	if ( reg_dir != NULL && reg_dir[0] != '\0' ) {	// reg_dir‚ªw’è‚³‚ê‚Ä‚¢‚é
+	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½
+	if (reg_dir != NULL && reg_dir[0] != '\0' ) {	// reg_dirï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 		argv[argc] = (char *)calloc( strlen( reg_dir ) + 1, sizeof(char) );
 		strcpy( argv[argc], reg_dir );
 		argc++;
-	} else {	// reg_dir‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢
+	} else {	// reg_dirï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½
 		argv[argc] = (char *)calloc( strlen( kDfltHashSrcDir ) + 1, sizeof(char) );
 		strcpy( argv[argc], kDfltHashSrcDir );
 		argc++;
 	}
-	// Šg’£q
-	if ( reg_suffix != NULL && reg_suffix[0] != '\0' ) {	// reg_suffix‚ªw’è‚³‚ê‚Ä‚¢‚é
+	// ï¿½gï¿½ï¿½ï¿½q
+	if (reg_suffix != NULL && reg_suffix[0] != '\0' ) {	// reg_suffixï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 		argv[argc] = (char *)calloc( strlen( reg_suffix ) + 1, sizeof(char) );
 		strcpy( argv[argc], reg_suffix );
 		argc++;
-	} else {	// reg_dir‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢
+	} else {	// reg_dirï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½
 		argv[argc] = (char *)calloc( strlen( kDfltHashSrcSuffix ) + 1, sizeof(char) );
 		strcpy( argv[argc], kDfltHashSrcSuffix );
 		argc++;
 	}
-	// o—ÍæƒfƒBƒŒƒNƒgƒŠ
-	if ( db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dir‚ªw’è‚³‚ê‚Ä‚¢‚é
+	// ï¿½oï¿½Íï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½
+	if (db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dirï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 		argv[argc] = (char *)calloc( 3, sizeof(char) );
 		strcpy( argv[argc], "-h" );
 		argc++;
@@ -189,49 +186,49 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 		strcpy( argv[argc], db_dir );
 		argc++;
 	}
-	// argv‚ÌŠm”F
+	// argvï¿½ÌŠmï¿½F
 //	for ( i = 0; i < argc; i++ ) {
 //		printf("%s\n", argv[i]);
 //	}
-	// argv‚ğg‚Á‚Äİ’è
+	// argvï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Äİ’ï¿½
 	AnalyzeArgAndSetExtern2( argc, argv );
 
-	// ./dcams -c [‰æ‘œ‚ÌƒfƒBƒŒƒNƒgƒŠ] [‰æ‘œ‚ÌŠg’£q] (-o [o—ÍƒfƒBƒŒƒNƒgƒŠ])
+	// ./dcams -c [ï¿½æ‘œï¿½Ìƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½] [ï¿½æ‘œï¿½ÌŠgï¿½ï¿½ï¿½q] (-o [ï¿½oï¿½Íƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½])
 	fprintf( stderr, "Hash Constraction\n" );
-	// “Á’¥“_‚Ì’Šo
+	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ì’ï¿½ï¿½o
 	fprintf( stderr, "Extracting Feature Points...\n" );
 	ret = CreatePointFile4( &reg_pss, &reg_areass, &reg_sizes, &reg_nums, &dbcors, eHashSrcDir, eHashSrcSuffix, eHashGaussMaskSize, eDirsDir, ePointDatFileName );
 	if ( ret <= 0 )	return 0;
-	// —£U‰»ƒtƒ@ƒCƒ‹‚Ìì¬
+	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìì¬
 	fprintf( stderr, "Making %s...\n", eDiscFileName );
 	ret = MakeDiscFile( min( eDocNumForMakeDisc, eDbDocs ), reg_pss, reg_nums, &disc, eDiscFileName );
 	if ( ret <= 0 )	return 0;
-	// ƒnƒbƒVƒ…‚Ì\’z
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì\ï¿½z
 	fprintf( stderr, "Constructing Hash Table...\n" );
 	ret = ConstructHash2( eDbDocs, reg_pss, reg_areass, reg_nums, &disc, &hash, &hash2, &hash3 );
 	if ( ret <= 0 )	return 0;
-	// Õ“Ë‚Ì‘½‚¢€–Ú‚ğœ‹
+	// ï¿½Õ“Ë‚Ì‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½
 	if ( !eNoHashList && eRemoveCollision )	{
 		if ( eCompressHash )	ret = RefineHash2( hash2 );
 		else					ret = RefineHash( hash );
 	}
-	// ƒnƒbƒVƒ…‚Ìƒ`ƒFƒbƒN
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒ`ï¿½Fï¿½bï¿½N
 	if ( eExperimentMode ) {
 		if ( eNoHashList )			ChkHash3( hash3 );
 		else if ( eCompressHash )	ChkHash2( hash2 );
 		else						ChkHash( hash );
 	}
-	// ƒnƒbƒVƒ…‚Ì•Û‘¶
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì•Û‘ï¿½
 	fprintf( stderr, "Saving Hash Table...\n" );
 	if ( eNoHashList )			ret = SaveHash3( hash3, eHashDatFileName );
 	else if ( eCompressHash )	ret = SaveHash2( hash2, eHashDatFileName );
 	else						ret = SaveHash( hash, eHashDatFileName );
 	if ( ret <= 0 )	return 0;
-	// ”ä—á’è”‚ÌŒvZ
+	// ï¿½ï¿½ï¿½è”ï¿½ÌŒvï¿½Z
 	fprintf( stderr, "Calculating Prop...\n" );
 //	eProp = CalcProp2( min( ePropMakeNum, eDbDocs ), reg_pss, reg_areass, reg_nums, &disc, hash, hash2, hash3 );
 	eProp = 0.0L;
-	// İ’èƒtƒ@ƒCƒ‹‚Ì•Û‘¶
+	// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì•Û‘ï¿½
 	fprintf( stderr, "Saving Config...\n" );
 	ret = SaveConfig( eInvType, eGroup1Num, eGroup2Num, eDiscNum, eProp, eCompressHash, eDocBit, ePointBit, eRBit, eOBit, eHList2DatByte, eRotateOnce, eUseArea, eIsJp, eNoHashList, eConfigFileName );
 	if ( ret <= 0 )	return 0;
@@ -240,7 +237,7 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 }
 
 strLlahDocDb *LlahDocLoadDb( const char *db_dir )
-// ƒnƒbƒVƒ…‚Ìƒ[ƒh
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½h
 {
 	int ret;
 	// argv
@@ -250,22 +247,22 @@ strLlahDocDb *LlahDocLoadDb( const char *db_dir )
 	char fname[kMaxPathLen], **dbcors = NULL;
 	strDisc disc;
 	int *numall = NULL;
-	CvPoint **psall = NULL;
+	cv::Point **psall = NULL;
 	double **areaall = NULL;
-	CvSize *sizeall = NULL;
+	cv::Size *sizeall = NULL;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
 	// db
 	strLlahDocDb *db = NULL;
 
-		// ƒpƒ‰ƒ[ƒ^‚©‚çargv‚Ìì¬
-	// ƒ_ƒ~[
+		// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½argvï¿½Ìì¬
+	// ï¿½_ï¿½~ï¿½[
 	argv[argc] = (char *)calloc( strlen( "llahdoc.dll" ) + 1, sizeof( char ) );
 	strcpy( argv[argc], "llahdoc.dll" );
 	argc++;
-	// ƒnƒbƒVƒ…‚ÌƒfƒBƒŒƒNƒgƒŠ
-	if ( db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dir‚ªw’è‚³‚ê‚Ä‚¢‚é
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½
+	if (db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dirï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 		argv[argc] = (char *)calloc( 3, sizeof(char) );
 		strcpy( argv[argc], "-h" );
 		argc++;
@@ -273,25 +270,25 @@ strLlahDocDb *LlahDocLoadDb( const char *db_dir )
 		strcpy( argv[argc], db_dir );
 		argc++;
 	}
-	// argv‚ğg‚Á‚Äİ’è
+	// argvï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Äİ’ï¿½
 	AnalyzeArgAndSetExtern2( argc, argv );
 
-	db = (strLlahDocDb *)malloc( sizeof(strLlahDocDb) );	// Db‚ÌŠm•Û
-//	ret = LoadConfig();	// İ’èƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+	db = (strLlahDocDb *)malloc( sizeof(strLlahDocDb) );	// Dbï¿½ÌŠmï¿½ï¿½
+//	ret = LoadConfig();	// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	ret = LoadConfig( eConfigFileName, &eInvType, &eGroup1Num, &eGroup2Num, &eGroup3Num, &eNumCom1, &eNumCom2, &eDiscNum, &eProp, &eCompressHash, &eDocBit, &ePointBit, &eRBit, &eOBit, &eHList2DatByte, &eRotateOnce, &eUseArea, &eIsJp, &eNoHashList );
 	if ( ret <= 0 )	return NULL;
 	sprintf( fname, "%s%s", eDirsDir, eDiscFileName );
-	ret = LoadDisc( fname, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+	ret = LoadDisc( fname, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	if ( ret <= 0 )	return NULL;
-	// ƒnƒbƒVƒ…‚Ì“Ç‚İ‚İ
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	if ( eNoHashList )			hash3 = LoadHash3( disc.num, eHashDatFileName );
 	else if ( eCompressHash )	hash2 = LoadHash2( disc.num, eHashDatFileName );
 	else						hash = LoadHash( disc.num, eHashDatFileName );
 	if ( ret <= 0 )	return NULL;
 	sprintf( fname, "%s%s", eDirsDir, ePointDatFileName );
-	ret = LoadPointFile2( fname, &psall, &areaall, &sizeall, &numall, &dbcors );	// “Á’¥“_ƒf[ƒ^‚Ì“Ç‚İ‚İ
+	ret = LoadPointFile2( fname, &psall, &areaall, &sizeall, &numall, &dbcors );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	if ( ret <= 0 )	return NULL;
-	// Db‚Ö‚Ì‘ã“ü
+	// Dbï¿½Ö‚Ì‘ï¿½ï¿½
 	db->disc = disc;
 	db->hash = hash;
 	db->hash2 = hash2;
@@ -301,52 +298,52 @@ strLlahDocDb *LlahDocLoadDb( const char *db_dir )
 	db->reg_sizes = sizeall;
 	db->reg_nums = numall;
 	db->dbcors = dbcors;
-	// ‘g‚İ‡‚í‚¹‚Ìì¬
+	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
 
 	return db;
 }
 
 void LlahDocReleaseDb( strLlahDocDb *db )
-// ƒf[ƒ^ƒx[ƒX‚Ì‰ğ•ú
+// ï¿½fï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½Ì‰ï¿½ï¿½
 {
 	int i;
 
-	if ( db == NULL )	return;
+	if (db == NULL)	return;
 	ReleaseHash( db->hash );
 	ReleaseHash2( db->hash2 );
 	ReleaseHash3( db->hash3 );
-	if ( db->reg_nums != NULL )	free( db->reg_nums );
-	if ( db->reg_sizes != NULL )	free( db->reg_sizes );
-	if ( db->reg_pss != NULL )
+	if ( db->reg_nums != NULL)	free( db->reg_nums );
+	if ( db->reg_sizes != NULL)	free( db->reg_sizes );
+	if ( db->reg_pss != NULL)
 		for ( i = 0; i < eDbDocs; i++ )	free( db->reg_pss[i] );
 	free( db->reg_pss );
-	if ( db->reg_areass != NULL )
+	if ( db->reg_areass != NULL)
 		for ( i = 0; i < eDbDocs; i++ )	free( db->reg_areass[i] );
 	free( db->reg_areass );
-	if ( db->dbcors != NULL )
+	if ( db->dbcors != NULL)
 		for ( i = 0; i < eDbDocs; i++ )	free( db->dbcors[i] );
 	free( db->dbcors );
-	if ( db->disc.dat != NULL )	free( db->disc.dat );
+	if ( db->disc.dat != NULL)	free( db->disc.dat );
 
 	free( db );
 }
 
 int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result, int result_len )
-// Ã~‰æ‘œŒŸõ
+// ï¿½Ã~ï¿½æ‘œï¿½ï¿½ï¿½ï¿½
 {
 	int i, num, **nears = 0, *score, res, ret_time, res_score;
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img, *img_cap;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img, img_cap;
 	double *areas = NULL;
 	// db
 	char **dbcors = NULL;
 	strDisc disc;
 	int *reg_nums = NULL;
-	CvPoint **reg_pss = NULL;
+	cv::Point **reg_pss = NULL;
 	double **reg_areass = NULL;
-	CvSize *reg_sizes = NULL;
+	cv::Size *reg_sizes = NULL;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
@@ -354,7 +351,7 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 //	fprintf( stderr, "Retrieval from Static Image\n" );
 	eEntireMode = RETRIEVE_MODE;
 	eExperimentMode = 1;
-	// db‚ğƒ[ƒJƒ‹•Ï”‚É‘ã“ü
+	// dbï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½Ïï¿½ï¿½É‘ï¿½ï¿½
 	disc = db->disc;
 	hash = db->hash;
 	hash2 = db->hash2;
@@ -365,28 +362,27 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 	reg_nums = db->reg_nums;
 	dbcors = db->dbcors;
 
-	// Œ‹‡‰æ‘œ‚ğì¬
-#ifdef	WIN32	// OpenCV‚Ìƒo[ƒWƒ‡ƒ“‚ªˆÙ‚È‚é‚½‚ß
+	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+#ifdef	WIN32	// OpenCVï¿½Ìƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù‚È‚é‚½ï¿½ï¿½
 //	img = GetConnectedImage2( img_fname, eEntireMode );
-	img_cap = cvLoadImage( img_fname, 1 );
-	if ( img_cap == NULL )	return 0;
+	img_cap = cv::imread(img_fname, cv::IMREAD_COLOR);
+	if (img_cap.empty())	return 0;
 	img = GetConnectedImageCam( img_cap );
 #else
 	if ( eIsJp ) 	img = GetConnectedImageJp2( query, eEntireMode );
 	else			img = GetConnectedImage2( query, eEntireMode );
 #endif
-	if ( img == NULL )	return 0;
-	// “Á’¥“_‚ğ’Šo
+	if (img.empty())	return 0;
+	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 	num = MakeCentresFromImage( &ps, img, &img_size, &areas );
-	cvReleaseImage( &img );
-	// ‹ß–T\‘¢‚ğŒvZ
+	// ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Z
 	MakeNearsFromCentres( ps, num, &nears );
-	// ŒŸõ
+	// ï¿½ï¿½ï¿½ï¿½
 	score = (int *)calloc( kMaxDocNum, sizeof(int) );
 	res = RetrieveNN52( ps, areas, num, nears, img_size, score, &disc, reg_nums, &ret_time, hash, hash2, hash3 );
-//	OutPutResult( score, 0, 5, argv[argi] );	// ‚»‚Ì‚Ü‚Ü‚Å‚Íg‚¦‚È‚¢
+//	OutPutResult( score, 0, 5, argv[argi] );	// ï¿½ï¿½ï¿½Ì‚Ü‚Ü‚Å‚Ígï¿½ï¿½ï¿½È‚ï¿½
 	if ( !eExperimentMode )	printf( "%s : %d\n", dbcors[res], score[res] );
-	// Œ‹‰Ê‚ÌŠi”[
+	// ï¿½ï¿½ï¿½Ê‚ÌŠiï¿½[
 	strncpy( result, dbcors[res], result_len );
 	res_score = score[res];
 	free( score );
@@ -394,32 +390,32 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 	return res_score;
 }
 
-int LlahDocRetrieveIplImage( IplImage *img_cap, strLlahDocDb *db, char *result, int result_len )
-// IplImageŒŸõ
-// ƒŠƒAƒ‹ƒ^ƒCƒ€ŒŸõ—p
+int LlahDocRetrieveIplImage( cv::Mat img_cap, strLlahDocDb *db, char *result, int result_len )
+// cv::Matï¿½ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½^ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½p
 {
 	int i, num, **nears = 0, *score, res, ret_time, res_score;
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img;
 	double *areas = NULL;
 	// db
 	char **dbcors = NULL;
 	strDisc disc;
 	int *reg_nums = NULL;
-	CvPoint **reg_pss = NULL;
+	cv::Point **reg_pss = NULL;
 	double **reg_areass = NULL;
-	CvSize *reg_sizes = NULL;
+	cv::Size *reg_sizes = NULL;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
-	// WebƒJƒƒ‰—p
+	// Webï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½p
 	strProjParam param, zero_param;
-	CvSize res_size;
+	cv::Size res_size;
 	int pcor[kMaxPointNum][2], pcornum = 0;
 
-//	fprintf( stderr, "Retrieval from IplImage\n" );
-	// db‚ğƒ[ƒJƒ‹•Ï”‚É‘ã“ü
+//	fprintf( stderr, "Retrieval from cv::Mat\n" );
+	// dbï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½Ïï¿½ï¿½É‘ï¿½ï¿½
 	disc = db->disc;
 	hash = db->hash;
 	hash2 = db->hash2;
@@ -429,69 +425,68 @@ int LlahDocRetrieveIplImage( IplImage *img_cap, strLlahDocDb *db, char *result, 
 	reg_sizes = db->reg_sizes;
 	reg_nums = db->reg_nums;
 	dbcors = db->dbcors;
-	// WebƒJƒƒ‰—p
+	// Webï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½p
 	score = (int *)calloc( kMaxDocNum, sizeof(int) );
 	zero_param.a1 = 0.0; zero_param.a2 = 0.0; zero_param.a3 = 0.0; zero_param.b1 = 0.0; zero_param.b2 = 0.0; zero_param.b3 = 0.0; zero_param.c1 = 0.0; zero_param.c2 = 0.0;
 	param = zero_param;
 	res_size = reg_sizes[0];
 
-#ifdef	WIN32	// OpenCV‚Ìƒo[ƒWƒ‡ƒ“‚ªˆÙ‚È‚é‚½‚ß
+#ifdef	WIN32	// OpenCVï¿½Ìƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù‚È‚é‚½ï¿½ï¿½
 //	img = GetConnectedImage( query, eEntireMode );
-	// WebƒJƒƒ‰ƒ‚[ƒh‚Å‚Ì“Á’¥“_’Šo
+	// Webï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Å‚Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½o
 	img = GetConnectedImageCam( img_cap );
 #else
 	fprintf( stderr, "This program currently support only Windows.\n" );
 	return 0;
 #endif
-	if ( img == NULL ) {
+	if (img.empty()) {
 		result[0] = '\0';
-		param = zero_param;	// ŒŸõŒ‹‰Ê‚ª‚È‚¢‚Ì‚Éƒpƒ‰ƒ[ƒ^‚¾‚¯‚ ‚é‚Á‚Ä‚Ì‚à•Ï‚È‚Ì‚Å
+		param = zero_param;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚Éƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚Ì‚ï¿½ï¿½Ï‚È‚Ì‚ï¿½
 		return 0;
 	}
-	// “Á’¥“_‚ğ’Šo
+	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 	num = MakeCentresFromImage( &ps, img, &img_size, &areas );
-	cvReleaseImage( &img );
-	// ‹ß–T\‘¢‚ğŒvZ
+	// ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Z
 //	MakeNearsFromCentres( ps, num, &nears );
-	if ( num >= kMinPoints ) {	// “Á’¥“_”‚ªÅ¬’lˆÈã
-		MakeNearsFromCentresDiv( ps, num, &img_size, kDivX, kDivY, eGroup1Num, &nears );	// ‹ß–T“_ŒvZi•ªŠ„”Åj
-		// ŒŸõ
-		res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, eProp, reg_nums, hash, hash2, hash3 );	// ŒŸõ‚Ì‚İ
-		// Å¬‘Î‰“_”ˆÈã‚È‚çAË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğŒvZ
-		if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, reg_pss[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// “o˜^‰æ‘œ‚Éã‘‚«
+	if ( num >= kMinPoints ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½lï¿½Èï¿½
+		MakeNearsFromCentresDiv( ps, num, &img_size, kDivX, kDivY, eGroup1Num, &nears );	// ï¿½ß–Tï¿½_ï¿½vï¿½Zï¿½iï¿½ï¿½ï¿½ï¿½ï¿½Åj
+		// ï¿½ï¿½ï¿½ï¿½
+		res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, eProp, reg_nums, hash, hash2, hash3 );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
+		// ï¿½Åï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½Èï¿½È‚ï¿½Aï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Z
+		if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, reg_pss[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// ï¿½oï¿½^ï¿½æ‘œï¿½Éã‘ï¿½ï¿½
 		else	param = zero_param;
-		if ( ps != NULL && num > 0 )	ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
-		if ( areas != NULL && num > 0 )	free( areas );
-		ReleaseNears( nears, num );	// nears‚Ì‰ğ•ú
-		// ŒvZŠÔ‚Ì•\¦
+		if (ps != NULL && num > 0 )	ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
+		if (areas != NULL && num > 0 )	free( areas );
+		ReleaseNears( nears, num );	// nearsï¿½Ì‰ï¿½ï¿½
+		// ï¿½vï¿½Zï¿½ï¿½ï¿½Ô‚Ì•\ï¿½ï¿½
 //			OutPutResultSv( score, end-start, 0/*5*/, doc_name );
-		if ( score[res] > kTopThr ) {	// ƒgƒbƒv‚Ì“¾•[”‚ªè‡’lˆÈ‰ºiƒŠƒWƒFƒNƒgj
+		if ( score[res] > kTopThr ) {	// ï¿½gï¿½bï¿½vï¿½Ì“ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½è‡’lï¿½È‰ï¿½ï¿½iï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½j
 //			GetBasename2( dbcors[res], kMaxPathLen, doc_name );
 			strncpy( result, dbcors[res], result_len );
 		}
 		else {
 			result[0] = '\0';
-			param = zero_param;	// ŒŸõŒ‹‰Ê‚ª‚È‚¢‚Ì‚Éƒpƒ‰ƒ[ƒ^‚¾‚¯‚ ‚é‚Á‚Ä‚Ì‚à•Ï‚È‚Ì‚Å
+			param = zero_param;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚Éƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚Ì‚ï¿½ï¿½Ï‚È‚Ì‚ï¿½
 		}
 //		puts( doc_name );
 	}
-	else {	// “Á’¥“_”‚ªÅ¬’l‚ğ–‚½‚³‚È‚¢
+	else {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½lï¿½ğ–‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 //		puts("min");
 		res = 0;
 		result[0] = '\0';
 		param = zero_param;
 	}
-	if ( result[0] != '\0' )	res_size = reg_sizes[res];	// ŒŸõ¬Œ÷‚È‚ç‚»‚ÌƒTƒCƒY
-	else	res_size = reg_sizes[0];	// ‚»‚¤‚Å‚È‚¯‚ê‚Îƒf[ƒ^ƒx[ƒX‚Ì0”Ô‚ÌƒTƒCƒY
+	if ( result[0] != '\0' )	res_size = reg_sizes[res];	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ç‚»ï¿½ÌƒTï¿½Cï¿½Y
+	else	res_size = reg_sizes[0];	// ï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½Îƒfï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½ï¿½0ï¿½Ô‚ÌƒTï¿½Cï¿½Y
 
 //	fprintf(stdout, "%s\n", doc_name);
 //	if ( eProtocol == kTCP )	ret = SendResultParam( sid2, doc_name, kMaxDocNameLen, &param, &res_size, &addr, eProtocol );
 //	else						ret = SendResultParam( sidres, doc_name, kMaxDocNameLen, &param, &res_size, &addr, eProtocol );
 //	if ( ret < 0 )	break;
-	// I—¹ˆ—
+	// ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	res_score = score[res];
 	free(score);
-	// Œ‹‰Ê‚ÌŠi”[
+	// ï¿½ï¿½ï¿½Ê‚ÌŠiï¿½[
 //	strncpy( result, dbcors[res], result_len );
 
 	return res_score;

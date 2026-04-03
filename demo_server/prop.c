@@ -7,8 +7,7 @@
 #else
 #include <glob.h>
 #endif
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "dirs.h"
@@ -25,8 +24,8 @@ int errfunc2( const char *epath, int eerrno )
 	return 1;
 }
 
-double CalcProp2( int doc_num, CvPoint **pss, double **areass, int *nums, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ”ä—á’è”‚ğ’²‚×‚é
+double CalcProp2( int doc_num, cv::Point **pss, double **areass, int *nums, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+// ï¿½ï¿½ï¿½è”ï¿½ğ’²‚×‚ï¿½
 {
 	int i, j, max_doc, max_score;
     int **nears = 0;
@@ -36,28 +35,28 @@ double CalcProp2( int doc_num, CvPoint **pss, double **areass, int *nums, strDis
 	for ( i = 0; i < doc_num; i++ ) {
 //		fprintf( stderr, "CalcProp2: %d\n", i);
 		MakeNearsFromCentres( pss[i], nums[i], &nears );
-		// ƒe[ƒuƒ‹EƒXƒRƒA‚Ì‰Šú‰»
+		// ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Eï¿½Xï¿½Rï¿½Aï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 		ClearFlag2();
 		ClearCorres();
 		memset( score, 0, sizeof(int) );
-		// ŒŸõ‚ğs‚¢C“¾•[”‚ğ‹‚ß‚é
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 		if ( eRotateOnce )	CalcScore4( pss[i], areass[i], nums[i], nears, score, disc, hash, hash2, hash3 );
 		else				CalcScore3( pss[i], areass[i], nums[i], nears, score, disc, hash, hash2, hash3 );
-		// Å‘åƒXƒRƒAi³‰ğj‚Ì•¶‘ID‚ğ‹‚ß‚é
+		// ï¿½Å‘ï¿½Xï¿½Rï¿½Aï¿½iï¿½ï¿½ï¿½ï¿½ï¿½jï¿½Ì•ï¿½ï¿½ï¿½IDï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 		for ( j = 0, max_doc = -1, max_score = -1; j < eDbDocs; j++ ) {
 			if ( score[j] > max_score ) {
 				max_doc = j;
 				max_score = score[j];
 			}
 		}
-		// “Á’¥“_”‚ÆŒë“¾•[”‚ÌŠÖŒW‚ğ’²‚×‚é
+		// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ÆŒë“¾ï¿½[ï¿½ï¿½ï¿½ÌŠÖŒWï¿½ğ’²‚×‚ï¿½
 		for ( j = 0; j < eDbDocs; j++ ) {
 			if ( j == max_doc )	continue;
 			xs_sum += nums[j] * nums[j];
 			xy_sum += nums[j] * score[j];
 //			printf("%ld,%ld\n", xs_sum, xy_sum);
 		}
-		ReleaseNears( nears, nums[i] );	// nears‚Ì‰ğ•ú
+		ReleaseNears( nears, nums[i] );	// nearsï¿½Ì‰ï¿½ï¿½
 	}
 //	printf("%lf\n", (double)xy_sum / (double)xs_sum);
 	return (double)xy_sum / (double)xs_sum;
@@ -65,7 +64,7 @@ double CalcProp2( int doc_num, CvPoint **pss, double **areass, int *nums, strDis
 
 #if 0
 double CalcProp( char *prop_path )
-// ”ä—á’è”‚ğ’²‚×‚é
+// ï¿½ï¿½ï¿½è”ï¿½ğ’²‚×‚ï¿½
 {
 	int i, j, max_doc;
     int num, **nears = 0;
@@ -79,12 +78,12 @@ double CalcProp( char *prop_path )
 #else
 	glob_t gt;
 #endif
-	CvPoint *ps = 0;
+	cv::Point *ps = 0;
 	FILE *fp_pn;
-	CvSize img_size;
+	cv::Size img_size;
 
-	if ( *prop_path == '\0' )	return 0.0;	// prop_path‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î0
-	// Še“o˜^‰æ‘œ‚Ì“Á’¥“_”‚Ì“Ç‚İ‚İ
+	if ( *prop_path == '\0' )	return 0.0;	// prop_pathï¿½ï¿½ï¿½İ’è‚³ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½0
+	// ï¿½eï¿½oï¿½^ï¿½æ‘œï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	if ( ( fp_pn = fopen(ePNFileName, "r") ) == NULL ) {
 		fprintf(stderr, "%s open error\n", ePNFileName);
 		return -1.0;
@@ -100,39 +99,39 @@ double CalcProp( char *prop_path )
 	}
 	fclose( fp_pn );
 #ifdef	WIN32
-	hSearch = FindFirstFile(prop_path, &fFind); /* ’TõŠJn */
-	if ( hSearch == INVALID_HANDLE_VALUE )	return 0.0;	// ƒ}ƒbƒ`‚·‚é‚à‚Ì‚ª‚È‚¯‚ê‚Î0
+	hSearch = FindFirstFile(prop_path, &fFind); /* ï¿½Tï¿½ï¿½ï¿½Jï¿½n */
+	if ( hSearch == INVALID_HANDLE_VALUE )	return 0.0;	// ï¿½}ï¿½bï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½0
 	do {
 		printf("%s\n", fFind.cFileName);
-		GetDir( prop_path, kMaxPathLen, fname );	// ƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
-		strcat(fname, fFind.cFileName);	// â‘ÎƒpƒX‚Ìì¬
-		num = LoadPointFile( fname, &ps, &img_size );	// “Á’¥“_‚Ì“Ç‚İ‚İ
+		GetDir( prop_path, kMaxPathLen, fname );	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾
+		strcat(fname, fFind.cFileName);	// ï¿½ï¿½Îƒpï¿½Xï¿½Ìì¬
+		num = LoadPointFile( fname, &ps, &img_size );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 		if ( num == 0 ) {
 			fprintf(stderr, "Error: no point in %s\n", fFind.cFileName);
 			return -1.0;
 		}
-		MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
-		max_doc = RetrieveNN5( ps, num, nears, img_size, score );	// ŒŸõ‚Ì‚İ
+		MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
+		max_doc = RetrieveNN5( ps, num, nears, img_size, score );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
 		for ( j = 0; j < eDbDocs; j++ ) {
 			if ( j == max_doc )	continue;
 			xs_sum += pn[j] * pn[j];
 			xy_sum += pn[j] * score[j];
 		}
-		ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
-		ReleaseNears( nears, num );	// nears‚Ì‰ğ•ú
-	} while ( FindNextFile( hSearch, &fFind ) );	/* ‘Sƒtƒ@ƒCƒ‹‚ğˆ— */
+		ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
+		ReleaseNears( nears, num );	// nearsï¿½Ì‰ï¿½ï¿½
+	} while ( FindNextFile( hSearch, &fFind ) );	/* ï¿½Sï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 #else
 	glob(prop_path, GLOB_NOCHECK, errfunc2, &gt);
 	for ( i = 0; (unsigned int)i < gt.gl_pathc; i++ ) {
 		printf("%s\n", gt.gl_pathv[i]);
 		
-		num = LoadPointFile( gt.gl_pathv[i], &ps, &img_size );	// “Á’¥“_‚Ì“Ç‚İ‚İ
+		num = LoadPointFile( gt.gl_pathv[i], &ps, &img_size );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 		if ( num == 0 ) {
 			fprintf(stderr, "Error: no point in %s\n", gt.gl_pathv[i]);
 			return -1.0;
 		}
-		MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
-		max_doc = RetrieveNN5( ps, num, nears, img_size, score );	// ŒŸõ‚Ì‚İ
+		MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
+		max_doc = RetrieveNN5( ps, num, nears, img_size, score );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
 		for ( j = 0; j < eDbDocs; j++ ) {
 			if ( j == max_doc )	continue;
 			xs_sum += pn[j] * pn[j];
@@ -140,8 +139,8 @@ double CalcProp( char *prop_path )
 //			printf("%ld,%ld\n", xs_sum, xy_sum);
 		}
 		
-		ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
-		ReleaseNears( nears, num );	// nears‚Ì‰ğ•ú
+		ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
+		ReleaseNears( nears, num );	// nearsï¿½Ì‰ï¿½ï¿½
 	}
 	globfree(&gt);
 #endif
