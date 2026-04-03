@@ -1,43 +1,42 @@
 #include <stdio.h>
-#include <cv.h>			// OpneCV
-#include <highgui.h>	// OpenCV
+#include <opencv2/opencv.hpp>
 #include "nimg.h"
 
-int SetPix( IplImage *img, int x, int y, char *val )
-// img‚Ì(x,y)‚Éval‚ğƒZƒbƒg‚·‚é
+int SetPix( cv::Mat img, int x, int y, char *val )
+// imgï¿½ï¿½(x,y)ï¿½ï¿½valï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
 {
 	int i, ws, bpp;
 
-	if ( x < 0 || x >= img->width || y < 0 || y >= img->height )	return 0;	// ‰æ‘œ‚Ì”ÍˆÍ‚ğ’´‚¦‚é
-	ws = img->widthStep;
-	bpp = (int)((img->depth & 0x0ff) / 8) * img->nChannels;	// ƒsƒNƒZƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
+	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ï¿½æ‘œï¿½Ì”ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½
+	ws = (int)img.step[0];
+	bpp = (int)img.elemSize();	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½
 	for ( i = 0; i < bpp; i++ )
-		img->imageData[ws*y + x*bpp + i] = val[i];
+		img.data[ws*y + x*bpp + i] = val[i];
 	return 1;
 }
 
-int GetPix( IplImage *img, int x, int y, char *val )
-// img‚Ì(x,y)‚ğval‚ÉƒZƒbƒg‚·‚é
+int GetPix( cv::Mat img, int x, int y, char *val )
+// imgï¿½ï¿½(x,y)ï¿½ï¿½valï¿½ÉƒZï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
 {
 	int i, ws, bpp;
 
-	if ( x < 0 || x >= img->width || y < 0 || y >= img->height )	return 0;	// ‰æ‘œ‚Ì”ÍˆÍ‚ğ’´‚¦‚é
-	ws = img->widthStep;
-	bpp = (int)((img->depth & 0x0ff) / 8) * img->nChannels;	// ƒsƒNƒZƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
+	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ï¿½æ‘œï¿½Ì”ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½
+	ws = (int)img.step[0];
+	bpp = (int)img.elemSize();	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½
 	for ( i = 0; i < bpp; i++ )
-		val[i] = img->imageData[ws*y + x*bpp + i];
+		val[i] = img.data[ws*y + x*bpp + i];
 	return 1;
 }
 
-void PutImage( IplImage *src, IplImage *dst, CvPoint origin )
-// dst‚Ìorigin‚ğ‹N“_‚Ésrc‚ğ”z’u‚·‚é
+void PutImage( cv::Mat src, cv::Mat dst, cv::Point origin )
+// dstï¿½ï¿½originï¿½ï¿½ï¿½Nï¿½_ï¿½ï¿½srcï¿½ï¿½zï¿½uï¿½ï¿½ï¿½ï¿½
 {
 	int i, j;
 	char val[3];
-//	if ( origin.x + src->width > dst->width || origin.y + src->height > dst->height )	return 0;	// ‚Í‚İo‚·
+//	if ( origin.x + src.cols > dst.cols || origin.y + src.rows > dst.rows )	return 0;	// ï¿½Í‚İoï¿½ï¿½
 	
-	for ( j = 0; j < src->height && origin.y + j < dst->height; j++ ) {
-		for ( i = 0; i < src->width && origin.x + i < dst->width; i++ ) {
+	for ( j = 0; j < src.rows && origin.y + j < dst.rows; j++ ) {
+		for ( i = 0; i < src.cols && origin.x + i < dst.cols; i++ ) {
 			memset( val, 0, 3 );
 			GetPix( src, i, j, val );
 			SetPix( dst, origin.x + i, origin.y + j, val );
@@ -45,41 +44,41 @@ void PutImage( IplImage *src, IplImage *dst, CvPoint origin )
 	}
 }
 
-void CopyImageData( IplImage *src, IplImage *dst )
-// src‚Ì‰æ‘œƒf[ƒ^‚ğdst‚ÉƒRƒs[‚·‚é
+void CopyImageData( cv::Mat src, cv::Mat dst )
+// srcï¿½Ì‰æ‘œï¿½fï¿½[ï¿½^ï¿½ï¿½dstï¿½ÉƒRï¿½sï¿½[ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j;
 	char val[3];
 
-	for ( j = 0; j < src->height && j < dst->height; j++ ) {
-		for ( i = 0; i < src->width && i < dst->width; i++ ) {
+	for ( j = 0; j < src.rows && j < dst.rows; j++ ) {
+		for ( i = 0; i < src.cols && i < dst.cols; i++ ) {
 			memset( val, 0, 3 );
 			GetPix( src, i, j, val );
-			if ( src->origin == dst->origin )	SetPix( dst, i, j, val );
-			else	SetPix( dst, i, dst->height - j - 1, val );	// origin‚ªˆÙ‚È‚éê‡
+			if ( 0/*src.origin removed,cv::Mat is always top-left*/ == 0/*dst.origin removed,cv::Mat is always top-left*/ )	SetPix( dst, i, j, val );
+			else	SetPix( dst, i, dst.rows - j - 1, val );	// originï¿½ï¿½ï¿½Ù‚È‚ï¿½ê‡
 		}
 	}
 }
 
-int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge )
-// img1‚Æimg2‚ğmode(MERGE_HOR:¶‰ECMERGE_VER:ã‰º)‚Å•À‚×‚½‰æ‘œ‚ğmerge‚ÉŠi”[‚·‚é
+int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
+// img1ï¿½ï¿½img2ï¿½ï¿½mode(MERGE_HOR:ï¿½ï¿½ï¿½Eï¿½CMERGE_VER:ï¿½ã‰º)ï¿½Å•ï¿½ï¿½×‚ï¿½ï¿½æ‘œï¿½ï¿½mergeï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, mw, mh;
 	char val[3];
 
 //	puts("mms");
-	mw = merge->width;
-	mh = merge->height;
+	mw = merge.cols;
+	mh = merge.rows;
 //	puts("mmf");
 
 	for ( j = 0; j < mh; j++ ) {
 		for ( i = 0; i < mw; i++ ) {
 //			printf("%d, %d\n", i, j);
 			memset( val, 0, 3 );
-			if ( mode == MERGE_HOR && i >= img1->width )	// ¶‰E”z’u‚Å‰æ‘œ1‚Ì•‚ğ‰z‚¦‚é
-				GetPix( img2, i - img1->width, j, val );
-			else if ( mode == MERGE_VER && j >= img1->height )	// ã‰º”z’u‚Å‰æ‘œ1‚Ì‚‚³‚ğ’´‚¦‚é
-				GetPix( img2, i, j - img1->height, val );
+			if ( mode == MERGE_HOR && i >= img1.cols )	// ï¿½ï¿½ï¿½Eï¿½zï¿½uï¿½Å‰æ‘œ1ï¿½Ì•ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½
+				GetPix( img2, i - img1.cols, j, val );
+			else if ( mode == MERGE_VER && j >= img1.rows )	// ï¿½ã‰ºï¿½zï¿½uï¿½Å‰æ‘œ1ï¿½Ìï¿½ï¿½ï¿½ï¿½ğ’´‚ï¿½ï¿½ï¿½
+				GetPix( img2, i, j - img1.rows, val );
 			else
 				GetPix( img1, i, j, val );
 
@@ -89,13 +88,13 @@ int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge )
 	return 1;
 }
 
-void DrawPolygon( IplImage *img, CvPoint *ps, int pnum, CvScalar color, int thickness, int line_type, int shift )
-// ‘½ŠpŒ`‚ğ•`‰æ‚·‚é
+void DrawPolygon( cv::Mat img, cv::Point *ps, int pnum, cv::Scalar color, int thickness, int line_type, int shift )
+// ï¿½ï¿½ï¿½pï¿½`ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½
 {
 	int i;
 
 	for ( i = 0; i < pnum; i++ ) {
-		cvLine( img, ps[i], ps[(i+1)%pnum], color, thickness, line_type, shift );
+		cv::line( img, ps[i], ps[(i+1)%pnum], color, thickness, line_type, shift );
 	}
 }
 

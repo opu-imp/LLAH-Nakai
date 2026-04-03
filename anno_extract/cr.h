@@ -1,8 +1,8 @@
-#define	kMinValCr	(0.0001)	/* 0‚É‚æ‚éœZ‚ğ”ğ‚¯‚é‚½‚ßA\•ª¬‚³‚¢‚Æ‚«‚É—p‚¢‚é’l */
+#define	kMinValCr	(0.0001)	/* 0ï¿½É‚ï¿½éœï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ßAï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½É—pï¿½ï¿½ï¿½ï¿½l */
 
-double CalcCR5ByArea( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 );
-double CalcArea( CvPoint p1, CvPoint p2, CvPoint p3 );
-double CalcAffineInv( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 );
-long double GetPointsAngle(CvPoint p1, CvPoint p2);
-double CalcAngleFromThreePoints( CvPoint p1, CvPoint p2, CvPoint p3 );
-double CalcSimilarInv( CvPoint p1, CvPoint p2, CvPoint p3 );
+double CalcCR5ByArea( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 );
+double CalcArea( cv::Point p1, cv::Point p2, cv::Point p3 );
+double CalcAffineInv( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
+long double GetPointsAngle(cv::Point p1, cv::Point p2);
+double CalcAngleFromThreePoints( cv::Point p1, cv::Point p2, cv::Point p3 );
+double CalcSimilarInv( cv::Point p1, cv::Point p2, cv::Point p3 );

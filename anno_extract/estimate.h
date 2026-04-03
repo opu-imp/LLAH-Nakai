@@ -1,17 +1,17 @@
-#define	kTryParamRand	(1000)	/* ѓ‰ѓ“ѓ_ѓЂ‚ЙЋЛ‰e•ПЉ·‚Мѓpѓ‰ѓЃЃ[ѓ^‚Мђ„’и‚рЌs‚¤‰сђ” */
+#define	kTryParamRand	(1000)	/* пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅЙЋЛ‰eпїЅПЉпїЅпїЅМѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅМђпїЅпїЅпїЅпїЅпїЅsпїЅпїЅпїЅпїЅ */
 
-// RANSAC‚Е‚Мѓpѓ‰ѓЃЃ[ѓ^
-#define	kRANSACTry	(100)	/* ѓpѓ‰ѓЃЃ[ѓ^‚МЊvЋZ‰сђ” */
-#define	kRANSACThr	(100.0)	/* ‹——ЈЃi‚М‚QЏжЃj‚Ми‡’l */
-#define	kRANSACMinScore	(4)	/* ЌЕЏ¬ѓXѓRѓA */
-#define	kRANSACRefineNum	(100)	/* ‚ж‚иђё“x‚МЌ‚‚ўѓpѓ‰ѓЃЃ[ѓ^‚р‹Ѓ‚Я‚йЌЫ‚Мђ” */
+// RANSACпїЅЕ‚МѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+#define	kRANSACTry	(100)	/* пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅМЊvпїЅZпїЅпїЅ */
+#define	kRANSACThr	(100.0)	/* пїЅпїЅпїЅпїЅпїЅiпїЅМ‚QпїЅпїЅjпїЅпїЅи‡’l */
+#define	kRANSACMinScore	(4)	/* пїЅЕЏпїЅпїЅXпїЅRпїЅA */
+#define	kRANSACRefineNum	(100)	/* пїЅпїЅиђёпїЅxпїЅМЌпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅпїЅпїЅпїЅЯ‚пїЅЫ‚МђпїЅ */
 
 typedef int keytype;
 
-void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type );
-int EstimateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type );
+void EstimateParam( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type );
+int EstimateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type );
 void GetNumRand( int num, int max, int *arr );
 void GetAppropriateParam( double **paramarr, double *param, int type );
 void MeanParam( double **data, double *mean, int n, int trpnum, double err0, int threshold);
 void simplesort(double *d, keytype *a, int first, int last);
-int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type );
+int EvaluateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type );

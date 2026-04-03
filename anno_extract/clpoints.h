@@ -10,18 +10,18 @@
 #define	kMaxConSize	(1000)
 #define	kClCmpStep	(4)
 
-void ColorClusteringAndMakePoints( IplImage *src, int cluster_count, int mode, int *nums, CvPoint **clps, double avgs[][3], char *dir, char *base );
+void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int *nums, cv::Point **clps, double avgs[][3], char *dir, char *base );
 int NearestCluster(unsigned char *pixels, double avgs[][3], int cluster_count );
-int SaveClusterPoints( char *fname, int cluster_count, int *nums, CvPoint **clps, double avgs[][3] );
-int LoadClusterPoints( char *fname, int *cluster_count, int *nums, CvPoint **clps, double avgs[][3] );
-void SavePointFile( char *fname, CvPoint *ps, int num, CvSize size );
+int SaveClusterPoints( char *fname, int cluster_count, int *nums, cv::Point **clps, double avgs[][3] );
+int LoadClusterPoints( char *fname, int *cluster_count, int *nums, cv::Point **clps, double avgs[][3] );
+void SavePointFile( char *fname, cv::Point *ps, int num, cv::Size size );
 
 #ifndef	cColors
-#define	cWhite	CV_RGB( 255,255,255 )
-#define	cBlack	CV_RGB( 0,0,0 )
-#define	cRed	CV_RGB( 255,0,0 )
-#define	cGreen	CV_RGB( 0,255,0 )
-#define	cBlue	CV_RGB( 0,0,255 )
-#define	cRandom	CV_RGB( rand()%256, rand()%256, rand()%256 )
+#define	cWhite	cv::Scalar(255,255,255)
+#define	cBlack	cv::Scalar(0,0,0)
+#define	cRed	cv::Scalar(0,0,255)
+#define	cGreen	cv::Scalar(0,255,0)
+#define	cBlue	cv::Scalar(255,0,0)
+#define	cRandom	cv::Scalar(rand(,rand()%256,rand()%256)%256 )
 #define	cColors
 #endif

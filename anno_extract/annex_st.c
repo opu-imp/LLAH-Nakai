@@ -1,40 +1,39 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "annex_st.h"
 
-void SimilarTransformation( IplImage *src, IplImage *dst, double *param )
-// ‘ŠŽ—•ÏŠ·‚·‚é
+void SimilarTransformation( cv::Mat src, cv::Mat dst, double *param )
+// ï¿½ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j;
-	CvPoint psrc, pdst;
+	cv::Point psrc, pdst;
 
-	for ( j = 0; j < dst->height; j++ ) {
-		for ( i = 0; i < dst->width; i++ ) {
+	for ( j = 0; j < dst.rows; j++ ) {
+		for ( i = 0; i < dst.cols; i++ ) {
 			pdst.x = i;
 			pdst.y = j;
 			SimPoint( &pdst, &psrc, param );
 
-			if ( psrc.x >= 0 && psrc.x < src->width && psrc.y >= 0 && psrc.y < src->height ) {
-				dst->imageData[j*dst->widthStep+i*3+0] = src->imageData[psrc.y*src->widthStep+psrc.x*3+0];
-				dst->imageData[j*dst->widthStep+i*3+1] = src->imageData[psrc.y*src->widthStep+psrc.x*3+1];
-				dst->imageData[j*dst->widthStep+i*3+2] = src->imageData[psrc.y*src->widthStep+psrc.x*3+2];
+			if ( psrc.x >= 0 && psrc.x < src.cols && psrc.y >= 0 && psrc.y < src.rows ) {
+				dst.data[j*(int)dst.step[0]+i*3+0] = src.data[psrc.y*(int)src.step[0]+psrc.x*3+0];
+				dst.data[j*(int)dst.step[0]+i*3+1] = src.data[psrc.y*(int)src.step[0]+psrc.x*3+1];
+				dst.data[j*(int)dst.step[0]+i*3+2] = src.data[psrc.y*(int)src.step[0]+psrc.x*3+2];
 			}
 			else {
-				dst->imageData[j*dst->widthStep+i*3+0] = kBgVal;
-				dst->imageData[j*dst->widthStep+i*3+1] = kBgVal;
-				dst->imageData[j*dst->widthStep+i*3+2] = kBgVal;
+				dst.data[j*(int)dst.step[0]+i*3+0] = kBgVal;
+				dst.data[j*(int)dst.step[0]+i*3+1] = kBgVal;
+				dst.data[j*(int)dst.step[0]+i*3+2] = kBgVal;
 			}
-//			dst->imageData[j*dst->widthStep+i*3+0] = src->imageData[j*src->widthStep+i*3+0];
-//			dst->imageData[j*dst->widthStep+i*3+1] = src->imageData[j*src->widthStep+i*3+1];
-//			dst->imageData[j*dst->widthStep+i*3+2] = src->imageData[j*src->widthStep+i*3+2];
+//			dst.data[j*(int)dst.step[0]+i*3+0] = src.data[j*(int)src.step[0]+i*3+0];
+//			dst.data[j*(int)dst.step[0]+i*3+1] = src.data[j*(int)src.step[0]+i*3+1];
+//			dst.data[j*(int)dst.step[0]+i*3+2] = src.data[j*(int)src.step[0]+i*3+2];
 		}
 	}
 }
 
-void SimPoint( CvPoint *p1, CvPoint *p2, double *param )
-// “_‚Ì‘ŠŽ—•ÏŠ·Œã‚ÌÀ•W‚ð‹‚ß‚é
+void SimPoint( cv::Point *p1, cv::Point *p2, double *param )
+// ï¿½_ï¿½Ì‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double theta, s, tx, ty;
 	
@@ -49,8 +48,8 @@ void SimPoint( CvPoint *p1, CvPoint *p2, double *param )
 	p2->y = (int)(s * sin(theta) * p1->x + s * cos(theta) * p1->y + ty);
 }
 
-void CalcSimParam( CvPoint p11, CvPoint p12, CvPoint p21, CvPoint p22, double *param )
-// p11,p12->p21,p22‚Ö‚Æ‘ŠŽ—•ÏŠ·‚·‚éƒpƒ‰ƒ[ƒ^‚ð‹‚ß‚é
+void CalcSimParam( cv::Point p11, cv::Point p12, cv::Point p21, cv::Point p22, double *param )
+// p11,p12->p21,p22ï¿½Ö‚Æ‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double theta, s, tx, ty;
 	
@@ -66,37 +65,37 @@ void CalcSimParam( CvPoint p11, CvPoint p12, CvPoint p21, CvPoint p22, double *p
 	param[3] = ty;
 }
 
-void AffineTransformation( IplImage *src, IplImage *dst, double *param )
-// ‘ŠŽ—•ÏŠ·‚·‚é
+void AffineTransformation( cv::Mat src, cv::Mat dst, double *param )
+// ï¿½ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j;
-	CvPoint psrc, pdst;
+	cv::Point psrc, pdst;
 
-	for ( j = 0; j < dst->height; j++ ) {
-		for ( i = 0; i < dst->width; i++ ) {
+	for ( j = 0; j < dst.rows; j++ ) {
+		for ( i = 0; i < dst.cols; i++ ) {
 			pdst.x = i;
 			pdst.y = j;
 			AffPoint( &pdst, &psrc, param );
 
-			if ( psrc.x >= 0 && psrc.x < src->width && psrc.y >= 0 && psrc.y < src->height ) {
-				dst->imageData[j*dst->widthStep+i*3+0] = src->imageData[psrc.y*src->widthStep+psrc.x*3+0];
-				dst->imageData[j*dst->widthStep+i*3+1] = src->imageData[psrc.y*src->widthStep+psrc.x*3+1];
-				dst->imageData[j*dst->widthStep+i*3+2] = src->imageData[psrc.y*src->widthStep+psrc.x*3+2];
+			if ( psrc.x >= 0 && psrc.x < src.cols && psrc.y >= 0 && psrc.y < src.rows ) {
+				dst.data[j*(int)dst.step[0]+i*3+0] = src.data[psrc.y*(int)src.step[0]+psrc.x*3+0];
+				dst.data[j*(int)dst.step[0]+i*3+1] = src.data[psrc.y*(int)src.step[0]+psrc.x*3+1];
+				dst.data[j*(int)dst.step[0]+i*3+2] = src.data[psrc.y*(int)src.step[0]+psrc.x*3+2];
 			}
 			else {
-				dst->imageData[j*dst->widthStep+i*3+0] = kBgVal;
-				dst->imageData[j*dst->widthStep+i*3+1] = kBgVal;
-				dst->imageData[j*dst->widthStep+i*3+2] = kBgVal;
+				dst.data[j*(int)dst.step[0]+i*3+0] = kBgVal;
+				dst.data[j*(int)dst.step[0]+i*3+1] = kBgVal;
+				dst.data[j*(int)dst.step[0]+i*3+2] = kBgVal;
 			}
-//			dst->imageData[j*dst->widthStep+i*3+0] = src->imageData[j*src->widthStep+i*3+0];
-//			dst->imageData[j*dst->widthStep+i*3+1] = src->imageData[j*src->widthStep+i*3+1];
-//			dst->imageData[j*dst->widthStep+i*3+2] = src->imageData[j*src->widthStep+i*3+2];
+//			dst.data[j*(int)dst.step[0]+i*3+0] = src.data[j*(int)src.step[0]+i*3+0];
+//			dst.data[j*(int)dst.step[0]+i*3+1] = src.data[j*(int)src.step[0]+i*3+1];
+//			dst.data[j*(int)dst.step[0]+i*3+2] = src.data[j*(int)src.step[0]+i*3+2];
 		}
 	}
 }
 
-void AffPoint( CvPoint *p1, CvPoint *p2, double *param )
-// “_‚ÌƒAƒtƒBƒ“•ÏŠ·Œã‚ÌÀ•W‚ð‹‚ß‚é
+void AffPoint( cv::Point *p1, cv::Point *p2, double *param )
+// ï¿½_ï¿½ÌƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double a1, b1, c1, a2, b2, c2;
 
@@ -112,8 +111,8 @@ void AffPoint( CvPoint *p1, CvPoint *p2, double *param )
 //	printf("%d, %d\n", p2->x, p2->y);
 }
 
-void CalcAffParam( CvPoint p11, CvPoint p12, CvPoint p13, CvPoint p21, CvPoint p22, CvPoint p23, double *param )
-// p11,p12,p13->p21,p22,p23‚Ö‚ÆƒAƒtƒBƒ“•ÏŠ·‚·‚éƒpƒ‰ƒ[ƒ^‚ð‹‚ß‚é
+void CalcAffParam( cv::Point p11, cv::Point p12, cv::Point p13, cv::Point p21, cv::Point p22, cv::Point p23, double *param )
+// p11,p12,p13->p21,p22,p23ï¿½Ö‚ÆƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double a1, b1, c1, a2, b2, c2;
 	double x11, x12, x13, x21, x22, x23, y11, y12, y13, y21, y22, y23;

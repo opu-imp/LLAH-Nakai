@@ -1,48 +1,47 @@
 #include <stdio.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "annex_st.h"
 #include "estimate.h"
 
-// •s•Ï—Êƒ^ƒCƒv
+// ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½v
 #define	CR_AREA		(0)
 #define	CR_INTER	(1)
 #define	AFFINE		(2)
 #define	SIMILAR		(3)
 
-#define	kMaxParamValNum	(8)	/* •ÏŠ·i‘Š—orƒAƒtƒBƒ“jƒpƒ‰ƒ[ƒ^‚ÌÅ‘å” */
+#define	kMaxParamValNum	(8)	/* ï¿½ÏŠï¿½ï¿½iï¿½ï¿½ï¿½ï¿½orï¿½Aï¿½tï¿½Bï¿½ï¿½ï¿½jï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ÌÅ‘å” */
 
-int EstimateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type )
-// RANSAC‚É‚æ‚è‘Î‰“_‚©‚ç‘Š—‚¨‚æ‚ÑƒAƒtƒBƒ“•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ„’è‚·‚éiannex—pj
+int EstimateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type )
+// RANSACï¿½É‚ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ç‘Šï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÑƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ğ„’è‚·ï¿½ï¿½iannexï¿½pï¿½j
 {
 	int i, j, num_p, trpnum, randpi[4], cori, cla, clo, pa, po;
 	int score, max_score = -1, max_param = -1;
 	double **paramarr;
-	CvPoint strp1[4], strp2[4];
+	cv::Point strp1[4], strp2[4];
 	
 	if ( type == SIMILAR )		num_p = 2;
 	else if ( type == AFFINE )	num_p = 3;
 	else	return 0;
 	trpnum = num_p * 2;
-	// ƒpƒ‰ƒ[ƒ^”z—ñ‚Ìƒƒ‚ƒŠŠm•Û
+	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½zï¿½ï¿½Ìƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
 	paramarr = (double **)calloc( kRANSACTry, sizeof( double * ) );
 	for ( i = 0; i < kRANSACTry; i++ )	paramarr[i] = (double *)calloc( trpnum, sizeof( double ) );
-	// „’èŠJn
-	for ( j = 0; j < kRANSACTry; j++ ) {	// kRANSACTry‰ñŒJ‚è•Ô‚·
-		GetNumRand( num_p, cor_num, randpi );	// ƒ‰ƒ“ƒ_ƒ€‚Énum_p“_”ñ•œŒ³’Šo‚·‚é
+	// ï¿½ï¿½ï¿½ï¿½Jï¿½n
+	for ( j = 0; j < kRANSACTry; j++ ) {	// kRANSACTryï¿½ï¿½Jï¿½ï¿½Ô‚ï¿½
+		GetNumRand( num_p, cor_num, randpi );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½num_pï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
 		for ( i = 0; i < num_p; i++ ) {
-			cori = randpi[i];	// ‘I‚Î‚ê‚½‘Î‰”Ô†
-			cla = cor[cori][0];	// anno‚ÌƒNƒ‰ƒXƒ^
-			pa = cor[cori][1];	// anno‚Ì“_
-			clo = cor[cori][2];	// orig‚ÌƒNƒ‰ƒXƒ^
-			po = cor[cori][3];	// orig‚Ì“_
+			cori = randpi[i];	// ï¿½Iï¿½Î‚ê‚½ï¿½Î‰ï¿½ï¿½Ôï¿½
+			cla = cor[cori][0];	// annoï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½^
+			pa = cor[cori][1];	// annoï¿½Ì“_
+			clo = cor[cori][2];	// origï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½^
+			po = cor[cori][3];	// origï¿½Ì“_
 			strp2[i].x = clpsa[cla][pa].x;
 			strp2[i].y = clpsa[cla][pa].y;
 			strp1[i].x = clpso[clo][po].x;
 			strp1[i].y = clpso[clo][po].y;
 		}
-		// num_pŒÂ‚Ì‘Î‰“_‚©‚çƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
+		// num_pï¿½Â‚Ì‘Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 		if ( type == SIMILAR )		CalcSimParam( strp1[0], strp1[1], strp2[0], strp2[1], paramarr[j] );
 		else if ( type == AFFINE )	CalcAffParam( strp1[0], strp1[1], strp1[2], strp2[0], strp2[1], strp2[2], paramarr[j] );
 		else	return 0;
@@ -57,21 +56,21 @@ int EstimateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor
 		}
 	}
 //	printf("max vote : %d\n", max_score);
-	// è‡’lˆ—‚È‚Ç‚¹‚¸‚ÉÅ‘å‚ÌƒXƒRƒA‚Ì‚à‚Ì‚ğo—Í
+	// è‡’lï¿½ï¿½ï¿½ï¿½ï¿½È‚Ç‚ï¿½ï¿½ï¿½ï¿½ÉÅ‘ï¿½ÌƒXï¿½Rï¿½Aï¿½Ì‚ï¿½ï¿½Ì‚ï¿½ï¿½oï¿½ï¿½
 	for ( i = 0; i < trpnum; i++ )	param[i] = paramarr[max_param][i];
-	// ƒƒ‚ƒŠ‰ğ•ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < kRANSACTry; i++ )	free( paramarr[i] );
 	free( paramarr );
 	return 1;
 }
 
-int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type )
-// RANSAC‚Å‚Ìƒpƒ‰ƒ[ƒ^‚Ì•]‰¿
+int EvaluateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type )
+// RANSACï¿½Å‚Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•]ï¿½ï¿½
 {
 	int i, score = 0;
 	int cla, clo, pa, po;
 	double dist;
-	CvPoint p1, p2, p2h;
+	cv::Point p1, p2, p2h;
 	
 //	printf("\ndist\n");
 	for ( i = 0; i < cor_num; i++ ) {
@@ -83,7 +82,7 @@ int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor
 		p1.y = clpso[clo][po].y;
 		p2.x = clpsa[cla][pa].x;
 		p2.y = clpsa[cla][pa].y;
-		// ƒpƒ‰ƒ[ƒ^‚©‚ç‹‚ß‚ç‚ê‚é‘Î‰“_‚ÌÀ•W‚Æ‚Ì‹——£i‚Ì‚Qæj‚ğ‹‚ß‚é
+		// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ç‹ï¿½ß‚ï¿½ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½Ìï¿½ï¿½Wï¿½Æ‚Ì‹ï¿½ï¿½ï¿½ï¿½iï¿½Ì‚Qï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 		if ( type == SIMILAR )		SimPoint( &p1, &p2h, param );
 		else if ( type == AFFINE )	AffPoint( &p1, &p2h, param );
 		else	return -1;
@@ -91,19 +90,19 @@ int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor
 		dist = (p2.x-p2h.x)*(p2.x-p2h.x)+(p2.y-p2h.y)*(p2.y-p2h.y);
 //		printf( "%lf, ", dist);
 //		printf("\n");
-		if ( dist < kRANSACThr )	score++;	// ‹——£‚ªè‡’lˆÈ‰º‚È‚çƒCƒ“ƒNƒŠƒƒ“ƒg
+		if ( dist < kRANSACThr )	score++;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‡’lï¿½È‰ï¿½ï¿½È‚ï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½g
 	}
 	return score;
 }
 
-void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type )
-// ‘Î‰“_‚©‚ç‘Š—‚¨‚æ‚ÑƒAƒtƒBƒ“•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ„’è‚·‚éiannex—pj
+void EstimateParam( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type )
+// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ç‘Šï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÑƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ğ„’è‚·ï¿½ï¿½iannexï¿½pï¿½j
 {
 	int i, j, randpi[2], cori, cla, clo, pa, po, num_p, trpnum;
 	double **paramarr;
 //	strSimParam st_paramarr[kTryParamRand];
 //	strAffParam af_paramarr[kTryParamRand];
-	CvPoint strp1[3], strp2[3];
+	cv::Point strp1[3], strp2[3];
 	
 	if ( type == SIMILAR ) {
 		num_p = 2;
@@ -117,15 +116,15 @@ void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num,
 		paramarr[i] = (double *)calloc( trpnum, sizeof( double ) );
 	}
 	for ( i = 0; i < kTryParamRand; i++ ) {
-		// ƒ‰ƒ“ƒ_ƒ€‚Énum_p“_”ñ•œŒ³’Šo‚·‚é
+		// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½num_pï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
 		GetNumRand( num_p, cor_num, randpi );
 		
 		for ( j = 0; j < num_p; j++ ) {
-			cori = randpi[j];	// ‘I‚Î‚ê‚½‘Î‰”Ô†
-			cla = cor[cori][0];	// anno‚ÌƒNƒ‰ƒXƒ^
-			pa = cor[cori][1];	// anno‚Ì“_
-			clo = cor[cori][2];	// orig‚ÌƒNƒ‰ƒXƒ^
-			po = cor[cori][3];	// orig‚Ì“_
+			cori = randpi[j];	// ï¿½Iï¿½Î‚ê‚½ï¿½Î‰ï¿½ï¿½Ôï¿½
+			cla = cor[cori][0];	// annoï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½^
+			pa = cor[cori][1];	// annoï¿½Ì“_
+			clo = cor[cori][2];	// origï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½^
+			po = cor[cori][3];	// origï¿½Ì“_
 			strp2[j].x = clpsa[cla][pa].x;
 			strp2[j].y = clpsa[cla][pa].y;
 			strp1[j].x = clpso[clo][po].x;
@@ -139,7 +138,7 @@ void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num,
 		}
 	}
 	
-	// “KØ‚Èƒpƒ‰ƒ[ƒ^‚ğŒvZ‚·‚é
+	// ï¿½Kï¿½Ø‚Èƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 //	GetAppropriateParam( paramarr, param, type );
 	MeanParam( paramarr, param, kTryParamRand, trpnum, 0.00001, 100 );
 
@@ -150,7 +149,7 @@ void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num,
 }
 
 void GetNumRand( int num, int max, int *arr )
-// 0`max-1‚Ì®”‚ğd•¡‚È‚µ‚ÅnumŒÂ¶¬‚µCarr‚ÉŠi”[‚·‚é
+// 0ï¿½`max-1ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½numï¿½Âï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Carrï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, r, *num_arr;
 
@@ -165,7 +164,7 @@ void GetNumRand( int num, int max, int *arr )
 }
 
 void GetAppropriateParam( double **paramarr, double *param, int type )
-// ƒpƒ‰ƒ[ƒ^\‘¢‘Ì”z—ñparamarr[]‚©‚ç“KØ‚Èƒpƒ‰ƒ[ƒ^param‚ğ“¾‚é
+// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½Ì”zï¿½ï¿½paramarr[]ï¿½ï¿½ï¿½ï¿½Kï¿½Ø‚Èƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^paramï¿½ğ“¾‚ï¿½
 {
 	int i, j, trpnum;
 	double **pdouble, *mean;
@@ -218,8 +217,8 @@ void GetAppropriateParam( double **paramarr, double *param, int type )
 	free( mean );
 }
 
-// err0: ‚P‚Â‘O‚ÌŒë·‚ÆV‚½‚ÉŒvZ‚µ‚½Œë·‚ªerr0–¢–‚È‚çI—¹
-// threshold: “_‚ğ‹——£‚ª‹ß‚¢‡‚É•À‚×‚½‚Æ‚«CthresholdŒÂ‚Ü‚Å‚ÍŸ‰ñ‚Ì•½‹Ï’l‚ÌŒvZ‚Ég‚¤(inside)
+// err0: ï¿½Pï¿½Â‘Oï¿½ÌŒë·ï¿½ÆVï¿½ï¿½ï¿½ÉŒvï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ë·ï¿½ï¿½err0ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½Iï¿½ï¿½
+// threshold: ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½×‚ï¿½ï¿½Æ‚ï¿½ï¿½Cthresholdï¿½Â‚Ü‚Å‚Íï¿½ï¿½ï¿½Ì•ï¿½ï¿½Ï’lï¿½ÌŒvï¿½Zï¿½Égï¿½ï¿½(inside)
 void MeanParam( double **data, double *mean, int n, int trpnum, double err0, int threshold) {
 	// variable for "for"
 	int i,j;
@@ -259,7 +258,7 @@ void MeanParam( double **data, double *mean, int n, int trpnum, double err0, int
 	// initialization of size_flag1
 	size_flag1 = n;
 
-	// loop (counter‚ª0‚©1‚Ì‚Æ‚«‚Íerr0‚É‚æ‚é•]‰¿‚Í‚µ‚È‚¢D‚Â‚Ü‚èC‚Q‰ñ‚Í•K‚¸ƒ‹[ƒv‚·‚é)
+	// loop (counterï¿½ï¿½0ï¿½ï¿½1ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½err0ï¿½É‚ï¿½ï¿½]ï¿½ï¿½ï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½Dï¿½Â‚Ü‚ï¿½Cï¿½Qï¿½ï¿½Í•Kï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½)
 	  while ( fabs(err-err_prev) > err0 || counter<=1) {
 	
 		// calculate mean
@@ -307,11 +306,11 @@ void MeanParam( double **data, double *mean, int n, int trpnum, double err0, int
 		for (i=0; i<n; i++) {
 			dist_n[i] = i;
 		}
-		// dist[dist_n[i]]‚ª¬‚³‚¢‡‚É•À‚Ô‚æ‚¤‚Édist_n‚ğƒ\[ƒg
+		// dist[dist_n[i]]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½Ô‚æ‚¤ï¿½ï¿½dist_nï¿½ï¿½ï¿½\ï¿½[ï¿½g
 //		quicksort(dist,dist_n,pdist,1,n);
 //		quicksort(dist,dist_n,0,n-1);
 		simplesort(dist,dist_n,0,n-1);
-		// ‹——£‚ª¬‚³‚¢‚à‚Ì‚ğinside‚ÉC‚»‚¤‚Å‚È‚¢‚à‚Ì‚ğoutside‚É‚·‚é
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½insideï¿½ÉCï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½outsideï¿½É‚ï¿½ï¿½ï¿½
 		for (i=0; i<threshold; i++) {
 			inside_flag[dist_n[i]] = 1;
 			size_flag1++;

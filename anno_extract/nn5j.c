@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
@@ -19,38 +18,38 @@
 int corres[kMaxPointNum][kMaxDocNum];
 char flag1[kMaxDocNum];
 char flag2[kMaxDocNum][kMaxPointNum];
-char flago[kMaxPointNum], flaga[kMaxPointNum];	// “_‘Î‰ƒtƒ‰ƒOiannex—pj
+char flago[kMaxPointNum], flaga[kMaxPointNum];	// ï¿½_ï¿½Î‰ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½iannexï¿½pï¿½j
 
 int **com1 = NULL;
 int **com2 = NULL;
 
 void SetCom1( int i, int j, int n )
-// com1‚Ìisj—ñ‚Én‚ğ“ü‚ê‚éDgetcomb—p
+// com1ï¿½ï¿½iï¿½sjï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Dgetcombï¿½p
 {
 	com1[i][j] = n;
 }
 
 void SetCom2( int i, int j, int n )
-// com2‚Ìisj—ñ‚Én‚ğ“ü‚ê‚éDgetcomb—p
+// com2ï¿½ï¿½iï¿½sjï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Dgetcombï¿½p
 {
 	com2[i][j] = n;
 }
 
-void ConstructHashSub( CvPoint *ps, int num )
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚éi–¼‘O‚ÍƒTƒu‚¾‚¯‚ÇƒƒCƒ“j
+void ConstructHashSub( cv::Point *ps, int num )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Oï¿½ÍƒTï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Çƒï¿½ï¿½Cï¿½ï¿½ï¿½j
 {
 	int **nears = NULL;
 	strDisc disc;
 	
-	InitHash();	// ƒnƒbƒVƒ…‚Ì‰Šú‰»
-	LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+	InitHash();	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-	MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
+	MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 	ConstructHashSubSub( ps, num, nears, 0, &disc );
 }
 
-void ConstructHashSubSub(CvPoint *ps, int num, int *nears[], int n, strDisc *disc)
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚éi–¼‘O‚ÍƒTƒu‚ÌƒTƒu‚¾‚¯‚ÇƒTƒuj
+void ConstructHashSubSub(cv::Point *ps, int num, int *nears[], int n, strDisc *disc)
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Oï¿½ÍƒTï¿½uï¿½ÌƒTï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ÇƒTï¿½uï¿½j
 {
 	char *hindex;
 	int i, j, k, l;
@@ -63,9 +62,9 @@ void ConstructHashSubSub(CvPoint *ps, int num, int *nears[], int n, strDisc *dis
 	idxcom2 = (int *)calloc( eGroup3Num, sizeof(int) );
 	for ( i = 0; i < num; i++ ) {
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Še8“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½e8ï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];
-			for ( k = 0; k < eNumCom2; k++ ) {	// Še5“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+			for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½e5ï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 //				if ( eIncludeCentre || eInvType == SIMILAR ) {
 				if ( eIncludeCentre ) {
 					idxcom2[0] = i;
@@ -84,7 +83,7 @@ void ConstructHashSubSub(CvPoint *ps, int num, int *nears[], int n, strDisc *dis
 						cr = CalcAffineInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]], ps[idxcom2[3]]);
 						break;
 					case SIMILAR:
-//						cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// Šp“x‚ğŒvZ
+//						cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// ï¿½pï¿½xï¿½ï¿½ï¿½vï¿½Z
 						cr = CalcSimilarInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);
 					default:
 						break;
@@ -102,40 +101,40 @@ void ConstructHashSubSub(CvPoint *ps, int num, int *nears[], int n, strDisc *dis
 	free( idxcom2 );
 }
 
-int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, int *pcor )
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚é
+int RetrieveNN5(cv::Point *ps, int num, int *nears[], cv::Size size, int *score, int *pcor )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j;
 	strDisc disc;
 //	DWORD start, end;
 	int start, end;
 
-	// ‘g‚İ‡‚í‚¹‚Ìì¬
+	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-	// “_‘Î‰ƒe[ƒuƒ‹‚Ìì¬
+	// ï¿½_ï¿½Î‰ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 	for ( i = 0; i < kMaxPointNum; i++ ) {
 		for ( j = 0; j < kMaxDocNum; j++ ) {
 			corres[i][j] = -1;
 		}
 	}
-	// flag2‚Ì‰Šú‰»
+	// flag2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 /*	for ( i = 0; i < kMaxDocNum; i++ ) {
 		for ( j = 0; j < kMaxPointNum; j++ ) {
 			flag2[i][j] = 0;
 		}
 	}*/
 	ClearCorFlag();
-	LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒe[ƒuƒ‹‚Ìì¬
+	LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 //	start = timeGetTime();
 	start = GetProcTimeMicroSec();
-	CalcScore3(ps, num, nears, score, &disc);	// ŒŸõ
-//	CheckByPPVar( ps, num, score );	// Ë‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚Ì•ªU‚Åƒ`ƒFƒbƒN
+	CalcScore3(ps, num, nears, score, &disc);	// ï¿½ï¿½ï¿½ï¿½
+//	CheckByPPVar( ps, num, score );	// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•ï¿½ï¿½Uï¿½Åƒ`ï¿½Fï¿½bï¿½N
 //	end = timeGetTime();
 	end = GetProcTimeMicroSec();
 //	printf("retrieval time : %d\n", end - start);
 //	printf("retrieval time : %d micro sec\n", end - start);
 
-	// ‘Î‰“_‚ÌŠi”[
+	// ï¿½Î‰ï¿½ï¿½_ï¿½ÌŠiï¿½[
 	for ( i = 0; i < num; i++ ) {
 		pcor[i] = corres[i][0];
 	}
@@ -143,8 +142,8 @@ int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, int
 	return 0;
 }
 
-void CalcScore3(CvPoint *ps, int num, int *nears[], int *score, strDisc *disc)
-// Še•¶‘‚Ì“¾“_‚ğŒvZ‚»‚Ì3
+void CalcScore3(cv::Point *ps, int num, int *nears[], int *score, strDisc *disc)
+// ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½_ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½3
 {
 	char *hindex;
 	int i=0, j, k, l, st, tmp;
@@ -161,10 +160,10 @@ void CalcScore3(CvPoint *ps, int num, int *nears[], int *score, strDisc *disc)
 //		ClearPVote();
 //		ClearFlag1();
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Šen“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½enï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];
-			for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
-                for ( k = 0; k < eNumCom2; k++ ) {	// Šem“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+			for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
+                for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½emï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 //                	if ( eIncludeCentre || eInvType == SIMILAR ) {
                 	if ( eIncludeCentre ) {
 						idxcom2[0] = i;
@@ -183,7 +182,7 @@ void CalcScore3(CvPoint *ps, int num, int *nears[], int *score, strDisc *disc)
 							cr = CalcAffineInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]], ps[idxcom2[3]]);
 							break;
 						case SIMILAR:
-//							cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// Šp“x‚ğŒvZ
+//							cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// ï¿½pï¿½xï¿½ï¿½ï¿½vï¿½Z
 							cr = CalcSimilarInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);
 						default:
 							break;
@@ -205,7 +204,7 @@ void CalcScore3(CvPoint *ps, int num, int *nears[], int *score, strDisc *disc)
 //		CalcPointCor( i );
 	}
 
-//	for ( i = 0; i < kMaxDocNum; i++ ) {	// ƒXƒRƒA‚ÌŠm”F
+//	for ( i = 0; i < kMaxDocNum; i++ ) {	// ï¿½Xï¿½Rï¿½Aï¿½ÌŠmï¿½F
 //		if ( score[i] > 0 ) {
 //			printf("%03d : %d\n", i, score[i]);
 //		}
@@ -217,33 +216,33 @@ void CalcScore3(CvPoint *ps, int num, int *nears[], int *score, strDisc *disc)
 }
 
 void VoteDirectlyByHL( strHList *hl, int *score, char *idx, int p )
-// ƒnƒbƒVƒ…ƒŠƒXƒg‚©‚ç’¼‚Évote‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ç’¼ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½
 {
 	strHList *hp;
     
 	for ( hp = hl; hp != NULL; hp = hp->next) {
 //		if ( memcmp(hp->idx, idx, eNumCom2) == 0 && flag1[hp->doc] == 0 && flag2[hp->doc][hp->point] == 0) {
-		// ‘Î‰ŠÖŒWƒ`ƒFƒbƒN && ( ƒxƒNƒgƒ‹ƒ`ƒFƒbƒN‚È‚µ || ƒxƒNƒgƒ‹ˆê’v )
+		// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½`ï¿½Fï¿½bï¿½N && ( ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½È‚ï¿½ || ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½v )
 //		if ( flag1[hp->doc] == 0 && flag2[hp->doc][hp->point] == 0 && ( !eVectorCheck || memcmp(hp->idx, idx, eNumCom2) == 0 ) ) {
 		if ( flaga[p] == 0 && flago[hp->point] == 0 && memcmp(hp->idx, idx, eNumCom2) == 0 ) {
-			score[hp->doc]++;	// “Š•[
+			score[hp->doc]++;	// ï¿½ï¿½ï¿½[
 			corres[p][hp->doc] = hp->point;
 			flaga[p] = 1;
 			flago[hp->point] = 1;
-//			flag1[hp->doc] = 1;	// hp->doc‚Í“Š•[Ï‚İ
-//			flag2[hp->doc][hp->point] = 1;	// hp-doc‚Ìhp->point‚Í“Š•[Ï‚İ
+//			flag1[hp->doc] = 1;	// hp->docï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
+//			flag2[hp->doc][hp->point] = 1;	// hp-docï¿½ï¿½hp->pointï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
 		}
 	}
 }
 
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
-//	ƒTƒCƒYnum‚Ì“_”z—ñps‚Ìn”Ô–Ú‚Ì“_‚ÆÅ‚à‹ß‚¢kNearsŒÂ‚Ì“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğnears‚ÉŠi”[‚·‚é
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
+//	ï¿½Tï¿½Cï¿½Ynumï¿½Ì“_ï¿½zï¿½ï¿½psï¿½ï¿½nï¿½Ô–Ú‚Ì“_ï¿½ÆÅ‚ï¿½ï¿½ß‚ï¿½kNearsï¿½Â‚Ì“_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½nearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, k, min_idxs[kNears];
 	double dist, min_dists[kNears];
-	CvPoint p;
+	cv::Point p;
 
-	// ‰Šú‰»
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < kNears; i++ ) {
 		min_idxs[i] = 0;
 		min_dists[i] = 10000000;
@@ -270,8 +269,8 @@ void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
 	}
 }
 
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
-// dS‚©‚ç‹ß–T\‘¢‚ğŒvZ‚·‚é
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
+// ï¿½dï¿½Sï¿½ï¿½ï¿½ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	int i, **nears;
 
@@ -286,8 +285,8 @@ void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
 	}
 }
 
-void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
-// Œv‰ñ‚è‚É‹ß–T“_‚ğ”z—ñ‚É“ü‚ê‚éi‚“_ƒo[ƒWƒ‡ƒ“j
+void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num )
+// ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½É‹ß–Tï¿½_ï¿½ï¿½zï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½_ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	int i, j, tmp_i;
 	double *angs, tmp_a;
@@ -313,8 +312,8 @@ void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
 	free(angs);
 }
 
-void CalcInterPoint( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint *p1234 )
-// “_p1‚Æp2‚Ì’Ê‚é’¼üC“_p3‚Æp4‚Ì’Ê‚é’¼ü‚Ì2’¼ü‚ÌŒğ“_‚ğ‹‚ß‚é
+void CalcInterPoint( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point *p1234 )
+// ï¿½_p1ï¿½ï¿½p2ï¿½Ì’Ê‚é’¼ï¿½ï¿½ï¿½Cï¿½_p3ï¿½ï¿½p4ï¿½Ì’Ê‚é’¼ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ÌŒï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double x1, x2, x3, x4, y1, y2, y3, y4, a1, a2, b1, b2;
 
@@ -336,10 +335,10 @@ void CalcInterPoint( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint *p1
 	p1234->y = (int)(-(a1*(b1-b2))/(a1-a2) + b1);
 }
 
-double CalcCR5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
-// •½–Êã‚Ì5“_‚Å•¡”ä‚ğŒvZ‚·‚é
+double CalcCR5( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
+// ï¿½ï¿½ï¿½Êï¿½ï¿½5ï¿½_ï¿½Å•ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
-	CvPoint p1325, p1425;
+	cv::Point p1325, p1425;
 
 	CalcInterPoint( p1, p3, p2, p5, &p1325 );
 	CalcInterPoint( p1, p4, p2, p5, &p1425 );
@@ -347,8 +346,8 @@ double CalcCR5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
 	return CalcCR(p2, p1325, p1425, p5);
 }
 
-double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
-// •¡”ä‚ğŒvZ‚·‚é
+double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	double d13, d23, d14, d24;
 	d13 = GetPointsDistance(p1, p3);
@@ -362,7 +361,7 @@ double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
 }
 
 void InitCom( int ***com0, int num1, int num2 )
-// com1/com2‚ğ‰Šú‰»‚·‚é
+// com1/com2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, **com;
 	com = (int **)calloc( num1, sizeof(int *) );
@@ -376,8 +375,8 @@ void GenerateCombination( int inv_type, int g1, int g2, int g3, void (*setcom1)(
 {
 //	int i;
 
-	if ( com1 == NULL )	InitCom( &com1, eNumCom1, eGroup2Num );
-	if ( com2 == NULL )	InitCom( &com2, eNumCom2, eGroup3Num );
+	if (com1 == NULL)	InitCom( &com1, eNumCom1, eGroup2Num );
+	if (com2 == NULL)	InitCom( &com2, eNumCom2, eGroup3Num );
 	
 	gencomb(g1, g2, setcom1);
 //	if ( inv_type == SIMILAR ) {

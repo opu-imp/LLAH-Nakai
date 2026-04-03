@@ -1,4 +1,4 @@
-// •s•Ï—Êƒ^ƒCƒv
+// ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½v
 #define	CR_AREA		(0)
 #define	CR_INTER	(1)
 #define	AFFINE		(2)
@@ -12,14 +12,14 @@
 	#define	SHOW_PIC
 	#define	SAVE_PIC
 #endif
-//#define	DRAW_BY_NUM	/* DrawPoint‚Å”š‚ğ•\¦‚·‚é*/
+//#define	DRAW_BY_NUM	/* DrawPointï¿½Åï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 
-#ifndef M_PI /* ‰~ü—¦ (pi) */
+#ifndef M_PI /* ï¿½~ï¿½ï¿½ï¿½ï¿½ (pi) */
 #define M_PI (3.14159265358979323846L)
 #endif
 
-//#define	kNears	5	/* 1NN,Word‚Ìê‡*/
-#define	kNears	30	/* CR‚Ìê‡ */
+//#define	kNears	5	/* 1NN,Wordï¿½Ìê‡*/
+#define	kNears	30	/* CRï¿½Ìê‡ */
 #define	kRadRange (M_PI / 4.0)
 #define	kRightRange kRadRange
 #define	kLeftRange kRadRange
@@ -27,76 +27,76 @@
 #define	kDownRange kRadRange
 #define	kMaxDiscriptorSize	(4096)
 #define	kWordSep	(1.4)
-#define	kFFRAngle	(M_PI / 4.0)		/* FirstFirstRightPointCR—pu‚¾‚¢‚½‚¢“¯‚¶v*/
-#define	kRoughlyAngle	(M_PI / 20.0)	/* FirstRightPointCR—pu‚â‚â“¯‚¶v*/
-#define	kNearlyAngle	(M_PI / 18.0)	/* RightPointCR—pu‚Ù‚Æ‚ñ‚Ç“¯‚¶v*/
-#define	kNLAngle	(M_PI / 4.0)	/* NextLineCR—p */
-//#define	kCloseAngle	(M_PI / 14400.0)	/* RightPointCR—p@s“ª‚Ì•¶š‚Æ‚ÌŠp“x*/
-#define	kCloseAngle	((long double)(M_PI / 1000000000.0L))	/* RightPointCR—p@s“ª‚Ì•¶š‚Æ‚ÌŠp“x */
-#define	kAlmostAngle	(M_PI / 4.0)	/* RightPointCR—p@‰E‘¤‚É‚È‚¢‚Æ¢‚é‚Ì‚Å*/
+#define	kFFRAngle	(M_PI / 4.0)		/* FirstFirstRightPointCRï¿½pï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½v*/
+#define	kRoughlyAngle	(M_PI / 20.0)	/* FirstRightPointCRï¿½pï¿½uï¿½ï¿½â“¯ï¿½ï¿½ï¿½v*/
+#define	kNearlyAngle	(M_PI / 18.0)	/* RightPointCRï¿½pï¿½uï¿½Ù‚Æ‚ï¿½Ç“ï¿½ï¿½ï¿½ï¿½v*/
+#define	kNLAngle	(M_PI / 4.0)	/* NextLineCRï¿½p */
+//#define	kCloseAngle	(M_PI / 14400.0)	/* RightPointCRï¿½pï¿½@ï¿½sï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½Æ‚ÌŠpï¿½x*/
+#define	kCloseAngle	((long double)(M_PI / 1000000000.0L))	/* RightPointCRï¿½pï¿½@ï¿½sï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½Æ‚ÌŠpï¿½x */
+#define	kAlmostAngle	(M_PI / 4.0)	/* RightPointCRï¿½pï¿½@ï¿½Eï¿½ï¿½ï¿½É‚È‚ï¿½ï¿½Æï¿½ï¿½ï¿½Ì‚ï¿½*/
 
 #define	kFileNameLen	(64)
 
-#define	kLittleVal	(0.000001L)	/* CalcCR—p */
+#define	kLittleVal	(0.000001L)	/* CalcCRï¿½p */
 
-#define	cWhite	CV_RGB( 255,255,255 )
-#define	cBlack	CV_RGB( 0,0,0 )
-#define	cRed	CV_RGB( 255,0,0 )
-#define	cGreen	CV_RGB( 0,255,0 )
-#define	cBlue	CV_RGB( 0,0,255 )
-#define	cRandom	CV_RGB( rand()%256, rand()%256, rand()%256 )
+#define	cWhite	cv::Scalar(255,255,255)
+#define	cBlack	cv::Scalar(0,0,0)
+#define	cRed	cv::Scalar(0,0,255)
+#define	cGreen	cv::Scalar(0,255,0)
+#define	cBlue	cv::Scalar(255,0,0)
+#define	cRandom	cv::Scalar(rand(,rand()%256,rand()%256)%256 )
 
-// ‘S‘Ì‚Ìƒ‚[ƒh
+// ï¿½Sï¿½Ì‚Ìƒï¿½ï¿½[ï¿½h
 #define	RETRIEVE_MODE	(0)
 #define	CONST_HASH_MODE	(1)
 #define	RET_MP_MODE			(2)
 #define	TEST_MODE		(3)
 #define	ADD_HASH_MODE	(4)
 #define	CREATE_QPF_MODE	(5)	/* Create point file of query image */
-// Ë‰e•ÏŠ·‚Ì•â³‚ğ‚·‚é‚©‚µ‚È‚¢‚©
+// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½Ì•â³ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½
 #define	NOT_RECOVER_MODE	(0)
 #define	RECOVER_MODE		(1)
-// “Á’¥“_‚Í‰½‚ğg‚¤‚©
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Í‰ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½
 #define	CONNECTED_MODE	(0)
 #define	ENCLOSED_MODE	(1)
-#define	USEPF_MODE		(2)	/* kPFPrefix, kPFSuffix‚Ì“_ƒtƒ@ƒCƒ‹‚ğg‚¤ */
-// Œ‹‡‰æ‘œ‚Í—pˆÓ‚³‚ê‚Ä‚¢‚é‚©ic‚·‚©j
+#define	USEPF_MODE		(2)	/* kPFPrefix, kPFSuffixï¿½Ì“_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ */
+// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Í—pï¿½Ó‚ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½iï¿½cï¿½ï¿½ï¿½ï¿½ï¿½j
 #define	NOT_PREPARED_MODE	(0)
 #define	PREPARED_MODE		(1)
 #define	LEAVE_MODE			(2)
 
-// Œg‘Ñ“d˜b‚ÌŠg‘å—¦
+// ï¿½gï¿½Ñ“dï¿½bï¿½ÌŠgï¿½å—¦
 #define	kMPExp	9
 
 #define	GetPointsDistance(p1, p2)	(sqrt((p1.x - p2.x)*(p1.x - p2.x)+(p1.y - p2.y)*(p1.y - p2.y)))
 
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] );
-int FirstPoint(CvPoint *ps, int num);
-int NextLine(int pt, CvPoint *ps, int num, int *nears[], int visited[]);
-int RightPoint(int pt, CvPoint *ps, int num, int nears[]);
-int LeftPoint(int pt, CvPoint *ps, int num, int nears[], int visited[]);
-int DownPoint(int pt, CvPoint *ps, int num, int nears[]);
-int IsOnRight( CvPoint *p1, CvPoint *p2 );
-int IsOnLeft( CvPoint *p1, CvPoint *p2 );
-int IsOnDown( CvPoint *p1, CvPoint *p2 );
-void Calc1NNDiscriptor(CvPoint *ps, int num, int *nears[], char disc[]);
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] );
+int FirstPoint(cv::Point *ps, int num);
+int NextLine(int pt, cv::Point *ps, int num, int *nears[], int visited[]);
+int RightPoint(int pt, cv::Point *ps, int num, int nears[]);
+int LeftPoint(int pt, cv::Point *ps, int num, int nears[], int visited[]);
+int DownPoint(int pt, cv::Point *ps, int num, int nears[]);
+int IsOnRight( cv::Point *p1, cv::Point *p2 );
+int IsOnLeft( cv::Point *p1, cv::Point *p2 );
+int IsOnDown( cv::Point *p1, cv::Point *p2 );
+void Calc1NNDiscriptor(cv::Point *ps, int num, int *nears[], char disc[]);
 int IsConnected1NN(int p1, int p2, int *nears[]);
-int IsConnectedWord(CvPoint p1, CvPoint p2, double *dist);
-//double GetPointsDistance(CvPoint p1, CvPoint p2);
-long double GetPointsAngle(CvPoint p1, CvPoint p2);
-void CalcCRDiscriptorLine(CvPoint *ps, int num, int *nears[]);
-int FirstFirstRightPointCR(int pt, CvPoint *ps, int *nears[]);
-int FirstRightPointCR(int pt, CvPoint *ps, int *nears[], double ang0);
-int RightPointCR(int pt, int pt0, CvPoint *ps, int nears[], long double ang0 );
-int NextLineCR(int pt, CvPoint *ps, int *nears[], double ang0);
-double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 );
+int IsConnectedWord(cv::Point p1, cv::Point p2, double *dist);
+//double GetPointsDistance(cv::Point p1, cv::Point p2);
+long double GetPointsAngle(cv::Point p1, cv::Point p2);
+void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[]);
+int FirstFirstRightPointCR(int pt, cv::Point *ps, int *nears[]);
+int FirstRightPointCR(int pt, cv::Point *ps, int *nears[], double ang0);
+int RightPointCR(int pt, int pt0, cv::Point *ps, int nears[], long double ang0 );
+int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0);
+double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
 void JInvariantTest(void);
-double CalcJI( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 );
-int CalcCentres(CvPoint **ps, CvSeq *contours, CvSize *size);
-int OutPutImage(IplImage *img);
-int MakeCentresFromImage(CvPoint **ps, IplImage *, CvSize *size);
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 );
-void ReleaseCentres( CvPoint *ps );
+double CalcJI( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
+int CalcCentres(cv::Point **ps, std::vector<std::vector<cv::Point>> &contours, cv::Size *size);
+int OutPutImage(cv::Mat img);
+int MakeCentresFromImage(cv::Point **ps, cv::Mat , cv::Size *size);
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 );
+void ReleaseCentres( cv::Point *ps );
 void ReleaseNears( int **nears, int num );
 void OutPutResult( int *s, int t, int disp, char *fname );
-int ScreenPointsWithNears( CvPoint *ps, int num, int **nears );
+int ScreenPointsWithNears( cv::Point *ps, int num, int **nears );

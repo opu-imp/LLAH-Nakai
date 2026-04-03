@@ -1,79 +1,78 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
 #include "annex_diff.h"
 
-void GetDiffImage0( IplImage *diff, IplImage *anno, IplImage *orig, int mode )
-// ·•ª‰æ‘œ‚ğ“¾‚é
+void GetDiffImage0( cv::Mat diff, cv::Mat anno, cv::Mat orig, int mode )
+// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ğ“¾‚ï¿½
 {
 	int i, j, k;
 	signed int diffval;
 
-	for ( j = 0; j < diff->height; j++ ) {
-		for ( i = 0; i < diff->width; i++ ) {
+	for ( j = 0; j < diff.rows; j++ ) {
+		for ( i = 0; i < diff.cols; i++ ) {
 			for ( k = 0; k < 3; k++ ) {
-				diffval = (int)(255 - (unsigned char)(anno->imageData[j*anno->widthStep+i*3+k])) - (255 - (unsigned char)(orig->imageData[j*orig->widthStep+i*3+k]));
-				if ( diffval >= 0 )	diff->imageData[j*diff->widthStep+i*3+k] = (char)(0x00ff & diffval);
-				else	diff->imageData[j*diff->widthStep+i*3+k] = 0;
+				diffval = (int)(255 - (unsigned char)(anno.data[j*(int)anno.step[0]+i*3+k])) - (255 - (unsigned char)(orig.data[j*(int)orig.step[0]+i*3+k]));
+				if ( diffval >= 0 )	diff.data[j*(int)diff.step[0]+i*3+k] = (char)(0x00ff & diffval);
+				else	diff.data[j*(int)diff.step[0]+i*3+k] = 0;
 			}
 		}
 	}
 }
 
-void GetDiffImage( IplImage *diff, IplImage *anno, IplImage *orig, int mode )
-// ·•ª‰æ‘œ‚ğ“¾‚é
+void GetDiffImage( cv::Mat diff, cv::Mat anno, cv::Mat orig, int mode )
+// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ğ“¾‚ï¿½
 {
 	unsigned char anno_pix[3], orig_pix[3];
 	double diff_dbl, dist, min_dist;
 	int i, j, k, nx, ny, min_nx, min_ny;
 	signed int diffval;
-	IplImage *anno_lab, *orig_lab;
-	IplImage *ori_img;
-//	CvScalar color_tab[eDiffNear*2+1][eDiffNear*2+1];
+	cv::Mat anno_lab, orig_lab;
+	cv::Mat ori_img;
+//	cv::Scalar color_tab[eDiffNear*2+1][eDiffNear*2+1];
 
-	// •ûŒü‰æ‘œ—p‚ÌFƒe[ƒuƒ‹
+	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½pï¿½ÌFï¿½eï¿½[ï¿½uï¿½ï¿½
 //	for ( j = 0; j <= eDiffNear * 2; j++ ) {
 //		for ( i = 0; i <= eDiffNear * 2; i++ ) {
-//			color_tab[i][j] = CV_RGB( (int)(255.0L / (double)(eDiffNear*2) * (double)i), 0/*(int)(255.0L / (double)(eDiffNear*2) * (double)j)*/, 0/*(int)(255.0L / (double)(eDiffNear*2) * ((double)(eDiffNear*4-i-j)/2.0L))*/ );
+//			color_tab[i][j] = cv::Scalar(0/*(int,0/*(int)(255.0L / (double)(eDiffNear*2) * (double)j)*/,(int)(255.0L / (double)(eDiffNear*2) * (double)i))(255.0L / (double)(eDiffNear*2) * ((double)(eDiffNear*4-i-j)/2.0L))*/ );
 //		}
 //	}
-//	ori_img = cvCreateImage( cvGetSize( orig ), IPL_DEPTH_8U, 3 );
-	// CIE L*a*b*‚Ì‰æ‘œ‚ğì¬
-	anno_lab = cvCreateImage( cvGetSize( anno ), IPL_DEPTH_8U, 3 );
-	orig_lab = cvCreateImage( cvGetSize( orig ), IPL_DEPTH_8U, 3 );
-	cvCvtColor( anno, anno_lab, CV_BGR2Lab );
-	cvCvtColor( orig, orig_lab, CV_BGR2Lab );
+//	ori_img = cv::Mat::zeros(orig.size(), CV_8UC3);
+	// CIE L*a*b*ï¿½Ì‰æ‘œï¿½ï¿½ï¿½ì¬
+	anno_lab = cv::Mat::zeros(anno.size(), CV_8UC3);
+	orig_lab = cv::Mat::zeros(orig.size(), CV_8UC3);
+	cv::cvtColor( anno, anno_lab, cv::COLOR_BGR2Lab );
+	cv::cvtColor( orig, orig_lab, cv::COLOR_BGR2Lab );
 	
 //	anno = anno_lab;
 //	orig = orig_lab;
 
-	for ( j = 0; j < diff->height; j++ ) {
-		for ( i = 0; i < diff->width; i++ ) {
-			for ( k = 0; k < 3; k++ ) {	// ‰æ‘f’l‚Ìæ“¾
-				anno_pix[k] = (unsigned char)anno->imageData[j*anno->widthStep+i*3+k];
+	for ( j = 0; j < diff.rows; j++ ) {
+		for ( i = 0; i < diff.cols; i++ ) {
+			for ( k = 0; k < 3; k++ ) {	// ï¿½ï¿½fï¿½lï¿½Ìæ“¾
+				anno_pix[k] = (unsigned char)anno.data[j*(int)anno.step[0]+i*3+k];
 			}
 			min_dist = kMaxColorDist;
 			min_nx = -eDiffNear;
 			min_ny = -eDiffNear;
-			// eDiffNear‚Ì”ÍˆÍ‚ÅÅ‚à‹ß‚¢‚à‚Ì‚ğ’T‚·
+			// eDiffNearï¿½Ì”ÍˆÍ‚ÅÅ‚ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½Tï¿½ï¿½
 			for ( ny = -eDiffNear; ny <= eDiffNear; ny++ ) {
-				if ( j + ny < 0 || j + ny >= orig->height )	continue;
+				if ( j + ny < 0 || j + ny >= orig.rows )	continue;
 				for ( nx = -eDiffNear; nx <= eDiffNear; nx++ ) {
-					if ( i + nx < 0 || i + nx >= orig->width )	continue;	// ”ÍˆÍ‚ğ’´‚¦‚½‚çƒXƒLƒbƒv
-//					dist = CalcColorDist( anno_pix, (unsigned char *)&(orig->imageData[(j+ny)*orig->widthStep+(i+nx)*3]) );
+					if ( i + nx < 0 || i + nx >= orig.cols )	continue;	// ï¿½ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Lï¿½bï¿½v
+//					dist = CalcColorDist( anno_pix, (unsigned char *)&(orig.data[(j+ny)*(int)orig.step[0]+(i+nx)*3]) );
 //					dist = 0;
-					dist = CalcColorDist( (unsigned char *)&anno_lab->imageData[j*anno_lab->widthStep+i*3], (unsigned char *)&orig_lab->imageData[j*orig_lab->widthStep+i*3] );	// lab‚Å‚Ì‹——£‚ğ‹‚ß‚é
-					for ( k = 0; k < 3; k++ ) {	// RGB‚Å‚Ì‹——£‚ğ‰Á‚¦‚é
-						diff_dbl = anno_pix[k] - (unsigned char)orig->imageData[(j+ny)*orig->widthStep+(i+nx)*3+k];
+					dist = CalcColorDist( (unsigned char *)&anno_lab.data[j*(int)anno_lab.step[0]+i*3], (unsigned char *)&orig_lab.data[j*(int)orig_lab.step[0]+i*3] );	// labï¿½Å‚Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+					for ( k = 0; k < 3; k++ ) {	// RGBï¿½Å‚Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						diff_dbl = anno_pix[k] - (unsigned char)orig.data[(j+ny)*(int)orig.step[0]+(i+nx)*3+k];
 						dist += diff_dbl * diff_dbl;
 					}
 					if ( dist < min_dist /*|| dist == min_dist && nx*nx+ny*ny < min_nx*min_nx+min_ny*min_ny*/) {
 						for ( k = 0; k < 3; k++ ) {
-							orig_pix[k] = (unsigned char)orig->imageData[(j+ny)*orig->widthStep+(i+nx)*3+k];
+							orig_pix[k] = (unsigned char)orig.data[(j+ny)*(int)orig.step[0]+(i+nx)*3+k];
 						}
 						min_dist = dist;
 						min_nx = nx;
@@ -83,36 +82,36 @@ void GetDiffImage( IplImage *diff, IplImage *anno, IplImage *orig, int mode )
 				}
 			}
 			end_search:
-			// ·•ª‚ğ‹‚ß‚é
-			if ( min_dist > eDiffLeaveThr ) {	// ·‚ª\•ª‚É‘å‚«‚¯‚ê‚Î·•ª‚ğæ‚ç‚¸‚Éanno‚ğ‚»‚Ì‚Ü‚Üc‚·
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+			if ( min_dist > eDiffLeaveThr ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‘å‚«ï¿½ï¿½ï¿½ï¿½Îï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç‚¸ï¿½ï¿½annoï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ü‚Ücï¿½ï¿½
 				for ( k = 0; k < 3; k++ ) {
-					diff->imageData[j*diff->widthStep+i*3+k] = (unsigned char)(0x00ff & (255 - anno_pix[k]));
+					diff.data[j*(int)diff.step[0]+i*3+k] = (unsigned char)(0x00ff & (255 - anno_pix[k]));
 				}
 			}
-			else if ( min_dist < eDiffEraseThr ) {	// ·‚ª\•ª‚É¬‚³‚¯‚ê‚Î0‚Æ‚·‚é
+			else if ( min_dist < eDiffEraseThr ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½Æ‚ï¿½ï¿½ï¿½
 				for ( k = 0; k < 3; k++ ) {
-					diff->imageData[j*diff->widthStep+i*3+k] = 0;
+					diff.data[j*(int)diff.step[0]+i*3+k] = 0;
 				}
 			}
-			else {	// ‚»‚¤‚Å‚È‚¯‚ê‚Î·•ª‚ğæ‚éi•‰‚É‚È‚Á‚Ä‚µ‚Ü‚¤ê‡‚Í0‚Æ‚·‚éj
+			else {	// ï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½Îï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½É‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ê‡ï¿½ï¿½0ï¿½Æ‚ï¿½ï¿½ï¿½j
 				for ( k = 0; k < 3; k++ ) {
 					diffval = (int)(255 - anno_pix[k]) - (255 - orig_pix[k]);
-					if ( diffval >= 0 )	diff->imageData[j*diff->widthStep+i*3+k] = (unsigned char)(0x00ff & diffval);
-					else	diff->imageData[j*diff->widthStep+i*3+k] = 0;
+					if ( diffval >= 0 )	diff.data[j*(int)diff.step[0]+i*3+k] = (unsigned char)(0x00ff & diffval);
+					else	diff.data[j*(int)diff.step[0]+i*3+k] = 0;
 				}
-				// •ûŒü‰æ‘œ‚Ì•`‰æ
+				// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Ì•`ï¿½ï¿½
 //				for ( k = 0; k < 3; k++ ) {
-//					ori_img->imageData[ori_img->widthStep*j+i*3+k] = (unsigned char)(color_tab[min_nx+eDiffNear][min_ny+eDiffNear].val[k]);
+//					ori_img.data[(int)ori_img.step[0]*j+i*3+k] = (unsigned char)(color_tab[min_nx+eDiffNear][min_ny+eDiffNear].val[k]);
 //				}
 			}
 		}
 	}
-//	cvSaveImage( "ori.bmp", ori_img );
-//	cvReleaseImage( &ori_img );
+//	cv::imwrite( "ori.bmp", ori_img );
+//
 }
 
 double CalcColorDist( unsigned char *c1, unsigned char *c2 )
-// F‹óŠÔã‚Ì‹——£‚ğŒvZ‚·‚é
+// ï¿½Fï¿½ï¿½Ôï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	int i;
 	double dist, diff, rgb1[3], lab1[3], rgb2[3], lab2[3];
@@ -140,7 +139,7 @@ double Lab_f( double t )
 }
 
 void RGB2Lab( double *rgb, double *lab )
-// RGB‚ğCIE Lab‚É•ÏŠ·‚·‚é
+// RGBï¿½ï¿½CIE Labï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	double x, y, z;
 	

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
@@ -16,59 +16,59 @@
 #include "proctime.h"
 #include "nimg.h"
 
-void OutputCor( IplImage *anno, IplImage *orig, CvPoint **clpsa, CvPoint **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo );
-void OutputCorCl( CvPoint **clpsa, CvPoint **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[kMaxClusters][kMaxPointNum] );
+void OutputCor( cv::Mat anno, cv::Mat orig, cv::Point **clpsa, cv::Point **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo );
+void OutputCorCl( cv::Point **clpsa, cv::Point **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[kMaxClusters][kMaxPointNum] );
 
-int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *param )
-// anno‚ğorig‚É•ÏŠ·‚·‚é‘Š—•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
+int TransformAnno( cv::Mat anno, cv::Mat orig, int cluster_count, double *param )
+// annoï¿½ï¿½origï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½é‘Šï¿½ï¿½ï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	int i, j, numso[kMaxClusters], numsa[kMaxClusters], clcor[kMaxClusters], **nears, score[kMaxDocNum];
 	int pcors[kMaxClusters][kMaxPointNum], cor[kMaxPointNum*kMaxClusters][4], cor_num = 0;
 	int start, start_ret, ret_sum;
-	CvPoint *clpso[kMaxClusters], *clpsa[kMaxClusters];
+	cv::Point *clpso[kMaxClusters], *clpsa[kMaxClusters];
 	double avgso[kMaxClusters][3], avgsa[kMaxClusters][3];
 	char cmd[kMaxCmdLineLen], diro[kMaxPathLen], dira[kMaxPathLen], baseo[kFileNameLen], basea[kFileNameLen];
 	char pfno[kMaxPathLen], pfna[kMaxPathLen], fname[kMaxPathLen];
-	IplImage *cor_img;
-	CvSize sizeo, sizea;
-	CvPoint p1[3], p2[3];
+	cv::Mat cor_img;
+	cv::Size sizeo, sizea;
+	cv::Point p1[3], p2[3];
 //	strSimParam param;
 	
-	// Œ³‰æ‘œ‚Æ‘‚«‚İ‰æ‘œ‚©‚ç“Á’¥“_‚ğ’Šoi‹Œƒo[ƒWƒ‡ƒ“j
+	// ï¿½ï¿½ï¿½æ‘œï¿½Æï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‰æ‘œï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šoï¿½iï¿½ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 /*	numo = MakeFeaturePointsFromColorImage( &pso, orig, FP_PDF );
 	numa = MakeFeaturePointsFromColorImage( &psa, anno, FP_SCAN );
-	OutPutPoints( pso, numo, cvGetSize(orig) );
-	OutPutPoints( psa, numa, cvGetSize(anno) );
+	OutPutPoints( pso, numo, orig.size() );
+	OutPutPoints( psa, numa, anno.size() );
 */
 
-	/************* Œ³‰æ‘œ‚Æ‘‚«‚İ‰æ‘œ‚©‚ç“Á’¥“_‚ğ’Šo *************/
-//	sizeo = cvSize( orig->width * kClScale, orig->height * kClScale );
-//	sizea = cvSize( anno->width * kClScale, anno->height * kClScale );
-	sizeo = cvGetSize( orig );
-	sizea = cvGetSize( anno );
-	// “_ƒtƒ@ƒCƒ‹–¼‚Ìì¬
+	/************* ï¿½ï¿½ï¿½æ‘œï¿½Æï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‰æ‘œï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo *************/
+//	sizeo = cv::Size( orig.cols * kClScale, orig.rows * kClScale );
+//	sizea = cv::Size( anno.cols * kClScale, anno.rows * kClScale );
+	sizeo = orig.size();
+	sizea = anno.size();
+	// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ìì¬
 	GetDir( eOrigFileName, kMaxPathLen, diro );
 	GetDir( eAnnoFileName, kMaxPathLen, dira );
 	GetBasename( eOrigFileName, kMaxPathLen, baseo );
 	GetBasename( eAnnoFileName, kMaxPathLen, basea );
 	sprintf( pfno, "%s%s.txt", eOutPutDir, baseo );
 	sprintf( pfna, "%s%s.txt", eOutPutDir, basea );
-	if ( IsExist( pfno ) ) {	// “_ƒtƒ@ƒCƒ‹‚ªŠù‚É‘¶İ
+	if ( IsExist( pfno ) ) {	// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½ï¿½
 		LoadClusterPoints( pfno, &cluster_count, numso, clpso, avgso );
 	}
-	else {	// FƒNƒ‰ƒXƒ^ƒŠƒ“ƒO‚ğs‚¢A˜AŒ‹¬•ª‚ÌdS‚ğ“Á’¥“_‚Æ‚·‚é
+	else {	// ï¿½Fï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Aï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‚ï¿½ï¿½ï¿½
 		ColorClusteringAndMakePoints( orig, cluster_count, FP_SCAN, numso, clpso, avgso, eOutPutDir, baseo );
 		SaveClusterPoints( pfno, cluster_count, numso, clpso, avgso );
 	}
-	if ( IsExist( pfna ) ) {	// “_ƒtƒ@ƒCƒ‹‚ªŠù‚É‘¶İ
+	if ( IsExist( pfna ) ) {	// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½ï¿½
 		LoadClusterPoints( pfna, &cluster_count, numsa, clpsa, avgsa );
 	}
-	else {	// FƒNƒ‰ƒXƒ^ƒŠƒ“ƒO‚ğs‚¢A˜AŒ‹¬•ª‚ÌdS‚ğ“Á’¥“_‚Æ‚·‚é
+	else {	// ï¿½Fï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Aï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‚ï¿½ï¿½ï¿½
 		ColorClusteringAndMakePoints( anno, cluster_count, FP_SCAN, numsa, clpsa, avgsa, eOutPutDir,basea );
 		SaveClusterPoints( pfna, cluster_count, numsa, clpsa, avgsa );
 	}
 	
-	// “Á’¥“_‚Ìo—ÍŠm”F
+	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìoï¿½ÍŠmï¿½F
 #ifdef	CL_OUTPUT_IMAGE
 	for ( i = 0; i < cluster_count; i++ ) {
 		sprintf( fname, "%s%s04pt%d.jpg", eOutPutDir, baseo, i );
@@ -77,7 +77,7 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 		OutPutPoints( fname, clpsa[i], numsa[i], sizea );
 	}
 #endif
-	// Œ³‰æ‘œA‘‚«‚İ‰æ‘œ‚ÌŠeƒNƒ‰ƒXƒ^‚Ì“Á’¥“_”‚Ìo—Í
+	// ï¿½ï¿½ï¿½æ‘œï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‰æ‘œï¿½ÌŠeï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ìoï¿½ï¿½
 	printf("original image\n");
 	for ( i = 0; i < cluster_count; i++ ) {
 		printf( "cluster %d : %d points\n", i, numso[i] );
@@ -86,23 +86,23 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 	for ( i = 0; i < cluster_count; i++ ) {
 		printf( "cluster %d : %d points\n", i, numsa[i] );
 	}
-	// ƒNƒ‰ƒXƒ^‚Ì‘Î‰ŠÖŒW‚Ìì¬
+	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì‘Î‰ï¿½ï¿½ÖŒWï¿½Ìì¬
 	MakeClusterCor( cluster_count, avgsa, avgso, clcor );
-	// ƒNƒ‰ƒXƒ^ŠÔ‘Î‰ŠÖŒW‚ÌŠm”F
+	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ô‘Î‰ï¿½ï¿½ÖŒWï¿½ÌŠmï¿½F
 /*	for ( i = 0; i < cluster_count; i++ ) {
 		printf("%d(%lf, %lf, %lf) <-> %d(%lf, %lf, %lf)\n", i, avgsa[i][0], avgsa[i][1], avgsa[i][2], clcor[i], avgso[clcor[i]][0], avgso[clcor[i]][1], avgso[clcor[i]][2] );
 	}
-*/	/************* ƒNƒ‰ƒXƒ^‚²‚Æ‚É‘Î‰“_‚ğ‹‚ß‚é *************/
+*/	/************* ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚É‘Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ *************/
 	start = GetProcTimeMiliSec();
 	ret_sum = 0;
-	for ( i = 0; i < cluster_count; i++ ) {	// i‚Íanno‘¤‚Ì”Ô†
-		// acr2‚ğ—p‚¢‚ÄŒ³‰æ‘œ‚Ì“Á’¥“_‚©‚ç—£U‰»ƒtƒ@ƒCƒ‹‚ğì¬ieAcr2Path‚Éacr2‚ª•K—vj
+	for ( i = 0; i < cluster_count; i++ ) {	// iï¿½ï¿½annoï¿½ï¿½ï¿½Ì”Ôï¿½
+		// acr2ï¿½ï¿½pï¿½ï¿½ï¿½ÄŒï¿½ï¿½æ‘œï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ç—£ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ieAcr2Pathï¿½ï¿½acr2ï¿½ï¿½ï¿½Kï¿½vï¿½j
 		SavePointFile( kTempPointFile, clpso[clcor[i]], numso[clcor[i]], sizeo );
 		sprintf( cmd, "%s %c %d %d %d %s %s", eAcr2Path, kAcr2InvType, eGroup1Num, eGroup2Num, eDiscNum, eDiscFileName, kTempPointFile );
 		system( cmd );
-		// Œ³‰æ‘œ‚Ì“Á’¥“_‚©‚çƒnƒbƒVƒ…‚ğ\’z
+		// ï¿½ï¿½ï¿½æ‘œï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½z
 		ConstructHashSub( clpso[clcor[i]], numso[clcor[i]] );
-		// ‘‚«‚İ‰æ‘œ‚Ì“Á’¥“_‚©‚çƒnƒbƒVƒ…‚ğŒŸõ
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‰æ‘œï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		start_ret = GetProcTimeMiliSec();
 		MakeNearsFromCentres( clpsa[i], numsa[i], &nears );
 		RetrieveNN5( clpsa[i], numsa[i], nears, sizea, score, pcors[i] );
@@ -111,18 +111,18 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 	}
 	printf("Making point cor: %d msec\n", GetProcTimeMiliSec() - start );
 	printf("(Retrieval: %d msec)\n", ret_sum );
-	// ‘Î‰“_‚Ìo—ÍŠm”F
+	// ï¿½Î‰ï¿½ï¿½_ï¿½Ìoï¿½ÍŠmï¿½F
 #ifdef	CL_OUTPUT_IMAGE
-	cor_img = cvCreateImage( cvSize( sizeo.width + sizea.width, (sizeo.height > sizea.height) ? sizeo.height : sizea.height ), 8, 1 );
+	cor_img = cv::Mat::zeros( cv::Size( sizeo.width + sizea.width, (sizeo.height > sizea.height) ? sizeo.height : sizea.height ), CV_8UC1 );
 	for ( i = 0; i < cluster_count; i++ ) {
 		sprintf( fname, "%s%s05cor%d.jpg", eOutPutDir, basea, i );
-		cvZero( cor_img );
+		cor_img.setTo(cv::Scalar::all(0));
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
-				cvLine( cor_img, clpsa[i][j], cvPoint( clpso[clcor[i]][pcors[i][j]].x + sizea.width, clpso[clcor[i]][pcors[i][j]].y ), cWhite, kDrawCorLineThick, CV_AA, 0 );
+				cv::line( cor_img, clpsa[i][j], cv::Point( clpso[clcor[i]][pcors[i][j]].x + sizea.width, clpso[clcor[i]][pcors[i][j]].y ), cWhite, kDrawCorLineThick, cv::LINE_AA, 0 );
 			}
 		}
-	cvSaveImage( fname, cor_img );
+	cv::imwrite( fname, cor_img );
 	}
 #endif
 #ifdef	OUTPUT_COR_IMAGE
@@ -130,9 +130,9 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 	OutputCorCl( clpsa, clpso, numsa, numso, basea, baseo , cluster_count, clcor, pcors );
 
 #endif
-	/************* ‘Î‰“_‚ğŒ³‚É‘Š—•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ„’è *************/
+	/************* ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ğ„’ï¿½ *************/
 	start = GetProcTimeMiliSec();
-	// ‘Î‰ŠÖŒW‚ğcor‚ÉŠi”[‚·‚é
+	// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½ï¿½corï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < cluster_count; i++ ) {
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
@@ -144,10 +144,10 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 			}
 		}
 	}
-	// ‘Î‰“_‚©‚ç‘Š—•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ„’è‚·‚é
+	// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ç‘Šï¿½ï¿½ï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ğ„’è‚·ï¿½ï¿½
 	if ( cor_num < kMinCorNum ) {
 		fprintf( stderr, "number of cor is too small, default param used\n" );
-		// ‘Î‰“_‚ª­‚È‚·‚¬‚éê‡‚Ìˆ—
+		// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Ìï¿½ï¿½ï¿½
 		param[0] = 0.0;
 		param[1] = 1.0;
 		param[2] = 0.0;
@@ -166,46 +166,46 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 
 //void MakeClusterCor( int cluster_count, double avgso[][3], double avgsa[][3], int *clcor )
 void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], int *clcor )
-// ƒNƒ‰ƒXƒ^‚Ì‘Î‰ŠÖŒW‚Ìì¬
+// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì‘Î‰ï¿½ï¿½ÖŒWï¿½Ìì¬
 {
-#ifdef	NEW_COR	// Vƒo[ƒWƒ‡ƒ“i•s‹ï‡‚ ‚è‚Ì‰Â”\«‚àj
+#ifdef	NEW_COR	// ï¿½Vï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½iï¿½sï¿½ï‡ï¿½ï¿½ï¿½ï¿½Ì‰Â”\ï¿½ï¿½ï¿½ï¿½ï¿½j
 	int i, j, k, pos, min_cora, min_coro;
 	double dist, diff, min_dist;
 	int *left_side, *used;
 	int **cor_mat;
 	double **dist_mat;
 	
-	// ‘Î‰E‹——£ƒ}ƒgƒŠƒNƒX‚Ì‰Šú‰»
+	// ï¿½Î‰ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½gï¿½ï¿½ï¿½Nï¿½Xï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	cor_mat = (int **)calloc( cluster_count, sizeof(int *) );
 	dist_mat = (double **)calloc( cluster_count, sizeof(double *) );
 	for ( i = 0; i < cluster_count; i++ ) {
 		cor_mat[i] = (int *)calloc( cluster_count, sizeof(int) );
 		dist_mat[i] = (double *)calloc( cluster_count, sizeof(double) );
 	}
-	// ‘Î‰E‹——£ƒ}ƒgƒŠƒNƒX‚Ìì¬
+	// ï¿½Î‰ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½gï¿½ï¿½ï¿½Nï¿½Xï¿½Ìì¬
 	for ( i = 0; i < cluster_count; i++ ) {
 		for ( j = 0; j < cluster_count; j++ ) {
-			// anno‚ÌiƒNƒ‰ƒXƒ^‚Æorig‚ÌjƒNƒ‰ƒXƒ^‚Ì‹——£‚ğ‹‚ß‚é
+			// annoï¿½ï¿½iï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½origï¿½ï¿½jï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 			dist = 0;
 			for ( k = 0; k < 3; k++ ) {
 				diff = avgsa[i][k] - avgso[j][k];
 				dist += diff * diff;
 			}
-			// “ü‚ê‚éêŠ‚ğ’T‚·
+			// ï¿½ï¿½ï¿½ï¿½ï¿½êŠï¿½ï¿½Tï¿½ï¿½
 			for ( k = 0, pos = 0; k < j; k++, pos++ ) {
 				if ( dist < dist_mat[i][k] )	break;
 			}
-			// ‚¸‚ç‚·
+			// ï¿½ï¿½ï¿½ç‚·
 			for ( k = j; k > pos; k-- ) {
 				dist_mat[i][k] = dist_mat[i][k-1];
 				cor_mat[i][k] = cor_mat[i][k-1];
 			}
-			// “ü‚ê‚é
+			// ï¿½ï¿½ï¿½ï¿½ï¿½
 			dist_mat[i][pos] = dist;
 			cor_mat[i][pos] = j;
 		}
 	}
-	// ‘Î‰E‹——£ƒ}ƒgƒŠƒNƒX‚Ìo—Í
+	// ï¿½Î‰ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½gï¿½ï¿½ï¿½Nï¿½Xï¿½Ìoï¿½ï¿½
 /*	for ( i = 0; i < cluster_count; i++ ) {
 		for ( j = 0; j < cluster_count; j++ ) {
 			printf("%d(%.0lf), ", cor_mat[i][j], dist_mat[i][j]);
@@ -213,17 +213,17 @@ void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], in
 		printf("\n");
 	}
 */
-	// ‘Î‰E‹——£ƒ}ƒgƒŠƒNƒX‚ğ—p‚¢‚ÄÅ“K‚È‘Î‰ŠÖŒW‚ğ‹‚ß‚é
-	// ¶’[s—ñ‚ÌŠm•ÛE‰Šú‰»
+	// ï¿½Î‰ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½gï¿½ï¿½ï¿½Nï¿½Xï¿½ï¿½pï¿½ï¿½ï¿½ÄÅ“Kï¿½È‘Î‰ï¿½ï¿½ÖŒWï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	// ï¿½ï¿½ï¿½[ï¿½sï¿½ï¿½ÌŠmï¿½ÛEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	left_side = (int *)calloc( cluster_count, sizeof(int) );
 	for ( i = 0; i < cluster_count; i++ )	left_side[i] = 0;
-	// ‘Î‰Ï‚İs—ñ‚ÌŠm•Û
+	// ï¿½Î‰ï¿½ï¿½Ï‚İsï¿½ï¿½ÌŠmï¿½ï¿½
 	used = (int *)calloc( cluster_count, sizeof(int) );
 	for ( i = 0; i < cluster_count; i++ ) {
 		min_dist = 16777216;
 		for ( j = 0; j < cluster_count; j++ ) {
-			if ( left_side[j] < 0 )	continue;	// ‚·‚Å‚É‘Î‰‚Ã‚¢‚Ä‚¢‚é
-			if ( dist_mat[j][left_side[j]] < min_dist ) {	// ¶’[‚Ì‹——£‚ªÅ¬
+			if ( left_side[j] < 0 )	continue;	// ï¿½ï¿½ï¿½Å‚É‘Î‰ï¿½ï¿½Ã‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+			if ( dist_mat[j][left_side[j]] < min_dist ) {	// ï¿½ï¿½ï¿½[ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½
 				min_cora = j;
 				min_coro = cor_mat[j][left_side[j]];
 				min_dist = dist_mat[j][left_side[j]];
@@ -233,45 +233,45 @@ void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], in
 		clcor[min_cora] = min_coro;
 		left_side[min_cora] = -1;
 		used[min_coro] = 1;
-		// g—pÏ‚İs—ñ‚ÉŠî‚Ã‚¢‚Ä¶’[s—ñ‚ğXV
+		// ï¿½gï¿½pï¿½Ï‚İsï¿½ï¿½ÉŠï¿½Ã‚ï¿½ï¿½Äï¿½ï¿½[ï¿½sï¿½ï¿½ï¿½ï¿½Xï¿½V
 		for ( j = 0; j < cluster_count; j++ ) {
 			if ( left_side[j] < 0 )	continue;
 			for ( k = left_side[j]; used[cor_mat[j][k]]; k++ );
 			left_side[j] = k;
 		}
 	}
-	// 0722—p‚Ìb’èˆ’u
+	// 0722ï¿½pï¿½Ìbï¿½èˆï¿½u
 //	clcor[0] = 2;
 //	clcor[1] = 1;
 //	clcor[2] = 3;
 //	clcor[3] = 0;
 //	clcor[4] = 4;
 				
-	// ‘Î‰E‹——£ƒ}ƒgƒŠƒNƒX‚Ì‰ğ•ú
+	// ï¿½Î‰ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½gï¿½ï¿½ï¿½Nï¿½Xï¿½Ì‰ï¿½ï¿½
 	for ( i = 0; i < cluster_count; i++ ) {
 		free( cor_mat[i] );
 		free( dist_mat[i] );
 	}
 	free( cor_mat );
 	free( dist_mat );
-	// ¶’[Eg—pÏ‚İs—ñ‚Ì‰ğ•ú
+	// ï¿½ï¿½ï¿½[ï¿½Eï¿½gï¿½pï¿½Ï‚İsï¿½ï¿½Ì‰ï¿½ï¿½
 	free( left_side );
 	free( used );
 	
-#else	// ‹Œƒo[ƒWƒ‡ƒ“
+#else	// ï¿½ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
 	int i, j, k, min_cl, occu[kMaxClusters];
 	double distance, min_distance, diff;
 	
-	// ‘Î‰Ï‚İƒNƒ‰ƒXƒ^‚Ì‰Šú‰»
+	// ï¿½Î‰ï¿½ï¿½Ï‚İƒNï¿½ï¿½ï¿½Xï¿½^ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < cluster_count; i++ ) {
 		occu[i] = 0;
 	}
-	// ƒNƒ‰ƒXƒ^‚Ì‘Î‰•t‚¯
+	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì‘Î‰ï¿½ï¿½tï¿½ï¿½
 	for ( i = 0; i < cluster_count; i++ ) {
 		min_cl = -1;
 		min_distance =  16777216;
 		for ( j = 0; j < cluster_count; j++ ) {
-			if ( occu[j] == 1 )	continue;	// ‘Î‰Ï‚İ
+			if ( occu[j] == 1 )	continue;	// ï¿½Î‰ï¿½ï¿½Ï‚ï¿½
 			distance = 0;
 //			printf("%d(%d, %d, %d) <-> %d(%d, %d, %d)\n", i, (int)avgso[i][0], (int)avgso[i][1], (int)avgso[i][2], j, (int)avgsa[j][0],(int)avgsa[j][1],(int)avgsa[j][2]);
 			for ( k = 0; k < 3; k++ ) {
@@ -290,7 +290,7 @@ void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], in
 		clcor[i] = min_cl;
 		occu[min_cl] = 1;
 	}
-	// 0722—p‚Ìb’èˆ’u
+	// 0722ï¿½pï¿½Ìbï¿½èˆï¿½u
 /*	clcor[0] = 2;
 	clcor[1] = 1;
 	clcor[2] = 3;
@@ -300,106 +300,102 @@ void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], in
 #endif
 }
 						
-int MakeFeaturePointsFromColorImage( CvPoint **ps0, IplImage *img, int mode )
-// ƒJƒ‰[‰æ‘œimg‚©‚çmode‚Å“Á’¥“_‚ğ’Šo‚µAps‚ÉŠi”[‚µ‚Ä“_”‚ğ•Ô‚·iŒ»İ‚Íg—p‚¹‚¸j
+int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
+// ï¿½Jï¿½ï¿½ï¿½[ï¿½æ‘œimgï¿½ï¿½ï¿½ï¿½modeï¿½Å“ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šoï¿½ï¿½ï¿½Apsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½Ä“_ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½iï¿½ï¿½ï¿½İ‚Ígï¿½pï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	int i;
-	IplImage *gray, *bin, *inv;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq *contours = 0, *con0;
-	CvMoments mom;
-	CvPoint *ps;
+	cv::Mat gray, bin, inv;
+    std::vector<std::vector<cv::Point>> contours;
 
-	// ‰æ‘œ‚Ìì¬
-	gray = cvCreateImage( cvGetSize( img ), IPL_DEPTH_8U, 1 );
-	bin = cvCreateImage( cvGetSize( img ), IPL_DEPTH_8U, 1 );
-	inv = cvCreateImage( cvGetSize( img ), IPL_DEPTH_8U, 1 );
-	// ŠJnˆÊ’u‚ğ‡‚í‚¹‚éi‚È‚¢‚Æã‰º”½“]‚·‚éj
-	gray->origin = img->origin;
-	bin->origin = img->origin;
-	inv->origin = img->origin;
-	// ƒOƒŒƒCƒXƒP[ƒ‹‚É•ÏŠ·
-	cvCvtColor( img, gray, CV_BGR2GRAY );
+    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+	cv::Moments mom;
+	cv::Point *ps;
+
+	// ï¿½æ‘œï¿½Ìì¬
+	gray = cv::Mat::zeros(img.size(), CV_8UC1);
+	bin = cv::Mat::zeros(img.size(), CV_8UC1);
+	inv = cv::Mat::zeros(img.size(), CV_8UC1);
+	// ï¿½Jï¿½nï¿½Ê’uï¿½ï¿½ï¿½ï¿½ï¿½í‚¹ï¿½ï¿½iï¿½È‚ï¿½ï¿½Æã‰ºï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½j
+	// origin not needed in cv::Mat (always top-left)
+	// origin not needed in cv::Mat (always top-left)
+	// origin not needed in cv::Mat (always top-left)
+	// ï¿½Oï¿½ï¿½ï¿½Cï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½É•ÏŠï¿½
+	cv::cvtColor( img, gray, cv::COLOR_BGR2GRAY );
 	OutPutImage( gray );
-	// “K‰“ñ’l‰»
-//	cvAdaptiveThreshold( gray, bin, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 401, 10 );
-	cvThreshold( gray, bin, 128, 255, CV_THRESH_BINARY );
-	cvNot( bin, inv );
+	// ï¿½Kï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
+//	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
+	cv::threshold( gray, bin, 128, 255, cv::THRESH_BINARY );
+	cv::bitwise_not( bin, inv );
 	OutPutImage( inv );
-	// ˜AŒ‹¬•ª‚ÌdS‚ğŒvZ
-	cvFindContours( inv, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0) );	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
-	// ‚Ü‚¸”‚ğ”‚¦‚é
-    for( i = 0, con0 = contours; con0 != 0 ; con0 = con0->h_next )
+	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½vï¿½Z
+	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+	// ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½ğ”‚ï¿½ï¿½ï¿½
+    for( i = 0; i < (int)contours.size(); i++ )
     {
 		double d00;
-//		CvPoint p;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
-		if ( d00 < 0.00001 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
+//		cv::Point p;
+		mom = cv::moments(contours[i]);
+		d00 = mom.m00;
+		if ( d00 < 0.00001 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
 		i++;
     }
-    // Šm•Û‚·‚é
-    ps = (CvPoint *)calloc( i, sizeof( CvPoint ) );
+    // ï¿½mï¿½Û‚ï¿½ï¿½ï¿½
+    ps = (cv::Point *)calloc( i, sizeof( cv::Point ) );
     *ps0 = ps;
-    for( i = 0, con0 = contours; con0 != 0 ; con0 = con0->h_next )
+    for( i = 0; i < (int)contours.size(); i++ )
     {
 		double d00;
-//		CvPoint p;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
-		if ( d00 < 0.00001 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
-//		cvCircle( point, p, 3, CV_RGB(255, 255, 255), -1, 1, 0 );
+//		cv::Point p;
+		mom = cv::moments(contours[i]);
+		d00 = mom.m00;
+		if ( d00 < 0.00001 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		ps[i].x = (int)(mom.m10 / d00);
+		ps[i].y = (int)(mom.m01 / d00);
+//		cv::circle( point, p, 3, cv::Scalar(255,255,255), -1, 1, 0 );
 		i++;
     }
-    
-    cvReleaseMemStorage( &storage );
-    cvReleaseImage( &gray );
-    cvReleaseImage( &bin );
-    cvReleaseImage( &inv );
+
+
     
 	return i;
 }
-int OutPutPoints( char *fname, CvPoint *ps, int num, CvSize size )
-// “Á’¥“_‚ğo—Í‚·‚é
+int OutPutPoints( char *fname, cv::Point *ps, int num, cv::Size size )
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½Í‚ï¿½ï¿½ï¿½
 {
 	int i, ret;
-	IplImage *img;
+	cv::Mat img;
 	
-	img = cvCreateImage( size, IPL_DEPTH_8U, 1 );
-	cvZero( img );
+	img = cv::Mat::zeros(size, CV_8UC1);
+	img.setTo(cv::Scalar::all(0));
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( img, ps[i], 25, cWhite, -1, CV_AA, 0 );
+		cv::circle( img, ps[i], 25, cWhite, -1, cv::LINE_AA, 0 );
 	}
 //	ret = OutPutImage( img );
-	ret = cvSaveImage( fname, img );
-	cvReleaseImage( &img );
+	ret = cv::imwrite( fname, img );
 	
 	return ret;
 }
 
-int OutPutImage( IplImage *img )
-// ‰æ‘œ‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚éDƒtƒ@ƒCƒ‹–¼‚Í©“®“I‚É˜A”Ô‚É‚È‚é
+int OutPutImage( cv::Mat img )
+// ï¿½æ‘œï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½É•Û‘ï¿½ï¿½ï¿½ï¿½ï¿½Dï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½Iï¿½É˜Aï¿½Ô‚É‚È‚ï¿½
 {
 	static int n = 0;
 	char filename[kFileNameLen];
 
 	sprintf(filename, "output%02d.bmp", n++);
-	return cvSaveImage(filename, img);
+	return cv::imwrite(filename, img);
 }
 
 #ifdef	COR_PRESET_MODE
-int TransformAnnoPreset( IplImage *anno, IplImage *orig, IplImage *anno2 )
-// anno‚ğorig‚É‡‚í‚¹Aanno2‚Éo—Í‚·‚éB
-// •Ô‚è’lF³íI—¹‚È‚ç1AˆÙíI—¹i‘Î‰‚µ‚Ä‚¢‚È‚¢j‚È‚ç0
-// ‘Î‰“_‚ª—\‚ß—^‚¦‚ç‚ê‚Ä‚¢‚éê‡BŒ»İ‚Íg—p•s‰Â”\
+int TransformAnnoPreset( cv::Mat anno, cv::Mat orig, cv::Mat anno2 )
+// annoï¿½ï¿½origï¿½Éï¿½ï¿½í‚¹ï¿½Aanno2ï¿½Éoï¿½Í‚ï¿½ï¿½ï¿½B
+// ï¿½Ô‚ï¿½lï¿½Fï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½È‚ï¿½1ï¿½Aï¿½Ùï¿½Iï¿½ï¿½ï¿½iï¿½Î‰ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½jï¿½È‚ï¿½0
+// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½\ï¿½ß—^ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡ï¿½Bï¿½ï¿½ï¿½İ‚Ígï¿½pï¿½sï¿½Â”\
 {
 	strSimParam param;
-	CvPoint p11, p12, p21, p22;
+	cv::Point p11, p12, p21, p22;
 	
-/* •K—vH‚í‚©‚ç‚ñ	
+/* ï¿½Kï¿½vï¿½Hï¿½í‚©ï¿½ï¿½ï¿½	
 	param.theta = 0.2;
 	param.s = 10.0;
 	param.tx = 10.0;
@@ -459,10 +455,10 @@ int TransformAnnoPreset( IplImage *anno, IplImage *orig, IplImage *anno2 )
 		return 1;
 	}
 	
-	// ‘Î‰‚·‚é2“_‚©‚ç‘Š—•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
+	// ï¿½Î‰ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½_ï¿½ï¿½ï¿½ç‘Šï¿½ï¿½ï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 	CalcSimParam( p11, p12, p21, p22, &param );
 	printf("s = %lf\ntheta = %lf\ntx = %lf\nty = %lf\n", param.s, param.theta, param.tx, param.ty );
-	// ƒpƒ‰ƒ[ƒ^‚ÉŠî‚Ã‚¢‚Ä‘Š—•ÏŠ·‚ğs‚¤
+	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ÉŠï¿½Ã‚ï¿½ï¿½Ä‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
 	SimilarTransformation( anno, anno2, &param );
 	
 	return 1;
@@ -471,7 +467,7 @@ int TransformAnnoPreset( IplImage *anno, IplImage *orig, IplImage *anno2 )
 #endif
 
 int IsExist( char *fname )
-// ƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚é‚©Šm”F‚·‚é
+// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½é‚©ï¿½mï¿½Fï¿½ï¿½ï¿½ï¿½
 {
 	FILE *fp;
 	
@@ -480,31 +476,30 @@ int IsExist( char *fname )
 	return 1;
 }
 
-void OutputCor( IplImage *anno, IplImage *orig, CvPoint **clpsa, CvPoint **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo )
-// ‘Î‰ŠÖŒW‚ğ•`‰æ
+void OutputCor( cv::Mat anno, cv::Mat orig, cv::Point **clpsa, cv::Point **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo )
+// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½ï¿½`ï¿½ï¿½
 {
 	int i, j;
 	char mergefn[kMaxPathLen];
-	IplImage *img;
+	cv::Mat img;
 	
-	// ‰æ‘œ‚ğì¬
-	img = cvCreateImage( cvSize( anno->width + orig->width, (anno->height > orig->height) ? anno->height : orig->height ), 8, 3 );
-	// •À‚×‚Ä•`‰æ
+	// ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+	img = cv::Mat::zeros( cv::Size( anno.cols + orig.cols, (anno.rows > orig.rows) ? anno.rows : orig.rows ), CV_8UC3 );
+	// ï¿½ï¿½ï¿½×‚Ä•`ï¿½ï¿½
 	MergeImage( anno, orig, MERGE_HOR, img );
-	// ˜g‚ğ•`‰æ
-	cvRectangle( img, cvPoint( 0, 0 ), cvPoint( anno->width, anno->height ), cBlack, 20, CV_AA, 0 );
-	cvRectangle( img, cvPoint( anno->width, 0 ), cvPoint( anno->width + orig->width, orig->height ), cBlack, 20, CV_AA, 0 );
-	// ‘Î‰ŠÖŒW‚ğ•`‰æ
+	// ï¿½gï¿½ï¿½`ï¿½ï¿½
+	cv::rectangle( img, cv::Point( 0, 0 ), cv::Point( anno.cols, anno.rows ), cBlack, 20, cv::LINE_AA, 0 );
+	cv::rectangle( img, cv::Point( anno.cols, 0 ), cv::Point( anno.cols + orig.cols, orig.rows ), cBlack, 20, cv::LINE_AA, 0 );
+	// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½ï¿½`ï¿½ï¿½
 	for ( i = 0; i < cluster_count; i++ ) {
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
-				cvLine( img, clpsa[i][j], cvPoint( clpso[clcor[i]][pcors[i][j]].x + anno->width, clpso[clcor[i]][pcors[i][j]].y ), cRed, kDrawCorLineThick, CV_AA, 0 );
+				cv::line( img, clpsa[i][j], cv::Point( clpso[clcor[i]][pcors[i][j]].x + anno.cols, clpso[clcor[i]][pcors[i][j]].y ), cRed, kDrawCorLineThick, cv::LINE_AA, 0 );
 			}
 		}
 	}
 	sprintf( mergefn, "%s%sacor.jpg", eOutPutDir, basea );
-	cvSaveImage( mergefn, img );
-	cvReleaseImage( &img );
+	cv::imwrite( mergefn, img );
 }
 
 #if 0
@@ -514,34 +509,34 @@ void OutputCor( IplImage *anno, IplImage *orig, CvPoint **clpsa, CvPoint **clpso
 
 #define	max(a,b)	(( a > b ) ? a : b)
 
-int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge )
-// img1‚Æimg2‚ğmode(MERGE_HOR:¶‰ECMERGE_VER:ã‰º)‚Å•À‚×‚½‰æ‘œ‚ğmerge‚ÉŠi”[‚·‚é
+int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
+// img1ï¿½ï¿½img2ï¿½ï¿½mode(MERGE_HOR:ï¿½ï¿½ï¿½Eï¿½CMERGE_VER:ï¿½ã‰º)ï¿½Å•ï¿½ï¿½×‚ï¿½ï¿½æ‘œï¿½ï¿½mergeï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, mw, mh, orig_x = 0, orig_y = 0;
 	char val[3];
 
-	mw = merge->width;
-	mh = merge->height;
-	if ( mode == MERGE_HOR ) {	// ¶‰E‚É•À‚×‚éƒ‚[ƒh‚ÅC
-		if ( mw > (img1->width + img2->width) )	// ¶‰E‚É•À‚×‚½’·‚³‚æ‚è•‚ª‘å‚«‚¢‚Æ‚«
-			orig_x = (int)((double)(mw - (img1->width+img2->width)) / 2.0L);	// —]”’‚Ì”¼•ª‚ğorig_x‚É‚·‚é
-		if ( mh > max(img1->height, img2->height) )	// ‘å‚«‚¢‚Ù‚¤‚Ì‚‚³‚æ‚è‚‚³‚ª‘å‚«‚¢‚Æ‚«
-			orig_y = (int)((double)(mh - max(img1->height, img2->height)) / 2.0L);
-	} else if ( mode == MERGE_VER ) {	// ã‰º‚É•À‚×‚éƒ‚[ƒh‚ÅC
-		if ( mw > max(img1->width, img2->width) )	// ‘å‚«‚¢‚Ù‚¤‚Ì•‚æ‚è‚à‘S‘Ì‚Ì•‚ª‘å‚«‚¢‚Æ‚«
-			orig_x = (int)((double)(mw - max(img1->width, img2->width)) / 2.0L);
-		if ( mh > (img1->height + img2->height) )	// ã‰º‚É•À‚×‚½’·‚³‚æ‚è‘S‘Ì‚Ì’·‚³‚ª‘å‚«‚¢‚Æ‚«
-			orig_y = (int)((double)(mh - (img1->height+img2->height)) / 2.0L);
+	mw = merge.cols;
+	mh = merge.rows;
+	if ( mode == MERGE_HOR ) {	// ï¿½ï¿½ï¿½Eï¿½É•ï¿½ï¿½×‚éƒ‚ï¿½[ï¿½hï¿½ÅC
+		if ( mw > (img1.cols + img2.cols) )	// ï¿½ï¿½ï¿½Eï¿½É•ï¿½ï¿½×‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è•ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+			orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// ï¿½]ï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½ï¿½ï¿½orig_xï¿½É‚ï¿½ï¿½ï¿½
+		if ( mh > max(img1.rows, img2.rows) )	// ï¿½å‚«ï¿½ï¿½ï¿½Ù‚ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½è‚ï¿½ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+			orig_y = (int)((double)(mh - max(img1.rows, img2.rows)) / 2.0L);
+	} else if ( mode == MERGE_VER ) {	// ï¿½ã‰ºï¿½É•ï¿½ï¿½×‚éƒ‚ï¿½[ï¿½hï¿½ÅC
+		if ( mw > max(img1.cols, img2.cols) )	// ï¿½å‚«ï¿½ï¿½ï¿½Ù‚ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ì‚Ì•ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+			orig_x = (int)((double)(mw - max(img1.cols, img2.cols)) / 2.0L);
+		if ( mh > (img1.rows + img2.rows) )	// ï¿½ã‰ºï¿½É•ï¿½ï¿½×‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ì‚Ì’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+			orig_y = (int)((double)(mh - (img1.rows+img2.rows)) / 2.0L);
 	}
 
 	for ( j = 0; j < mh; j++ ) {
 		for ( i = 0; i < mw; i++ ) {
 //			printf("%d, %d\n", i, j);
 			memset( val, 0, 3 );
-			if ( mode == MERGE_HOR && i >= img1->width )	// ¶‰E”z’u‚Å‰æ‘œ1‚Ì•‚ğ‰z‚¦‚é
-				GetPix( img2, i - img1->width, j, val );
-			else if ( mode == MERGE_VER && j >= img1->height )	// ã‰º”z’u‚Å‰æ‘œ1‚Ì‚‚³‚ğ’´‚¦‚é
-				GetPix( img2, i, j - img1->height, val );
+			if ( mode == MERGE_HOR && i >= img1.cols )	// ï¿½ï¿½ï¿½Eï¿½zï¿½uï¿½Å‰æ‘œ1ï¿½Ì•ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½
+				GetPix( img2, i - img1.cols, j, val );
+			else if ( mode == MERGE_VER && j >= img1.rows )	// ï¿½ã‰ºï¿½zï¿½uï¿½Å‰æ‘œ1ï¿½Ìï¿½ï¿½ï¿½ï¿½ğ’´‚ï¿½ï¿½ï¿½
+				GetPix( img2, i, j - img1.rows, val );
 			else
 				GetPix( img1, i, j, val );
 
@@ -552,48 +547,46 @@ int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge )
 }
 #endif
 
-void OutputCorCl( CvPoint **clpsa, CvPoint **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[][10000] )
-// ƒNƒ‰ƒXƒ^‚²‚Æ‚É‘Î‰“_‚ğ•`‰æ
+void OutputCorCl( cv::Point **clpsa, cv::Point **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[][10000] )
+// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚É‘Î‰ï¿½ï¿½_ï¿½ï¿½`ï¿½ï¿½
 {
 	int i, j;
 	char climgafn[kMaxPathLen], climgofn[kMaxPathLen], mergefn[kMaxPathLen];
-	IplImage *climga, *climgo, *merge, *sml_merge;
-	CvPoint pta, pto;
+	cv::Mat climga, climgo, merge, sml_merge;
+	cv::Point pta, pto;
 
 	for ( i = 0; i < cluster_count; i++ ) {
 		sprintf( climgafn, "%s%s03con%d.jpg", eOutPutDir, basea, i );
 		sprintf( climgofn, "%s%s03con%d.jpg", eOutPutDir, baseo, clcor[i] );
 		puts( climgafn );
 		puts( climgofn );
-		climga = cvLoadImage( climgafn, 1 );
-		climgo = cvLoadImage( climgofn, 1 );
-		if ( climga == NULL || climgo == NULL )	{
+		climga = cv::imread(climgafn, cv::IMREAD_COLOR);
+		climgo = cv::imread(climgofn, cv::IMREAD_COLOR);
+		if (climga.empty() || climgo.empty())	{
 			fprintf( stderr, "%s or %s cannot open\n", climgafn, climgofn );
 			return;
 		}
-		merge = cvCreateImage( cvSize( climga->width + climgo->width, (climga->height > climgo->height) ? climga->height : climgo->height ), IPL_DEPTH_8U, 3 );
-		sml_merge = cvCreateImage( cvSize( (int)(merge->width * 0.5), (int)(merge->height * 0.5) ), IPL_DEPTH_8U, 3 );
+		merge = cv::Mat::zeros( cv::Size( climga.cols + climgo.cols, (climga.rows > climgo.rows) ? climga.rows : climgo.rows ), CV_8UC3 );
+		sml_merge = cv::Mat::zeros( cv::Size( (int)(merge.cols * 0.5), (int)(merge.rows * 0.5) ), CV_8UC3 );
 		sprintf( mergefn, "%s%sclcor%d.jpg", eOutPutDir, basea, i );
 		MergeImage( climga, climgo, MERGE_HOR, merge );
 		for ( j = 0; j < numsa[i]; j++ ) {
-			cvCircle( merge, cvPoint( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale)), 4, CV_RGB(255,0,0), -1, CV_AA, 0 );
+			cv::circle( merge, cv::Point( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale)), 4, cv::Scalar(0,0,255), -1, cv::LINE_AA, 0 );
 		}
 		for ( j = 0; j < numso[clcor[i]]; j++ ) {
-			cvCircle( merge, cvPoint( climga->width + (int)(clpso[clcor[i]][j].x * eClScale), (int)(clpso[clcor[i]][j].y * eClScale)), 4, CV_RGB(255,0,0), -1, CV_AA, 0 );
+			cv::circle( merge, cv::Point( climga.cols + (int)(clpso[clcor[i]][j].x * eClScale), (int)(clpso[clcor[i]][j].y * eClScale)), 4, cv::Scalar(0,0,255), -1, cv::LINE_AA, 0 );
 		}
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
-				pta = cvPoint( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale) );
-				pto = cvPoint( climga->width + (int)(clpso[clcor[i]][pcors[i][j]].x * eClScale), (int)(clpso[clcor[i]][pcors[i][j]].y * eClScale) );
-				cvLine( merge, pta, pto, CV_RGB(255,255,0), 4, CV_AA, 0 );
+				pta = cv::Point( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale) );
+				pto = cv::Point( climga.cols + (int)(clpso[clcor[i]][pcors[i][j]].x * eClScale), (int)(clpso[clcor[i]][pcors[i][j]].y * eClScale) );
+				cv::line( merge, pta, pto, cv::Scalar(0,255,255), 4, cv::LINE_AA, 0 );
 			}
 		}
-		cvResize( merge, sml_merge, CV_INTER_NN );
-		cvSaveImage( mergefn, sml_merge );
+		cv::resize( merge, sml_merge, sml_merge.size(), 0, 0, cv::INTER_NEAREST );
+		cv::imwrite( mergefn, sml_merge );
 
-		cvReleaseImage( &sml_merge );
-		cvReleaseImage( &merge );
-		cvReleaseImage( &climga );
-		cvReleaseImage( &climgo );
+
+
 	}
 }

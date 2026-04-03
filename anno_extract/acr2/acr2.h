@@ -1,10 +1,10 @@
-#define	kMaxPointNum	(1024)	/* “_‚ÌÅ‘å” */
-#define	kDiscRes	(1000)	/* —£U‰»ƒtƒ@ƒCƒ‹‚Ì‰ğ‘œ“x */
+#define	kMaxPointNum	(1024)	/* ï¿½_ï¿½ÌÅ‘å” */
+#define	kDiscRes	(1000)	/* ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‰ğ‘œ“x */
 
-int LoadPointFile( char *fname, CvPoint **ps0, CvSize *size );
-//void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 );
-//void NearestPoint( int n, CvPoint *ps, int num, int nears[] );
-void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist );
-void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num );
+int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size );
+//void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 );
+//void NearestPoint( int n, cv::Point *ps, int num, int nears[] );
+void CalcCRAndAddHist( cv::Point *ps, int num, int *nears[], strHist *hist );
+void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num );
 void Hist2Disc( strHist *hist, strDisc *disc, int disc_num );
 void SaveDisc( char *fname, strDisc *disc );

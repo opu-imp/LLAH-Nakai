@@ -3,20 +3,20 @@
 #define	FP_ORIG	(0)
 #define	FP_ANNO	(1)
 
-#define	kTempPointFile	"point.dat"	/* ‘Î‰“_’Tõ‚Éì¬‚·‚é“Á’¥“_‚Ìˆêƒtƒ@ƒCƒ‹‚ÌƒpƒX */
-#define	kAcr2InvType	's'	/* acr2‚Å—p‚¢‚é•s•Ï—Êƒ^ƒCƒvis‚Å‘Š—•s•Ï—Êj*/
-#define	kDrawCorLineThick	(8)	/* ‘Î‰“_‚ğ•`‰æ‚·‚éÛ‚Ìü‚Ì‘¾‚³ */
-#define	kMinCorNum	(2)	/* ƒpƒ‰ƒ[ƒ^„’è‚ğs‚¤Å¬‘Î‰“_” */
+#define	kTempPointFile	"point.dat"	/* ï¿½Î‰ï¿½ï¿½_ï¿½Tï¿½ï¿½ï¿½ï¿½ï¿½Éì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìˆêï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒpï¿½X */
+#define	kAcr2InvType	's'	/* acr2ï¿½Å—pï¿½ï¿½ï¿½ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½vï¿½isï¿½Å‘ï¿½ï¿½ï¿½ï¿½sï¿½Ï—Êj*/
+#define	kDrawCorLineThick	(8)	/* ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½Û‚Ìï¿½ï¿½Ì‘ï¿½ï¿½ï¿½ */
+#define	kMinCorNum	(2)	/* ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Åï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ */
 
-int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *param );
-int MakeFeaturePointsFromColorImage( CvPoint **ps, IplImage *img, int mode );
+int TransformAnno( cv::Mat anno, cv::Mat orig, int cluster_count, double *param );
+int MakeFeaturePointsFromColorImage( cv::Point **ps, cv::Mat img, int mode );
 void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], int *clcor );
 
-int OutPutPoints( char *fname, CvPoint *ps, int num, CvSize size );
-int OutPutImage( IplImage *img );
+int OutPutPoints( char *fname, cv::Point *ps, int num, cv::Size size );
+int OutPutImage( cv::Mat img );
 
 int IsExist( char *fname );
 
 #ifdef	COR_PRESET_MODE
-int TransformAnnoPreset( IplImage *anno, IplImage *orig, IplImage *anno2 );
+int TransformAnnoPreset( cv::Mat anno, cv::Mat orig, cv::Mat anno2 );
 #endif
