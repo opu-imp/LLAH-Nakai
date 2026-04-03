@@ -17,16 +17,15 @@
 
 #include "hash.h"
 #include "disc.h"
-#include "cxtypes.h"
 
 typedef struct _strLlahDocDb {
 	strDisc disc;
 	strHList **hash;
 	strHList2 **hash2;
 	HENTRY *hash3;
-	CvPoint **reg_pss;
+	cv::Point **reg_pss;
 	double **reg_areass;
-	CvSize *reg_sizes;
+	cv::Size *reg_sizes;
 	int *reg_nums;
 	char **dbcors;
 } strLlahDocDb;
@@ -40,6 +39,6 @@ _EXPORT int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_d
 _EXPORT strLlahDocDb *LlahDocLoadDb( const char *db_dir );
 _EXPORT void LlahDocReleaseDb( strLlahDocDb *db );
 _EXPORT int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result, int result_len );
-_EXPORT int LlahDocRetrieveIplImage( IplImage *img, strLlahDocDb *db, char *result, int result_len );
+_EXPORT int LlahDocRetrieveIplImage( cv::Mat img, strLlahDocDb *db, char *result, int result_len );
 
 #endif	/* __LLAHDOC_DLL_H__ */

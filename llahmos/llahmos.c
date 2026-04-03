@@ -1,4 +1,4 @@
-#define	GLOBAL_DEFINE	/* extern•Ï”‚É‚±‚±‚ÅÀ‘Ì‚ğ—^‚¦‚é */
+#define	GLOBAL_DEFINE	/* externï¿½Ïï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½Ì‚ï¿½^ï¿½ï¿½ï¿½ï¿½ */
 
 #include "def_general.h"
 
@@ -10,8 +10,7 @@
 #include <mmsystem.h>
 #endif
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "dirs.h"
@@ -42,12 +41,12 @@ int main( int argc, char *argv[] )
 {
 	int i, argi, ret, num, *reg_nums, **nears = 0, *score, ret_time, res;
 	int pcor[kMaxPointNum][2], pcornum = 0;
-	CvPoint *ps = 0, **reg_pss;
-	CvSize img_size, *reg_sizes;
+	cv::Point *ps = 0, **reg_pss;
+	cv::Size img_size, *reg_sizes;
 	double *areas = NULL, **reg_areass;
 	char **dbcors;
 	strProjParam param, param_rev;
-	IplImage *img, *img1, *img2, *mos;
+	cv::Mat img, img1, img2, mos;
 	strDisc disc;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
@@ -56,62 +55,60 @@ int main( int argc, char *argv[] )
 
 	if ( ( argi = AnalyzeArgAndSetExtern2( argc, argv ) ) < 0 )	return 1;
 	eDbDocs = 1;
-	// ƒƒ‚ƒŠ‚ÌŠm•Û
-	reg_pss = (CvPoint **)calloc( eDbDocs, sizeof(CvPoint *) );
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½ï¿½
+	reg_pss = (cv::Point **)calloc( eDbDocs, sizeof(cv::Point *) );
 	reg_areass = (double **)calloc( eDbDocs, sizeof(double *) );
-	reg_sizes = (CvSize *)calloc( eDbDocs, sizeof(CvSize) );
+	reg_sizes = (cv::Size *)calloc( eDbDocs, sizeof(cv::Size) );
 	reg_nums = (int *)calloc( eDbDocs, sizeof(int) );
 	dbcors = (char **)calloc( eDbDocs, sizeof(char *) );
 	dbcors[0] = (char *)calloc( kMaxPathLen, sizeof(char) );
 
-	// ‰æ‘œ1‚©‚ç“Á’¥“_‚ğ’Šo
-	img1 = cvLoadImage( argv[argi], 1 );
+	// ï¿½æ‘œ1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
+	img1 = cv::imread(argv[argi], cv::IMREAD_COLOR);
 	fprintf( stderr, "%s\n", argv[argi] );
-	strcpy( dbcors[0], argv[argi] );	// Œ³‰æ‘œƒtƒ@ƒCƒ‹–¼‚ğ•Û‘¶
+	strcpy( dbcors[0], argv[argi] );	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û‘ï¿½
 	start = GetProcTimeMiliSec();
-	if ( eIsJp )	img = GetConnectedImageJp2( argv[argi], RETRIEVE_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
-	else			img = GetConnectedImage2( argv[argi], RETRIEVE_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
-	reg_nums[0] = MakeCentresFromImage( &(reg_pss[0]), img, &(reg_sizes[0]), &(reg_areass[0]) );	// “Á’¥“_‚ğ’Šo
+	if ( eIsJp )	img = GetConnectedImageJp2( argv[argi], RETRIEVE_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+	else			img = GetConnectedImage2( argv[argi], RETRIEVE_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+	reg_nums[0] = MakeCentresFromImage( &(reg_pss[0]), img, &(reg_sizes[0]), &(reg_areass[0]) );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 	end = GetProcTimeMiliSec();
 	printf("Feature point extraction 1: %d ms\n", end - start);
-	cvReleaseImage( &img );	// ‰æ‘œ‚ğ‰ğ•ú
-	// —£U‰»ƒtƒ@ƒCƒ‹‚Ìì¬
+	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìì¬
 	fprintf( stderr, "Making %s...\n", eDiscFileName );
 	ret = MakeDiscFile( min( eDocNumForMakeDisc, eDbDocs ), reg_pss, reg_nums, &disc );
 	if ( ret <= 0 )	return 1;
-	// ƒnƒbƒVƒ…‚Ì\’z
+	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì\ï¿½z
 	start = GetProcTimeMiliSec();
 	fprintf( stderr, "Constructing Hash Table...\n" );
 	ret = ConstructHash2( eDbDocs, reg_pss, reg_areass, reg_nums, &disc, &hash, &hash2, &hash3 );
 	end = GetProcTimeMiliSec();
 	printf("Storage: %d ms\n", end - start);
-	// ”ä—á’è”‚ÌŒvZ
+	// ï¿½ï¿½ï¿½è”ï¿½ÌŒvï¿½Z
 	eProp = 0.0L;
 
-	// ‰æ‘œ2‚©‚ç“Á’¥“_‚ğ’Šo
+	// ï¿½æ‘œ2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 	argi++;
-	img2 = cvLoadImage( argv[argi], 1 );
+	img2 = cv::imread(argv[argi], cv::IMREAD_COLOR);
 	start = GetProcTimeMiliSec();
-	if ( eIsJp )	img = GetConnectedImageJp2( argv[argi], RETRIEVE_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
-	else			img = GetConnectedImage2( argv[argi], RETRIEVE_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
-	num = MakeCentresFromImage( &ps, img, &img_size, &areas );	// “Á’¥“_‚ğ’Šo
+	if ( eIsJp )	img = GetConnectedImageJp2( argv[argi], RETRIEVE_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+	else			img = GetConnectedImage2( argv[argi], RETRIEVE_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+	num = MakeCentresFromImage( &ps, img, &img_size, &areas );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 	end = GetProcTimeMiliSec();
 	printf("Feature point extraction 2: %d ms\n", end - start);
-	cvReleaseImage( &img );	// ‰æ‘œ‚ğ‰ğ•ú
-	// ‹ß–T\‘¢‚ğŒvZ
+	// ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Z
 	start = GetProcTimeMiliSec();
 	MakeNearsFromCentres( ps, num, &nears );
-	// ŒŸõ
+	// ï¿½ï¿½ï¿½ï¿½
 	score = (int *)calloc( kMaxDocNum, sizeof(int) );
 	eProp = 0.0L;
 //	res = RetrieveNN52( ps, areas, num, nears, img_size, score, &disc, reg_nums, &ret_time, hash, hash2, hash3 );
-	res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, reg_nums, hash, hash2, hash3 );	// ŒŸõ‚Ì‚İ
+	res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, reg_nums, hash, hash2, hash3 );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
 	end = GetProcTimeMiliSec();
 	printf("Num of points 1: %d\nNum of points 2: %d\nNum of cor points: %d\n", num, reg_nums[0], pcornum );
 	printf("Retrieval: %d ms\n", end - start);
 
 	DrawCor( ps, num, img_size, res, reg_pss[res], reg_nums[res], reg_sizes[res], pcor, pcornum );
-	// Å¬‘Î‰“_”ˆÈã‚È‚çAË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğŒvZ
+	// ï¿½Åï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½Èï¿½È‚ï¿½Aï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Z
 	start = GetProcTimeMiliSec();
 	CalcProjParamTop( ps, reg_pss[res], pcor, pcornum, &param, PROJ_NORMAL, PARAM_RANSAC );
 	CalcProjParamTop( ps, reg_pss[res], pcor, pcornum, &param_rev, PROJ_REVERSE, PARAM_RANSAC );
@@ -119,7 +116,7 @@ int main( int argc, char *argv[] )
 	printf("Estimate parameter: %d ms\n", end - start);
 
 	printf("%d(%d)\n", res, score[res]);
-	// ‰æ‘œ1‚Æ‰æ‘œ2‚ğ‡¬‚·‚é
+	// ï¿½æ‘œ1ï¿½Æ‰æ‘œ2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	fprintf( stderr, "Creating Mosaicing Image...\n" );
 	start = GetProcTimeMiliSec();
 	mos = MosaicImages( img1, img2, param, param_rev );
@@ -129,44 +126,44 @@ int main( int argc, char *argv[] )
 	return 0;
 }
 
-IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strProjParam param_rev )
-// 2–‡‚Ì‰æ‘œ‚ğË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ÉŠî‚Ã‚¢‚Ä‡¬‚·‚é
+cv::Mat MosaicImages( cv::Mat img1, cv::Mat img2, strProjParam param, strProjParam param_rev )
+// 2ï¿½ï¿½ï¿½Ì‰æ‘œï¿½ï¿½ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ÉŠï¿½Ã‚ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, k, x_min, y_min, x_max, y_max, x_exp, y_exp;
 	int flag1, flag2;
 	unsigned char val1[3], val2[3], val3[3];
-	IplImage *mos;
-	CvSize size_mos, size1, size2;
+	cv::Mat mos;
+	cv::Size size_mos, size1, size2;
 	strPoint img1_pt, img2_pt, src[4], dst[4];
 
-	size1.width = img1->width;
-	size1.height = img1->height;
-	size2.width = img2->width;
-	size2.height = img2->height;
+	size1.width = img1.cols;
+	size1.height = img1.rows;
+	size2.width = img2.cols;
+	size2.height = img2.rows;
 
-//	mos = cvCreateImage( size1, IPL_DEPTH_8U, 3 );
+//	mos = cv::Mat::zeros(size1, CV_8UC3);
 
-/*	for ( j = 0; j < mos->height; j++ ) {
-		for ( i = 0; i < mos->width; i++ ) {
+/*	for ( j = 0; j < mos.rows; j++ ) {
+		for ( i = 0; i < mos.cols; i++ ) {
 			GetPix( img1, i, j, val );
 			SetPix( mos, i, j, val );
 		}
 	}*/
 	src[0].x = 0;
 	src[0].y = 0;
-	src[1].x = img2->width;
+	src[1].x = img2.cols;
 	src[1].y = 0;
-	src[2].x = img2->width;
-	src[2].y = img2->height;
+	src[2].x = img2.cols;
+	src[2].y = img2.rows;
 	src[3].x = 0;
-	src[3].y = img2->height;
+	src[3].y = img2.rows;
 	for ( i = 0; i < 4; i++ ) {
 		ProjTrans( src + i, dst + i, &param_rev );
 	}
 	x_min = 0;
 	y_min = 0;
-	x_max = img1->width;
-	y_max = img1->height;
+	x_max = img1.cols;
+	y_max = img1.rows;
 	for ( i = 0; i < 4; i++ ) {
 		if ( dst[i].x < x_min )	x_min = dst[i].x;
 		if ( dst[i].y < y_min ) y_min = dst[i].y;
@@ -179,8 +176,8 @@ IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strP
 	if ( y_min < 0 )	y_exp = abs( y_min );
 	size_mos.width = x_exp + x_max;
 	size_mos.height = y_exp + y_max;
-	mos = cvCreateImage( size_mos, IPL_DEPTH_8U, 3 );
-	cvZero( mos );
+	mos = cv::Mat::zeros(size_mos, CV_8UC3);
+	mos.setTo(cv::Scalar::all(0));
 	for ( j = 0; j < size_mos.height; j++ ) {
 		for ( i = 0; i < size_mos.width; i++ ) {
 			img1_pt.x = i - x_exp;
@@ -194,7 +191,7 @@ IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strP
 			else if ( flag2 )		SetPixU( mos, i, j, val2 );
 		}
 	}
-//	for ( i = 0; i < 4; i++ )	cvLine( mos, cvPoint( x_exp + dst[i].x, y_exp + dst[i].y ), cvPoint( x_exp + dst[(i+1)%4].x, y_exp + dst[(i+1)%4].y ), cRed, 4, CV_AA, 0 );
+//	for ( i = 0; i < 4; i++ )	cv::line( mos, cv::Point( x_exp + dst[i].x, y_exp + dst[i].y ), cv::Point( x_exp + dst[(i+1)%4].x, y_exp + dst[(i+1)%4].y ), cRed, 4, cv::LINE_AA, 0 );
 
 	return mos;
 }

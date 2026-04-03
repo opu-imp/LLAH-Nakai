@@ -1,12 +1,12 @@
-#define	WIN
-//#define	LINUX
+//#define	WIN
+#define	LINUX
 //#define	RESO_LIMIT
 // DLL
-#ifdef	WIN	// Œ»İ‚ÍWIN”Å‚Ì‚İ
+#ifdef	WIN	// ï¿½ï¿½ï¿½İ‚ï¿½WINï¿½Å‚Ì‚ï¿½
 #define	LLAHDOC_EXPORTS
 #endif
 
-// ƒo[ƒWƒ‡ƒ“
+// ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
 #define	kLlahDocVersion	(1.1)
 
 #ifdef	WIN
@@ -31,9 +31,9 @@
 #endif
 
 #define	kFileNameLen	(64)
-#define	kMaxPathLen	(128)	/* ƒpƒX‚Ì•¶š—ñ‚ÌÅ‘å’· */
-#define	kMaxLineLen	(1024)	/* fgets‚Å“Ç‚İ‚Şê‡‚Ìƒoƒbƒtƒ@ƒTƒCƒY */
+#define	kMaxPathLen	(128)	/* ï¿½pï¿½Xï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ÌÅ‘å’· */
+#define	kMaxLineLen	(1024)	/* fgetsï¿½Å“Ç‚İï¿½ï¿½Şê‡ï¿½Ìƒoï¿½bï¿½tï¿½@ï¿½Tï¿½Cï¿½Y */
 
-#ifndef M_PI /* ‰~ü—¦ (pi) */
+#ifndef M_PI /* ï¿½~ï¿½ï¿½ï¿½ï¿½ (pi) */
 #define M_PI (3.14159265358979323846L)
 #endif
