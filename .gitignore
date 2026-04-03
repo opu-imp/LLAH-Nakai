@@ -1,0 +1,16 @@
+# Object files
+*.o
+
+# Executables
+llahmos/llahmos
+demo_server/llahdoc
+old_stable/llahdoc
+old_stable/temp/llahdoc
+anno_extract/annex
+
+# Editor / OS artifacts
+.DS_Store
+*.swp
+*.swo
+*~
+.!*
