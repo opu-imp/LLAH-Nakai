@@ -2,45 +2,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "cr.h"
 #include "dirs.h"
 
-double CalcCR5ByArea( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
-// –ÊÏ‚ÉŠî‚Ã‚¢‚Ä•½–Êã‚Ì5“_‚Å•¡”ä‚ğŒvZ‚·‚é
+double CalcCR5ByArea( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
+// ï¿½ÊÏ‚ÉŠï¿½Ã‚ï¿½ï¿½Ä•ï¿½ï¿½Êï¿½ï¿½5ï¿½_ï¿½Å•ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	double s;
 	if ( ( s = CalcArea(p1, p2, p4) * CalcArea(p1, p3, p5 )) < 0.0001 )	s = 0.0001;
 	return (CalcArea(p1, p2, p3) * CalcArea(p1, p4, p5)) / s ;
 }
 
-double CalcArea( CvPoint p1, CvPoint p2, CvPoint p3 )
-// w’è‚³‚ê‚½3“_‚ÅˆÍ‚Ü‚ê‚½OŠpŒ`‚Ì–ÊÏ‚ğŒvZ‚·‚é
+double CalcArea( cv::Point p1, cv::Point p2, cv::Point p3 )
+// ï¿½wï¿½è‚³ï¿½ê‚½3ï¿½_ï¿½ÅˆÍ‚Ü‚ê‚½ï¿½Oï¿½pï¿½`ï¿½Ì–ÊÏ‚ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	return fabs((p1.x-p3.x)*(p2.y-p3.y)-(p1.y-p3.y)*(p2.x-p3.x)) / (double)2.0L;
 }
 
-double CalcAffineInv( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
-// •½–Êã‚Ì4“_‚ÅƒAƒtƒBƒ“•ÏŠ·‚Ì•s•Ï—Ê‚ğŒvZ‚·‚é
+double CalcAffineInv( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
+// ï¿½ï¿½ï¿½Êï¿½ï¿½4ï¿½_ï¿½ÅƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½Ì•sï¿½Ï—Ê‚ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
-//	‹Œƒo[ƒWƒ‡ƒ“
+//	ï¿½ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
 //	if ( (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y) == 0 )	return 1000000;
 //	else    return (double)((p3.x - p1.x) * (p4.y - p1.y) - (p4.x - p1.x) * (p3.y - p1.y)) / (double)((p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y));
-//	Vƒo[ƒWƒ‡ƒ“iDASj
+//	ï¿½Vï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½iDASï¿½j
 	double s;
 	if ( (s = CalcArea(p1, p2, p3)) < 0.0001 )	s = 0.0001;
 	return CalcArea(p1, p3, p4) / s ;
 }
 
-long double GetPointsAngle(CvPoint p1, CvPoint p2)
-// p1‚©‚çŒ©‚½p2‚ÌŠp“x‚ğŒvZ‚·‚éi–ñ-3.14‚©‚ç–ñ3.14j
+long double GetPointsAngle(cv::Point p1, cv::Point p2)
+// p1ï¿½ï¿½ï¿½çŒ©ï¿½ï¿½p2ï¿½ÌŠpï¿½xï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½iï¿½ï¿½-3.14ï¿½ï¿½ï¿½ï¿½ï¿½3.14ï¿½j
 {
 	return atan2(p2.y - p1.y, p2.x - p1.x);
 }
 
-double CalcAngleFromThreePoints( CvPoint p1, CvPoint p2, CvPoint p3 )
-// p1‚ğ’¸“_‚Æ‚µ‚½p2‚Æp3‚ÌŠp“x‚ğ‹‚ß‚é
+double CalcAngleFromThreePoints( cv::Point p1, cv::Point p2, cv::Point p3 )
+// p1ï¿½ğ’¸“_ï¿½Æ‚ï¿½ï¿½ï¿½p2ï¿½ï¿½p3ï¿½ÌŠpï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double ang;
 
@@ -49,8 +48,8 @@ double CalcAngleFromThreePoints( CvPoint p1, CvPoint p2, CvPoint p3 )
 	return ang;
 }
 
-double CalcSimilarInv( CvPoint p1, CvPoint p2, CvPoint p3 )
-// •½–Êã‚Ì3“_‚Å‘Š—•ÏŠ·‚Ì•s•Ï—Ê‚ğŒvZ‚·‚é
+double CalcSimilarInv( cv::Point p1, cv::Point p2, cv::Point p3 )
+// ï¿½ï¿½ï¿½Êï¿½ï¿½3ï¿½_ï¿½Å‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½Ì•sï¿½Ï—Ê‚ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	double s;
 	if ( (s = GetPointsDistance(p1, p2)) < 0.0001 )	s = 0.0001;

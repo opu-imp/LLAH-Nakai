@@ -10,7 +10,7 @@ void ClusterTest( void )
     #define MAX_CLUSTERS 5
     CvScalar color_tab[MAX_CLUSTERS];
     IplImage* img = cvCreateImage( cvSize( 500, 500 ), 8, 3 );
-    CvRNG rng = cvRNG(0xffffffff);
+    CvRNG rng = cv::RNG(0xffffffff);
     
     color_tab[0] = CV_RGB(255,0,0);
     color_tab[1] = CV_RGB(0,255,0);
@@ -53,7 +53,7 @@ void ClusterTest( void )
         cvKMeans2( points, cluster_count, clusters,
                    cvTermCriteria( CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 10, 1.0 ));
 
-        cvZero( img );
+        img.setTo(cv::Scalar::all(0));
 
         for( i = 0; i < sample_count; i++ )
         {

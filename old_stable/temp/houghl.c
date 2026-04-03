@@ -18,7 +18,7 @@ void CalcHoughLineCRHist(CvPoint *ps, int pt_num,  CvSize size)
 	strHist hist;
 
 	cent = cvCreateImage(size, 8, 1);
-	cvZero(cent);
+	cent.setTo(cv::Scalar::all(0));
 
 	for ( i = 0; i < pt_num; i++ ) {
 		cvCircle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
@@ -172,7 +172,7 @@ int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
 
 //	dst1 = cvCreateImage( cvGetSize(dst), 8, 3 );
 	color_dst = cvCreateImage( cvGetSize(dst), 8, 1 );
-	cvZero(color_dst);
+	color_dst.setTo(cv::Scalar::all(0));
 	color_dst = cvCloneImage( dst );
 	w = color_dst->width;
 	h = color_dst->height;

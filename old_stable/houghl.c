@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 
 #include "dirs.h"
 #include "hist.h"
@@ -9,22 +9,22 @@
 
 void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, int corder );
 
-void CalcHoughLineCRHist(CvPoint *ps, int pt_num,  CvSize size)
-// “_‚ÌW‡‚ğHough•ÏŠ·‚µ‚Ä’¼ü‚ğŒŸo‚µCüã‚Ì“_‚©‚ç•¡”ä‚ğ‹‚ß‚ÄƒqƒXƒgƒOƒ‰ƒ€‚ğì¬‚·‚é
+void CalcHoughLineCRHist(cv::Point *ps, int pt_num,  cv::Size size)
+// ï¿½_ï¿½ÌWï¿½ï¿½ï¿½ï¿½Houghï¿½ÏŠï¿½ï¿½ï¿½ï¿½Ä’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ç•¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚Äƒqï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½
 {
 	int i, line_num;
-	IplImage *cent;
+	cv::Mat cent;
 	strLineForCR *lines = NULL;
 	strHist hist;
 
-	cent = cvCreateImage(size, 8, 1);
-	cvZero(cent);
+	cent = cv::Mat::zeros(size, CV_8UC1);
+	cent.setTo(cv::Scalar::all(0));
 
 	for ( i = 0; i < pt_num; i++ ) {
-		cvCircle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
+		cv::circle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
 	}
 
-	line_num = CalcHoughLinesImg(cent, &lines);	// ‰æ‘œ‚©‚çHough•ÏŠ·‚Å’¼ü‚ğ‹‚ß‚é
+	line_num = CalcHoughLinesImg(cent, &lines);	// ï¿½æ‘œï¿½ï¿½ï¿½ï¿½Houghï¿½ÏŠï¿½ï¿½Å’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 
 //	for ( i = 0; i < line_num; i++ )	printf("%f %f\n", lines[i].rho, lines[i].theta);
 
@@ -35,7 +35,7 @@ void CalcHoughLineCRHist(CvPoint *ps, int pt_num,  CvSize size)
 	for ( i = 0; i < line_num; i++ ) {
 		printf("line%02d\n", i);
 		cur = lines[i].first;
-		while ( cur != NULL ) {
+		while ( cur != NULL) {
 			printf("%d %d\n", cur->pt.x, cur->pt.y );
 			cur = cur->next;
 		}
@@ -50,17 +50,17 @@ void CalcHoughLineCRHist(CvPoint *ps, int pt_num,  CvSize size)
 }
 
 void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, int corder )
-// ü‚©‚çƒqƒXƒgƒOƒ‰ƒ€‚ğì¬‚·‚éiƒqƒXƒgƒOƒ‰ƒ€‚Í‰Šú‰»Ï‚İ
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½iï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï‚ï¿½
 {
 	int i, j, pt_num, p1, p2, p3, p4;
 	double cr = 0.0;
-	CvPoint pts[kLinePoints];
+	cv::Point pts[kLinePoints];
 	strPtList *cur;
 
 	for ( i = 0; i < line_num; i++ ) {
 		cur = lines[i].first;
 		j = 0;
-		while ( cur != NULL ) {	// “_‚ğpts‚ÉƒRƒs[
+		while ( cur != NULL) {	// ï¿½_ï¿½ï¿½ptsï¿½ÉƒRï¿½sï¿½[
 			pts[j].x = cur->pt.x;
 			pts[j].y = cur->pt.y;
 			cur = cur->next;
@@ -68,7 +68,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 		}
 		pt_num = j;
 		switch (corder) {
-			case kSeqOrder:	// æ“ª‚©‚ç4‚Â‚¸‚Â
+			case kSeqOrder:	// ï¿½æ“ªï¿½ï¿½ï¿½ï¿½4ï¿½Â‚ï¿½ï¿½ï¿½
                 for ( j = 0; j+4 <= pt_num; j++ ) {
 					switch (ctype) {
 						case kUseCR:
@@ -82,7 +82,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
                     AddDataHist(hist, cr);
                     }
 				break;
-			case kAllAssort:	// ‚·‚×‚Ä‚Ì‘g‚İ‡‚í‚¹
+			case kAllAssort:	// ï¿½ï¿½ï¿½×‚Ä‚Ì‘gï¿½İï¿½ï¿½í‚¹
 				for ( p1 = 0; p1 < pt_num; p1++ ) {
 					for ( p2 = 0; p2 < pt_num; p2++ ) {
 						if ( p2 == p1 ) continue;
@@ -109,8 +109,8 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 	}
 }
 
-void ResisterPointToLines( CvPoint pt, strLineForCR *lines, int line_num )
-// “_‚ğ‹ß‚¢’¼ü‚É“o˜^‚·‚é
+void ResisterPointToLines( cv::Point pt, strLineForCR *lines, int line_num )
+// ï¿½_ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½
 {
 	int i;
 
@@ -121,8 +121,8 @@ void ResisterPointToLines( CvPoint pt, strLineForCR *lines, int line_num )
 	}
 }
 
-void AddPoint( CvPoint pt, strLineForCR *line )
-// “_‚ğ’¼ü‚Ì“_ƒŠƒXƒg‚É’Ç‰Á‚·‚é
+void AddPoint( cv::Point pt, strLineForCR *line )
+// ï¿½_ï¿½ğ’¼ï¿½ï¿½Ì“_ï¿½ï¿½ï¿½Xï¿½gï¿½É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	strPtList *newpl = (strPtList *)calloc(1, sizeof(strPtList));
 	strPtList *cur;
@@ -130,20 +130,20 @@ void AddPoint( CvPoint pt, strLineForCR *line )
 	newpl->pt.x = pt.x;
 	newpl->pt.y = pt.y;
 	newpl->next = NULL;
-	if ( line->first == NULL ) {
+	if ( line->first == NULL) {
 		line->first = newpl;
 		return;
 	}
 	cur = line->first;
-	while ( cur->next != NULL )
+	while ( cur->next != NULL)
 		cur = cur->next;
 	cur->next = newpl;
 }
 
 
 
-int IsCloseToLine( CvPoint pt, strLineForCR *line )
-// “_‚Æ’¼ü‚ª‹ß‚¢‚©”»’è‚·‚é
+int IsCloseToLine( cv::Point pt, strLineForCR *line )
+// ï¿½_ï¿½Æ’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‚·ï¿½ï¿½
 {
 	if ( fabs((pt.x * cos(line->theta) + pt.y * sin(line->theta)) - line->rho) < kCloseToLine )
 		return 1;
@@ -152,7 +152,7 @@ int IsCloseToLine( CvPoint pt, strLineForCR *line )
 }
 
 int x2yrh(int x, float rho, float theta)
-//	rho-thetaŒ^‚Ì’¼ü‚Ì®‚Åx‚©‚çy‚ğ‹‚ß‚é
+//	rho-thetaï¿½^ï¿½Ì’ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½yï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	return (int)((rho - x * cos(theta))/sin(theta));
 }
@@ -162,38 +162,42 @@ int y2xrh(int y, float rho, float theta)
 	return (int)((rho - y * sin(theta))/cos(theta));
 }
 
-int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
+int CalcHoughLinesImg(cv::Mat dst, strLineForCR **line_cr)
 {
-//	IplImage* dst = cvLoadImage("htest.bmp", 0);
-    IplImage *color_dst;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    CvSeq* lines = 0;
+//	cv::Mat  dst = cv::imread("htest.bmp", cv::IMREAD_GRAYSCALE);
+    cv::Mat color_dst;
+    std::vector<std::vector<cv::Point>> contours;
+
+    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    // lines_vec declared at HoughLines call site
+    // (CvSeq* lines removed)
     int i, w, h;
 
-//	dst1 = cvCreateImage( cvGetSize(dst), 8, 3 );
-	color_dst = cvCreateImage( cvGetSize(dst), 8, 1 );
-	cvZero(color_dst);
-	color_dst = cvCloneImage( dst );
-	w = color_dst->width;
-	h = color_dst->height;
+//	dst1 = cv::Mat::zeros(dst.size(), CV_8UC3);
+	color_dst = cv::Mat::zeros(dst.size(), CV_8UC1);
+	color_dst.setTo(cv::Scalar::all(0));
+	color_dst = dst.clone();
+	w = color_dst.cols;
+	h = color_dst.rows;
 
-//    cvCvtColor( dst, color_dst, CV_GRAY2BGR );
+//    cv::cvtColor( dst, color_dst, cv::COLOR_GRAY2BGR );
 
-	cvDilate(dst, color_dst, NULL, 5);
+	cv::dilate(dst, color_dst, cv::Mat(), cv::Point(-1,-1), 5);
 	OutPutImage(color_dst);
 
 //    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 2, CV_PI/180, /*150*/4, 0, 0 );
-//htest.bmp—p    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 1, CV_PI/90, /*150*/3, 0, 0 );
-    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 8, CV_PI/180, /*150*/10, 0, 0 );
+//htest.bmpï¿½p    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 1, CV_PI/90, /*150*/3, 0, 0 );
+    std::vector<cv::Vec2f> lines_vec;
+    cv::HoughLines(dst, lines_vec, 8, CV_PI/180, /*150*/10);
 
-	*line_cr = (strLineForCR *)calloc(lines->total, sizeof(strLineForCR));
+	*line_cr = (strLineForCR *)calloc((int)lines_vec.size(), sizeof(strLineForCR));
 
-    for( i = 0; i < lines->total; i++ )
+    for( i = 0; i < (int)lines_vec.size(); i++ )
     {
-        float* line = (float*)cvGetSeqElem(lines,i);
+        float* line = (float*)&lines_vec[i];
         float rho = line[0];
         float theta = line[1];
-		CvPoint pt[2];
+		cv::Point pt[2];
 		int xt, yt, count = 0;
 //        double a = cos(theta), b = sin(theta);
 
@@ -202,7 +206,7 @@ int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
 
 //		printf("%f %f\n", rho, theta);
 //		printf("(0, %d) (%d, %d) (%d, 0) (%d, %d)\n", x2yrh(0, rho, theta), w, x2yrh(w, rho, theta), y2xrh(0, rho, theta), h, y2xrh(h, rho, theta));
-		// ˆÈ‰ºC’¼ü‚ğˆø‚­‚½‚ß‚Ì‹N“_‚ÆI“_‚ğŒ©‚Â‚¯‚éD‰æ‘œ‚ğo—Í‚µ‚È‚¢‚Ì‚È‚ç•s—vD
+		// ï¿½È‰ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ì‹Nï¿½_ï¿½ÆIï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Dï¿½æ‘œï¿½ï¿½ï¿½oï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚È‚ï¿½sï¿½vï¿½D
 		yt = x2yrh(0, rho, theta);
 		if ( yt >= 0 && yt < h && count < 2) {
 			pt[count].x = 0;
@@ -227,13 +231,13 @@ int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
 			pt[count].y = h;
 			count++;
 		}
-        cvLine( color_dst, pt[0], pt[1], cWhite, 4, 8, 0 );
+        cv::line( color_dst, pt[0], pt[1], cWhite, 4, 8, 0 );
 
-		//ˆÈ‰º‚É‚ ‚Á‚½’¼ü‚ğˆø‚­ƒvƒƒOƒ‰ƒ€‚ªŒ©–‚ÉŠÔˆá‚Á‚Ä‚¢‚½DƒTƒ“ƒvƒ‹‚Æ‚¢‚¦‚ÇM—p‚Å‚«‚È‚¢‚ÈD
+		//ï¿½È‰ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÉŠÔˆï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½Dï¿½Tï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ÇMï¿½pï¿½Å‚ï¿½ï¿½È‚ï¿½ï¿½ÈD
 	}
 
 //	OutPutImage(dst);
 	OutPutImage(color_dst);
 
-	return lines->total;
+	return (int)lines_vec.size();
 }

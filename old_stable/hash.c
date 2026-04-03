@@ -3,10 +3,9 @@
 #include <ctype.h>
 #include <string.h>
 #include "def_general.h"
-//#include "cv.h"
-//#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "hash.h"
-//#include "dirs.h"
+#include "dirs.h"
 #include "hist.h"
 #include "block.h"
 #include "extern.h"
@@ -51,7 +50,7 @@ unsigned int HashFuncArea( char *index, char *index_area, int num)
 }
 
 unsigned int CountHashList( int index, strHList **hash )
-// index”Ô–Ú‚ÌƒŠƒXƒgƒTƒCƒY‚ğ“¾‚é
+// indexï¿½Ô–Ú‚Ìƒï¿½ï¿½Xï¿½gï¿½Tï¿½Cï¿½Yï¿½ğ“¾‚ï¿½
 {
 	unsigned int count;
 	strHList *hp;
@@ -60,7 +59,7 @@ unsigned int CountHashList( int index, strHList **hash )
 }
 
 unsigned int CountHashList2( int index, strHList2 **hash2 )
-// index”Ô–Ú‚ÌƒŠƒXƒgƒTƒCƒY‚ğ“¾‚é
+// indexï¿½Ô–Ú‚Ìƒï¿½ï¿½Xï¿½gï¿½Tï¿½Cï¿½Yï¿½ğ“¾‚ï¿½
 {
 	unsigned int count;
 	strHList2 *hp;
@@ -69,7 +68,7 @@ unsigned int CountHashList2( int index, strHList2 **hash2 )
 }
 
 int SaveHash( strHList **hash )
-// ƒnƒbƒVƒ…‚ğƒZ[ƒu‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½
 {
 	unsigned int i, j, n, ret;
 	strHList *hp;
@@ -77,7 +76,7 @@ int SaveHash( strHList **hash )
 
 	sprintf( hash_fname, "%s%s", eDirsDir, eHashDatFileName );
 //	StartWriteBlock( eHashFileName, kBlockSize );
-	ret = StartWriteBlock( hash_fname, kBlockSize );	// ŒöŠJ‚ÉŒü‚¯‚Ä‰ü•Ï
+	ret = StartWriteBlock( hash_fname, kBlockSize );	// ï¿½ï¿½ï¿½Jï¿½ÉŒï¿½ï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½
 	if ( ret <= 0 )	return 0;
 	for ( i = 0; i < kHashSize; i++ ) {
 //		fprintf( stderr, "(%d/%d)\n", i+1, kHashSize );
@@ -90,7 +89,7 @@ int SaveHash( strHList **hash )
 				WriteBlock( (unsigned char *)&(hp->doc), sizeof(unsigned short) );
 				WriteBlock( (unsigned char *)&(hp->point), sizeof(unsigned short) );
 //				WriteBlock( (unsigned char *)&(hp->pat), sizeof(unsigned char) );
-				if ( eUseArea )	WriteBlock( (unsigned char *)hp->idx, sizeof(char)*(eNumCom2+eGroup2Num) );	// –ÊÏ‚à‹L˜^
+				if ( eUseArea )	WriteBlock( (unsigned char *)hp->idx, sizeof(char)*(eNumCom2+eGroup2Num) );	// ï¿½ÊÏ‚ï¿½ï¿½Lï¿½^
 				else			WriteBlock( (unsigned char *)hp->idx, sizeof(char)*eNumCom2 );
 			}
 		}
@@ -100,14 +99,14 @@ int SaveHash( strHList **hash )
 }
 
 int SaveHash2( strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚ğƒZ[ƒu‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½
 {
 	unsigned int i, j, k, n, ret;
 	strHList2 *hp;
 	char hash_fname[kMaxPathLen];
 
 	sprintf( hash_fname, "%s%s", eDirsDir, eHashDatFileName );
-	ret = StartWriteBlock( hash_fname, kBlockSize );	// ŒöŠJ‚ÉŒü‚¯‚Ä‰ü•Ï
+	ret = StartWriteBlock( hash_fname, kBlockSize );	// ï¿½ï¿½ï¿½Jï¿½ÉŒï¿½ï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½
 	if ( ret <= 0 )	return 0;
 	for ( i = 0; i < kHashSize; i++ ) {
 //		fprintf( stderr, "(%d/%d)\n", i+1, kHashSize );
@@ -126,16 +125,16 @@ int SaveHash2( strHList2 **hash2 )
 }
 
 int SaveHash3( HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚ğƒZ[ƒu‚·‚éiƒnƒbƒVƒ…ƒŠƒXƒg‚È‚µƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½iï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned int i, ret;
 	char hash_fname[kMaxPathLen];
 
 	sprintf( hash_fname, "%s%s", eDirsDir, eHashDatFileName );
-	ret = StartWriteBlock( hash_fname, kBlockSize );	// ŒöŠJ‚ÉŒü‚¯‚Ä‰ü•Ï
+	ret = StartWriteBlock( hash_fname, kBlockSize );	// ï¿½ï¿½ï¿½Jï¿½ÉŒï¿½ï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½
 	if ( ret <= 0 )	return 0;
 	for ( i = 0; i < kHashSize; i++ ) {
-		if ( hash3[i] != kFreeEntry && hash3[i] != kInvalidEntry ) {	// “o˜^—L‚è
+		if ( hash3[i] != kFreeEntry && hash3[i] != kInvalidEntry ) {	// ï¿½oï¿½^ï¿½Lï¿½ï¿½
 			WriteBlock( (unsigned char *)&i, sizeof(unsigned int) );
 			WriteBlock( (unsigned char *)&(hash3[i]), sizeof(HENTRY) );
 		}
@@ -145,7 +144,7 @@ int SaveHash3( HENTRY *hash3 )
 }
 
 strHList **LoadHash( int num )
-// ƒnƒbƒVƒ…‚ğƒ[ƒh‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½
 {
 	unsigned int i, index, n;
 	unsigned short doc, point;
@@ -154,12 +153,12 @@ strHList **LoadHash( int num )
 	strHList **hash = NULL;
 
 
-	if ( eUseArea )	idx = (char *)calloc(eNumCom2 + eGroup2Num, sizeof(char));	// ƒCƒ“ƒfƒbƒNƒXi–ÊÏ•t‚«j
-	else 			idx = (char *)calloc(eNumCom2, sizeof(char));	// ƒCƒ“ƒfƒbƒNƒX
+	if ( eUseArea )	idx = (char *)calloc(eNumCom2 + eGroup2Num, sizeof(char));	// ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½iï¿½ÊÏ•tï¿½ï¿½ï¿½j
+	else 			idx = (char *)calloc(eNumCom2, sizeof(char));	// ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return NULL;
 	hash = InitHash();
-	if ( hash == NULL )	return NULL;	// Šm•Û‚É¸”s
+	if (hash == NULL)	return NULL;	// ï¿½mï¿½Û‚Éï¿½ï¿½s
 	while ( ReadBlock((unsigned char *)&index, sizeof(unsigned int)) != 0 ) {
 		ReadBlock((unsigned char *)&n, sizeof(unsigned int));
 		for ( i = 0; i < n; i++ ) {
@@ -182,7 +181,7 @@ strHList **LoadHash( int num )
 }
 
 strHList2 **LoadHash2( int num )
-// ƒnƒbƒVƒ…‚ğƒ[ƒh‚·‚é2
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½2
 {
 	unsigned int i, index, n;
 	unsigned long doc, point;
@@ -192,7 +191,7 @@ strHList2 **LoadHash2( int num )
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return NULL;
 	hash2 = InitHash2();
-	if ( hash2 == NULL )	return NULL;	// Šm•Û‚É¸”s
+	if (hash2 == NULL)	return NULL;	// ï¿½mï¿½Û‚Éï¿½ï¿½s
 	while ( ReadBlock((unsigned char *)&index, sizeof(unsigned int)) != 0 ) {
 		ReadBlock((unsigned char *)&n, sizeof(unsigned int));
 		for ( i = 0; i < n; i++ ) {
@@ -208,7 +207,7 @@ strHList2 **LoadHash2( int num )
 		}
 	}
 	/*
-	idx = (char *)calloc(eNumCom2, sizeof(char));	// ƒCƒ“ƒfƒbƒNƒX
+	idx = (char *)calloc(eNumCom2, sizeof(char));	// ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
 	dat = (unsigned char *)calloc( eHList2DatByte, sizeof(unsigned char) );
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return 0;
@@ -230,7 +229,7 @@ strHList2 **LoadHash2( int num )
 }
 
 HENTRY *LoadHash3( int num )
-// ƒnƒbƒVƒ…‚ğƒ[ƒh‚·‚é3iƒŠƒXƒg‚È‚µƒ‚[ƒhj
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½3ï¿½iï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½j
 {
 	unsigned int i, index;
 	int doc, point;
@@ -238,7 +237,7 @@ HENTRY *LoadHash3( int num )
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return NULL;
 	hash3 = InitHash3();
-	if ( hash3 == NULL )	return NULL;	// Šm•Û‚É¸”s
+	if (hash3 == NULL)	return NULL;	// ï¿½mï¿½Û‚Éï¿½ï¿½s
 	while ( ReadBlock((unsigned char *)&index, sizeof(unsigned int)) != 0 ) {
 		ReadBlock( (unsigned char *)&he, sizeof(HENTRY) );
 		hash3[index] = he;
@@ -250,7 +249,7 @@ HENTRY *LoadHash3( int num )
 }
 
 int ChkHash( strHList **hash )
-// ƒnƒbƒVƒ…‚ğƒ`ƒFƒbƒN‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½
 {
 	unsigned long i, ent, total_ent, len, pow_sum;
 	unsigned long total_one_num = 0, total_two_num = 0, total_two_len = 0;
@@ -258,9 +257,9 @@ int ChkHash( strHList **hash )
 	
 	for ( i = 0, ent = 0, total_ent = 0, pow_sum = 0; i < kHashSize; i++ ) {
 //		printf("%d\n", i);
-		if ( (hl = hash[i]) != NULL ) {	// ƒŠƒXƒg’·‚ª1ˆÈã
+		if ( (hl = hash[i]) != NULL ) {	// ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½1ï¿½Èï¿½
 			ent++;
-			for ( len = 0; hl != NULL; hl = hl->next ) {	// ƒŠƒXƒg‚ğ‘S•”’²‚×‚é
+			for ( len = 0; hl != NULL; hl = hl->next ) {	// ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½×‚ï¿½
 				total_ent++;
 				len++;
 			}
@@ -284,7 +283,7 @@ int ChkHash( strHList **hash )
 }
 
 int ChkHash2( strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚ğƒ`ƒFƒbƒN‚·‚éiˆ³kƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½kï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned long i, ent, total_ent, len, pow_sum;
 	unsigned long total_one_num = 0, total_two_num = 0, total_two_len = 0;
@@ -292,9 +291,9 @@ int ChkHash2( strHList2 **hash2 )
 	
 	for ( i = 0, ent = 0, total_ent = 0, pow_sum = 0; i < kHashSize; i++ ) {
 //		printf("%d\n", i);
-		if ( (hl = hash2[i]) != NULL ) {	// ƒŠƒXƒg’·‚ª1ˆÈã
+		if ( (hl = hash2[i]) != NULL ) {	// ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½1ï¿½Èï¿½
 			ent++;
-			for ( len = 0; hl != NULL; hl = hl->next ) {	// ƒŠƒXƒg‚ğ‘S•”’²‚×‚é
+			for ( len = 0; hl != NULL; hl = hl->next ) {	// ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½×‚ï¿½
 				total_ent++;
 				len++;
 			}
@@ -318,7 +317,7 @@ int ChkHash2( strHList2 **hash2 )
 }
 
 int ChkHash3( HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚ğƒ`ƒFƒbƒN‚·‚éiƒŠƒXƒg‚È‚µƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned long i, ent = 0, total_ent = 0;
 	unsigned long total_free_num = 0, total_col_num = 0, total_valid_num = 0;
@@ -348,7 +347,7 @@ int ChkHash3( HENTRY *hash3 )
 }
 
 strHList *ReadHash( char *index, char *index_area, int num, strHList **hash )
-// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚ğ•Ô‚·
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½Ô‚ï¿½
 {
 	unsigned int hindex;
 	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );
@@ -357,7 +356,7 @@ strHList *ReadHash( char *index, char *index_area, int num, strHList **hash )
 }
 
 strHList2 *ReadHash2( char *index, char *index_area, int num, strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚ğ•Ô‚·
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½Ô‚ï¿½
 {
 	unsigned int hindex;
 	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );
@@ -366,7 +365,7 @@ strHList2 *ReadHash2( char *index, char *index_area, int num, strHList2 **hash2 
 }
 
 HENTRY *ReadHash3( char *index, char *index_area, int num, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚ğ•Ô‚·iƒnƒbƒVƒ…ƒŠƒXƒg‚È‚µƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½Ô‚ï¿½ï¿½iï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned int hindex;
 	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );
@@ -376,7 +375,7 @@ HENTRY *ReadHash3( char *index, char *index_area, int num, HENTRY *hash3 )
 
 
 strHList2 *ReadHash2Area( char *index, char *index_area, int num, strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚ğ•Ô‚·i–ÊÏƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½Ô‚ï¿½ï¿½iï¿½ÊÏƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned int hindex;
 	hindex = HashFuncArea( index, index_area, num );
@@ -384,7 +383,7 @@ strHList2 *ReadHash2Area( char *index, char *index_area, int num, strHList2 **ha
 }
 
 int SearchHash( unsigned int index, unsigned int doc, strHList **hash )
-// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚©‚çdoc‚ğ’T‚·DŒ©‚Â‚©‚ê‚Î^CŒ©‚Â‚©‚ç‚È‚¯‚ê‚Î‹U‚ğ•Ô‚·
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½ï¿½ï¿½docï¿½ï¿½Tï¿½ï¿½ï¿½Dï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Î^ï¿½Cï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½Î‹Uï¿½ï¿½Ô‚ï¿½
 {
 	strHList *hp;
 
@@ -396,18 +395,18 @@ int SearchHash( unsigned int index, unsigned int doc, strHList **hash )
 }
 
 int AddHash( char *index, char *index_area, int num, unsigned short doc, unsigned short point, strHList **hash )
-// ƒnƒbƒVƒ…‚É“o˜^‚·‚é
-// 07/07/05 –ÊÏ“Á’¥—Ê‚Ì‹L˜^‚ğ’Ç‰Á
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½
+// 07/07/05 ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Ì‹Lï¿½^ï¿½ï¿½Ç‰ï¿½
 {
 	unsigned int hindex;
 	strHList *hp;
 
-	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// –ÊÏ“Á’¥—Ê‚Ì—˜—p
+	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Ì—ï¿½ï¿½p
 	else			hindex = HashFunc( index, num );
 	hp = (strHList *)malloc(sizeof(*hp));
 	if ( eUseArea )	hp->idx = (char *)calloc( eNumCom2 + eGroup2Num, sizeof(char) );
 	else			hp->idx = (char *)calloc( eNumCom2, sizeof(char) );
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->next = hash[hindex];
 	hp->doc = doc;
 	hp->point = point;
@@ -417,7 +416,7 @@ int AddHash( char *index, char *index_area, int num, unsigned short doc, unsigne
 		memcpy(hp->idx, index, eNumCom2);
 		memcpy(hp->idx + eNumCom2, index_area, eGroup2Num);
 	} else {
-		memcpy(hp->idx, index, eNumCom2);	// –ÊÏ“Á’¥—Ê‚Í‹L˜^‚µ‚È‚¢
+		memcpy(hp->idx, index, eNumCom2);	// ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Í‹Lï¿½^ï¿½ï¿½ï¿½È‚ï¿½
 	}
 	hash[hindex] = hp;
 	count++;
@@ -429,17 +428,17 @@ int AddHash( char *index, char *index_area, int num, unsigned short doc, unsigne
 }
 
 int AddHash2( char *index, char *index_area, int num, unsigned short doc, unsigned short point, strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚É“o˜^‚·‚é2iˆ³kƒ‚[ƒhj
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½2ï¿½iï¿½ï¿½ï¿½kï¿½ï¿½ï¿½[ï¿½hï¿½j
 {
 	unsigned int hindex;
 	strHList2 *hp;
 
-	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// –ÊÏ“Á’¥—Ê‚Ì—˜—p
+	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Ì—ï¿½ï¿½p
 	else			hindex = HashFunc( index, num );
 	hp = (strHList2 *)malloc(sizeof(*hp));
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->dat = MakeHList2Dat( doc, point, index, index_area );
-	if ( hp->dat == NULL )	return 0;
+	if ( hp->dat == NULL)	return 0;
 	hp->next = hash2[hindex];
 	hash2[hindex] = hp;
 	count++;
@@ -450,32 +449,32 @@ int AddHash2( char *index, char *index_area, int num, unsigned short doc, unsign
 }
 
 HENTRY MakeHashEntry( int doc, int point )
-// ƒnƒbƒVƒ…‚ÌƒGƒ“ƒgƒŠ‚ğƒrƒbƒg‘€ì‚Åì¬
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ÌƒGï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½rï¿½bï¿½gï¿½ï¿½ï¿½ï¿½Åì¬
 {
 	return ((HENTRY)doc) << ePointBit | ((HENTRY)point);
 }
 
 void ReadHashEntry( HENTRY *phe, int *p_doc, int *p_point )
-// ƒnƒbƒVƒ…‚ÌƒGƒ“ƒgƒŠ‚©‚çƒrƒbƒg‘€ì‚ÅID‚ğæ“¾
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ÌƒGï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½rï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½IDï¿½ï¿½ï¿½æ“¾
 {
 	*p_point = (int)(*phe & ((1 << ePointBit) - 1));
 	*p_doc = (int)((*phe >> ePointBit) & ((1 << eDocBit) - 1));
 }
 
 int AddHash3( char *index, char *index_area, int num, int doc, int point, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚É“o˜^‚·‚é3iƒnƒbƒVƒ…ƒŠƒXƒg‚È‚µƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½3ï¿½iï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned int hindex;
 
-	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// –ÊÏ“Á’¥—Ê‚Ì—˜—p
+	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Ì—ï¿½ï¿½p
 	else			hindex = HashFunc( index, num );
 	switch ( hash3[hindex] ) {
-		case kInvalidEntry:	// Õ“Ë‚É‚æ‚è“o˜^•s‰Â
+		case kInvalidEntry:	// ï¿½Õ“Ë‚É‚ï¿½ï¿½oï¿½^ï¿½sï¿½ï¿½
 			break;
-		case kFreeEntry:	// ‹ó‚«
+		case kFreeEntry:	// ï¿½ï¿½
 			hash3[hindex] = MakeHashEntry( doc, point );
 			break;
-		default:	// “o˜^Ï‚İiÕ“Ë”­¶j
+		default:	// ï¿½oï¿½^ï¿½Ï‚İiï¿½Õ“Ë”ï¿½ï¿½ï¿½ï¿½j
 			hash3[hindex] = kInvalidEntry;
 			break;
 	}
@@ -484,7 +483,7 @@ int AddHash3( char *index, char *index_area, int num, int doc, int point, HENTRY
 }
 
 void PrintHash( strHList **hash )
-// ƒnƒbƒVƒ…‚Ìƒf[ƒ^‚ğ‰æ–Ê‚Éo—Í‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½Ê‚Éoï¿½Í‚ï¿½ï¿½ï¿½
 {
 	unsigned int i;
 	int j;
@@ -499,14 +498,14 @@ void PrintHash( strHList **hash )
 				for ( j = 0; j < eNumCom2; j++ ) printf("%02x", hp->idx[j]);
 				printf(", ");
 				hp = hp->next;
-			} while ( hp != NULL );
+			} while ( hp != NULL);
 		printf("\n");
 		}
 	}
 }
 
 void PrintHash2( strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚Ìƒf[ƒ^‚ğ‰æ–Ê‚Éo—Í‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½Ê‚Éoï¿½Í‚ï¿½ï¿½ï¿½
 {
 	unsigned int i;
 	int j;
@@ -530,7 +529,7 @@ void PrintHash2( strHList2 **hash2 )
 				}
 				printf(", ");
 				hp = hp->next;
-			} while ( hp != NULL );
+			} while ( hp != NULL);
 		printf("\n");
 		}
 	}
@@ -539,25 +538,25 @@ void PrintHash2( strHList2 **hash2 )
 }
 
 strHList **InitHash( void )
-// ƒnƒbƒVƒ…‚ğŠm•Û1
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½1
 {
 	int i;
 	strHList **hash = NULL;
 
 	count = 0;
 	hash = (strHList **)malloc( sizeof(strHList *)*kHashSize );
-	if ( hash == NULL )	return NULL;
+	if (hash == NULL)	return NULL;
 	for ( i = 0; i < kHashSize; i++ )	hash[i] = NULL;
 	return hash;
 }
 
 void ReleaseHash( strHList **hash )
-// ƒnƒbƒVƒ…‚ğ‰ğ•ú1
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
 {
 	int i;
 	strHList *hp, *next;
 
-	if ( hash == NULL )	return;
+	if (hash == NULL)	return;
 	for ( i = 0; i < kHashSize; i++ ) {
 		for ( hp = hash[i]; hp != NULL; hp = next ) {
 			next = hp->next;
@@ -569,25 +568,25 @@ void ReleaseHash( strHList **hash )
 }
 
 strHList2 **InitHash2( void )
-// ƒnƒbƒVƒ…‚ğŠm•Û2
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½2
 {
 	int i;
 	strHList2 **hash2 = NULL;
 
 	count = 0;
 	hash2 = (strHList2 **)malloc( sizeof(strHList2 *)*kHashSize );
-	if ( hash2 == NULL )	return NULL;
+	if (hash2 == NULL)	return NULL;
 	for ( i = 0; i < kHashSize; i++ )	hash2[i] = NULL;
 	return hash2;
 }
 
 void ReleaseHash2( strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚ğ‰ğ•ú2
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2
 {
 	int i;
 	strHList2 *hp, *next;
 
-	if ( hash2 == NULL )	return;
+	if (hash2 == NULL)	return;
 	for ( i = 0; i < kHashSize; i++ ) {
 		for ( hp = hash2[i]; hp != NULL; hp = next ) {
 			next = hp->next;
@@ -599,28 +598,28 @@ void ReleaseHash2( strHList2 **hash2 )
 }
 
 HENTRY *InitHash3( void )
-// ƒŠƒXƒg‚È‚µƒ‚[ƒh‚ÅƒnƒbƒVƒ…‚ğ‰Šú‰»‚·‚é
+// ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Åƒnï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i;
 	HENTRY *hash3 = NULL;
 
-	if ( hash3 != NULL )	free( hash3 );
+	if ( hash3 != NULL)	free( hash3 );
 	hash3 = (HENTRY *)calloc( kHashSize, sizeof(HENTRY) );
-	if ( hash3 == NULL )	return NULL;
+	if (hash3 == NULL)	return NULL;
 	for ( i = 0; i < kHashSize; i++ )	hash3[i] = kFreeEntry;
 
 	return hash3;
 }
 
 void ReleaseHash3( HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚ğ‰ğ•ú3
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½3
 {
-	if ( hash3 != NULL )	free( hash3 );
+	if ( hash3 != NULL)	free( hash3 );
 	return;
 }
 
 void GetMinHindex( char **hindex_array, char *hindex )
-// Å¬‚ÌƒnƒbƒVƒ…ƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ß‚é
+// ï¿½Åï¿½ï¿½Ìƒnï¿½bï¿½Vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	int i, j, min = 0;
 
@@ -639,18 +638,18 @@ void GetMinHindex( char **hindex_array, char *hindex )
 }
 
 int RefineHash( strHList **hash )
-// Õ“Ë‚Ì‘½‚¢€–Ú‚ğœ‹‚·‚éi”ñˆ³kƒo[ƒWƒ‡ƒ“j
+// ï¿½Õ“Ë‚Ì‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ñˆ³kï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned long i, len, removed, remain;
 	strHList *hl, *next_hl;
 	
 	for ( i = 0, removed = 0, remain = 0; i < kHashSize; i++ ) {
-		if ( (hl = hash[i]) != NULL ) {	// 1‚ÂˆÈã“o˜^‚³‚ê‚Ä‚¢‚é
-			// Õ“Ë‚Ì”‚ğƒJƒEƒ“ƒg
+		if ( (hl = hash[i]) != NULL ) {	// 1ï¿½ÂˆÈï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+			// ï¿½Õ“Ë‚Ìï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½g
 			for ( len = 0; hl != NULL; hl = hl->next ) {
 				len++;
 			}
-			if ( len > eMaxHashCollision ) {	// Õ“Ë‚ªÅ‘å”‚ğ’´‰ß
+			if ( len > eMaxHashCollision ) {	// ï¿½Õ“Ë‚ï¿½ï¿½Å‘å”ï¿½ğ’´‰ï¿½
 				for ( hl = hash[i]; hl != NULL; ) {
 					next_hl = hl->next;
 					free( hl->idx );
@@ -672,18 +671,18 @@ int RefineHash( strHList **hash )
 }
 
 int RefineHash2( strHList2 **hash2 )
-// Õ“Ë‚Ì‘½‚¢€–Ú‚ğœ‹‚·‚éiˆ³kƒo[ƒWƒ‡ƒ“j
+// ï¿½Õ“Ë‚Ì‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½kï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned long i, len, removed, remain;
 	strHList2 *hl, *next_hl;
 	
 	for ( i = 0, removed = 0, remain = 0; i < kHashSize; i++ ) {
-		if ( (hl = hash2[i]) != NULL ) {	// 1‚ÂˆÈã“o˜^‚³‚ê‚Ä‚¢‚é
-			// Õ“Ë‚Ì”‚ğƒJƒEƒ“ƒg
+		if ( (hl = hash2[i]) != NULL ) {	// 1ï¿½ÂˆÈï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+			// ï¿½Õ“Ë‚Ìï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½g
 			for ( len = 0; hl != NULL; hl = hl->next ) {
 				len++;
 			}
-			if ( len > eMaxHashCollision ) {	// Õ“Ë‚ªÅ‘å”‚ğ’´‰ß
+			if ( len > eMaxHashCollision ) {	// ï¿½Õ“Ë‚ï¿½ï¿½Å‘å”ï¿½ğ’´‰ï¿½
 				for ( hl = hash2[i]; hl != NULL; ) {
 					next_hl = hl->next;
 					free( hl->dat );
@@ -705,16 +704,16 @@ int RefineHash2( strHList2 **hash2 )
 }
 
 int AddHashArea( char *index, char *index_area, int num, unsigned short doc, unsigned short point, strHList2 **hash2 )
-// ƒnƒbƒVƒ…‚É“o˜^‚·‚éi–ÊÏƒo[ƒWƒ‡ƒ“j
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½iï¿½ÊÏƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	unsigned int hindex;
 	strHList2 *hp;
 
 	hindex = HashFuncArea( index, index_area, num );
 	hp = (strHList2 *)malloc(sizeof(*hp));
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->dat = MakeHList2Dat( doc, point, index, index_area );
-	if ( hp->dat == NULL )	return 0;
+	if ( hp->dat == NULL)	return 0;
 	hp->next = hash2[hindex];
 	hash2[hindex] = hp;
 	count++;

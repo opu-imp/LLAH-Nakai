@@ -1,16 +1,16 @@
-typedef struct _strDiv {	// •ªŠ„—Ìˆæ
-	int xindex;	// x²‚ÌƒCƒ“ƒfƒbƒNƒX
-	int yindex;	// y²‚ÌƒCƒ“ƒfƒbƒNƒX
-	double dist;	// ’–Ú‚µ‚Ä‚¢‚é“Á’¥“_‚Æ‚ÌÅ¬‹——£
+typedef struct _strDiv {	// ï¿½ï¿½ï¿½ï¿½ï¿½Ìˆï¿½
+	int xindex;	// xï¿½ï¿½ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+	int yindex;	// yï¿½ï¿½ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+	double dist;	// ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‚ÌÅï¿½ï¿½ï¿½ï¿½ï¿½
 } strDiv;
 
-typedef struct _strPointDist {	// ƒ\[ƒg‚Ì‚½‚ß‚Ì“Á’¥“_‚Æ‹——£‚Ì\‘¢‘Ì
-	int pindex;	// “_‚ÌƒCƒ“ƒfƒbƒNƒX
-	double	dist;	// “_‚Ü‚Å‚Ì‹——£
+typedef struct _strPointDist {	// ï¿½\ï¿½[ï¿½gï¿½Ì‚ï¿½ï¿½ß‚Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‹ï¿½ï¿½ï¿½ï¿½Ì\ï¿½ï¿½ï¿½ï¿½
+	int pindex;	// ï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+	double	dist;	// ï¿½_ï¿½Ü‚Å‚Ì‹ï¿½ï¿½ï¿½
 } strPointDist;
 
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 );
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] );
-void MakeNearsFromCentresDiv( CvPoint *ps, int pnum, CvSize *size, int tx, int ty, int kn, int ***nears0 );
-double CalcDivDist( CvPoint pt1, CvSize *size, int tx, int ty, int x, int y, int div_x, int div_y );
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 );
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] );
+void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, int ty, int kn, int ***nears0 );
+double CalcDivDist( cv::Point pt1, cv::Size *size, int tx, int ty, int x, int y, int div_x, int div_y );
 void MergePointDist( strPointDist *tmp0, int t0num, strPointDist *tmp1, int t1num, int kn, strPointDist **merge0, int *mnum0 );

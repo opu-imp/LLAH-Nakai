@@ -1,42 +1,40 @@
 #include "def_general.h"
 #include <stdio.h>
 #include <math.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 
 #include "f_points.h"
 #include "dirs.h"
 
-int MakeFeaturePointsFromImage(CvPoint **ps, IplImage *img, CvSize *size)
-// •Â—Ìˆæ‚©‚ç“Á’¥“_‚ð“¾‚é
+int MakeFeaturePointsFromImage(cv::Point **ps, cv::Mat img, cv::Size *size)
+// ï¿½Â—Ìˆæ‚©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ð“¾‚ï¿½
 {
 	int i, num = 0;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    IplImage *bin, *p;
-	CvSeq *contours = 0;
+    std::vector<std::vector<cv::Point>> contours;
 
-	size->width = img->width;
-	size->height = img->height;
+    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    cv::Mat bin, p;
 
-	bin = cvCreateImage( cvSize(size->width, size->height), 8, 1 );
-//	cvAdaptiveThreshold( img, bin, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 31, 10 );
-	cvAdaptiveThreshold( img, bin, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 101, 10 );
+	size->width = img.cols;
+	size->height = img.rows;
+
+	bin = cv::Mat::zeros(cv::Size(size->width, size->height), CV_8UC1);
+//	cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 31, 10 );
+	cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 10 );
 	OutPutImage( bin );
-	cvFloodFill( bin, cvPoint(300,300), cBlack, cvScalarAll(0), cvScalarAll(0), NULL, 4, NULL );
+	cv::floodFill(bin, cv::Point(300,300), cBlack, nullptr, cv::Scalar::all(0), cv::Scalar::all(0), 4);
 	OutPutImage( bin );
-    cvFindContours( bin, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0) );	// ˜AŒ‹¬•ª‚ð’Šo‚·‚é
+    cv::findContours(bin, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ð’Šoï¿½ï¿½ï¿½ï¿½
 
-	num = CalcCentres(ps, contours, size, NULL);	// Še˜AŒ‹¬•ª‚ÌdS‚ðŒvŽZ‚·‚é
+	num = CalcCentres(ps, contours, size, NULL);	// ï¿½eï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 
-	p = cvCreateImage( cvSize(size->width, size->height), 8, 1 );
+	p = cv::Mat::zeros(cv::Size(size->width, size->height), CV_8UC1);
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( p, (*ps)[i], 8, cWhite, -1, 8, 0 );
+		cv::circle( p, (*ps)[i], 8, cWhite, -1, 8, 0 );
 	}
 //	printf("%d\n", num);
 	OutPutImage( p );
-	if ( contours != NULL )	cvClearSeq( contours );
-	cvReleaseMemStorage( &storage );
 
 	return num;
 }

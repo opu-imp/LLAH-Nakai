@@ -1,6 +1,6 @@
 #include "def_general.h"
 #include <stdio.h>
-#include <time.h>	// —”—p
+#include <time.h>	// ï¿½ï¿½ï¿½ï¿½ï¿½p
 #ifdef	WIN32
 #include <windows.h>
 #include <mmsystem.h>
@@ -8,8 +8,7 @@
 #else
 #include <glob.h>
 #endif
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "hash.h"
@@ -56,7 +55,7 @@ int VoteDirectlyByHL2( strHList2 *hl, int *score, char *idx, char *idx_area, int
 
 /*
 int cr2hindex(double cr)
-// •¡”ä‚Ì’l‚ğƒnƒbƒVƒ…‚Ég‚¤Å‘å’lkHashNum‚Ì’l‚É•ÏŠ·‚·‚é
+// ï¿½ï¿½ï¿½ï¿½Ì’lï¿½ï¿½ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Égï¿½ï¿½ï¿½Å‘ï¿½lkHashNumï¿½Ì’lï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	unsigned int crint;
 	crint = (unsigned int)((cr/(kErrorNN5CR*2)) + 0.5);
@@ -84,7 +83,7 @@ unsigned int RealIndex(int *hindex, int num)
 }
 
 unsigned int HIndexCnv(int *hindex, int num)
-// ”z—ñ‚ÌŒ`‚ÌƒnƒbƒVƒ…ƒCƒ“ƒfƒbƒNƒX‚ğ•ÏŠ·‚·‚é
+// ï¿½zï¿½ï¿½ÌŒ`ï¿½Ìƒnï¿½bï¿½Vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i;
 	unsigned int ret = 0;
@@ -98,19 +97,19 @@ unsigned int HIndexCnv(int *hindex, int num)
 }
 
 void SetCom1( int i, int j, int n )
-// com1‚Ìisj—ñ‚Én‚ğ“ü‚ê‚éDgetcomb—p
+// com1ï¿½ï¿½iï¿½sjï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Dgetcombï¿½p
 {
 	com1[i][j] = n;
 }
 
 void SetCom2( int i, int j, int n )
-// com2‚Ìisj—ñ‚Én‚ğ“ü‚ê‚éDgetcomb—p
+// com2ï¿½ï¿½iï¿½sjï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Dgetcombï¿½p
 {
 	com2[i][j] = n;
 }
 
 int IsDat( char *str )
-// str‚Ì––”ö‚ª.dat‚©’²‚×‚é
+// strï¿½Ì–ï¿½ï¿½ï¿½ï¿½ï¿½.datï¿½ï¿½ï¿½ï¿½ï¿½×‚ï¿½
 {
 	int i, last_dot = -1;
 	
@@ -123,7 +122,7 @@ int IsDat( char *str )
 }
 
 int IsTxt( char *str )
-// str‚Ì––”ö‚ª.txt‚©’²‚×‚é
+// strï¿½Ì–ï¿½ï¿½ï¿½ï¿½ï¿½.txtï¿½ï¿½ï¿½ï¿½ï¿½×‚ï¿½
 {
 	int i, last_dot = -1;
 	
@@ -135,8 +134,8 @@ int IsTxt( char *str )
 	else	return 0;
 }
 
-int RetrieveNN52( CvPoint *ps, double *areas, int num, int *nears[], CvSize size, int *score, strDisc *disc, int *reg_nums, int *ret_time, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚é
+int RetrieveNN52( cv::Point *ps, double *areas, int num, int *nears[], cv::Size size, int *score, strDisc *disc, int *reg_nums, int *ret_time, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, max_score = 0, max_doc = 0;
 //	DWORD start, end;
@@ -144,26 +143,26 @@ int RetrieveNN52( CvPoint *ps, double *areas, int num, int *nears[], CvSize size
 	char line[kMaxLineLen];
 	int pn;
 
-	// ‘g‚İ‡‚í‚¹‚Ìì¬
+	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-	// “_‘Î‰ƒe[ƒuƒ‹‚Ìì¬
+	// ï¿½_ï¿½Î‰ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 	ClearCorres();
-	// flag2‚Ì‰Šú‰»
+	// flag2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	ClearFlag2();
 //	start = timeGetTime();
 	start = GetProcTimeMicroSec();
 	if ( eRotateOnce )
-		CalcScore4( ps, areas, num, nears, score, disc, hash, hash2, hash3 );	// ŒŸõ **CalcScore4‚É•ÏX** 07/05/29
+		CalcScore4( ps, areas, num, nears, score, disc, hash, hash2, hash3 );	// ï¿½ï¿½ï¿½ï¿½ **CalcScore4ï¿½É•ÏX** 07/05/29
 	else
 		CalcScore3( ps, areas, num, nears, score, disc, hash, hash2, hash3 );
-//	CheckByPPVar( ps, num, score );	// Ë‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚Ì•ªU‚Åƒ`ƒFƒbƒN
+//	CheckByPPVar( ps, num, score );	// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•ï¿½ï¿½Uï¿½Åƒ`ï¿½Fï¿½bï¿½N
 //	end = timeGetTime();
 	end = GetProcTimeMicroSec();
 //	printf("retrieval time : %d\n", end - start);
-	if ( !eExperimentMode )	printf("retrieval time : %dƒÊs\n", end - start);
+	if ( !eExperimentMode )	printf("retrieval time : %dï¿½ï¿½s\n", end - start);
 	*ret_time = end - start;
 	for ( i = 0; i < eDbDocs; i++ ) {
-		score[i] = (int)((double)score[i] - (double)reg_nums[i] * eProp);	// CBDAR‚Å‚Ì•â³
+		score[i] = (int)((double)score[i] - (double)reg_nums[i] * eProp);	// CBDARï¿½Å‚Ì•â³
 	}
 
 	for ( i = 0; i < eDbDocs; i++ ) {
@@ -175,8 +174,8 @@ int RetrieveNN52( CvPoint *ps, double *areas, int num, int *nears[], CvSize size
 	return max_doc;
 }
 
-int RetrieveNN5Cor2(CvPoint *ps, double *areas, int num, int *nears[], CvSize size, int *score, int pcor[][2], int *pcornum0, strDisc *disc, int *reg_nums, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚éi‘Î‰“_‚ğ•Ô‚·ƒo[ƒWƒ‡ƒ“j2
+int RetrieveNN5Cor2(cv::Point *ps, double *areas, int num, int *nears[], cv::Size size, int *score, int pcor[][2], int *pcornum0, strDisc *disc, int *reg_nums, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Î‰ï¿½ï¿½_ï¿½ï¿½Ô‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j2
 {
 	int i, j, max_score = 0, max_doc = 0, second_score = 0, second_doc = 0;
 	int start, end;
@@ -190,22 +189,22 @@ int RetrieveNN5Cor2(CvPoint *ps, double *areas, int num, int *nears[], CvSize si
 	end = GetProcTimeMiliSec();
 //	printf("ret_init : %dms\n", end - start);
 	start = GetProcTimeMiliSec();
-	if ( eRotateOnce )	CalcScore4(ps, areas, num, nears, score, disc, hash, hash2, hash3);	// ŒŸõ
+	if ( eRotateOnce )	CalcScore4(ps, areas, num, nears, score, disc, hash, hash2, hash3);	// ï¿½ï¿½ï¿½ï¿½
 	else				CalcScore3(ps, areas, num, nears, score, disc, hash, hash2, hash3);
 	end = GetProcTimeMiliSec();
 //	printf("ret_main : %dms\n", end - start);
-//	eProp = 0.0;	// ƒXƒRƒA“¾•[”‚É‚·‚é
+//	eProp = 0.0;	// ï¿½Xï¿½Rï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
-		score[i] = (int)((double)score[i] - (double)reg_nums[i] * eProp);	// CBDAR‚Å‚Ì•â³
+		score[i] = (int)((double)score[i] - (double)reg_nums[i] * eProp);	// CBDARï¿½Å‚Ì•â³
 	}
-	// “¾•[”Å‘å‚Ì‚à‚Ì‚ğ’T‚·
+	// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Å‘ï¿½Ì‚ï¿½ï¿½Ì‚ï¿½Tï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
 		if ( score[i] > max_score ) {
 			max_doc = i;
 			max_score = score[i];
 		}
 	}
-	// ‘Î‰“_‚ğŠi”[‚·‚é
+	// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0, j = 0; i < num; i++ ) {
 		if ( corres[i][max_doc] >= 0 )	{
 			pcor[j][0] = i;
@@ -218,8 +217,8 @@ int RetrieveNN5Cor2(CvPoint *ps, double *areas, int num, int *nears[], CvSize si
 	return max_doc;
 }
 
-int RetrieveNN5CorAll(CvPoint *ps, double *areas, int num, int *nears[], CvSize size, int *score, int pcors[][kMaxPointNum][2], int *pcornums, strDisc *disc, int *reg_nums, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚éi‚·‚×‚Ä‚Ì•¶‘‚Ö‚Ì‘Î‰“_‚ğ•Ô‚·ƒo[ƒWƒ‡ƒ“j
+int RetrieveNN5CorAll(cv::Point *ps, double *areas, int num, int *nears[], cv::Size size, int *score, int pcors[][kMaxPointNum][2], int *pcornums, strDisc *disc, int *reg_nums, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½×‚Ä‚Ì•ï¿½ï¿½ï¿½ï¿½Ö‚Ì‘Î‰ï¿½ï¿½_ï¿½ï¿½Ô‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	int i, j, max_score = 0, max_doc = 0, second_score = 0, second_doc = 0;
 	int start, end;
@@ -233,22 +232,22 @@ int RetrieveNN5CorAll(CvPoint *ps, double *areas, int num, int *nears[], CvSize 
 	end = GetProcTimeMiliSec();
 //	printf("ret_init : %dms\n", end - start);
 	start = GetProcTimeMiliSec();
-	if ( eRotateOnce )	CalcScore4(ps, areas, num, nears, score, disc, hash, hash2, hash3);	// ŒŸõ
+	if ( eRotateOnce )	CalcScore4(ps, areas, num, nears, score, disc, hash, hash2, hash3);	// ï¿½ï¿½ï¿½ï¿½
 	else				CalcScore3(ps, areas, num, nears, score, disc, hash, hash2, hash3);
 	end = GetProcTimeMiliSec();
 //	printf("ret_main : %dms\n", end - start);
-//	eProp = 0.0;	// ƒXƒRƒA“¾•[”‚É‚·‚é
+//	eProp = 0.0;	// ï¿½Xï¿½Rï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
-		score[i] = (int)((double)score[i] - (double)reg_nums[i] * eProp);	// CBDAR‚Å‚Ì•â³
+		score[i] = (int)((double)score[i] - (double)reg_nums[i] * eProp);	// CBDARï¿½Å‚Ì•â³
 	}
-	// “¾•[”Å‘å‚Ì‚à‚Ì‚ğ’T‚·
+	// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Å‘ï¿½Ì‚ï¿½ï¿½Ì‚ï¿½Tï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
 		if ( score[i] > max_score ) {
 			max_doc = i;
 			max_score = score[i];
 		}
 	}
-	// ‘Î‰“_‚ğŠi”[‚·‚é
+	// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < kMaxDocNum; i++ )	pcornums[i] = 0;
 	for ( i = 0; i < num; i++ ) {
 		for ( j = 0; j < eDbDocs; j++ ) {
@@ -263,8 +262,8 @@ int RetrieveNN5CorAll(CvPoint *ps, double *areas, int num, int *nears[], CvSize 
 	return max_doc;
 }
 
-int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚é
+int RetrieveNN5(cv::Point *ps, int num, int *nears[], cv::Size size, int *score, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, max_score = 0, max_doc = 0;
 	strDisc disc;
@@ -274,37 +273,37 @@ int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, str
 	char line[kMaxLineLen];
 	int pn;
 
-	// ‘g‚İ‡‚í‚¹‚Ìì¬
+	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-	// “_‘Î‰ƒe[ƒuƒ‹‚Ìì¬
+	// ï¿½_ï¿½Î‰ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 	for ( i = 0; i < kMaxPointNum; i++ ) {
 		for ( j = 0; j < kMaxDocNum; j++ ) {
 			corres[i][j] = -1;
 		}
 	}
-	// flag2‚Ì‰Šú‰»
+	// flag2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < kMaxDocNum; i++ ) {
 		for ( j = 0; j < kMaxPointNum; j++ ) {
 			flag2[i][j] = 0;
 		}
 	}
-	LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒe[ƒuƒ‹‚Ìì¬
+	LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 //	start = timeGetTime();
 	start = GetProcTimeMicroSec();
 	if ( eRotateOnce )	CalcScore4( ps, NULL, num, nears, score, &disc, hash, hash2, hash3 );
-	else				CalcScore3( ps, NULL, num, nears, score, &disc, hash, hash2, hash3 );	// ŒŸõ
-//	CheckByPPVar( ps, num, score );	// Ë‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚Ì•ªU‚Åƒ`ƒFƒbƒN
+	else				CalcScore3( ps, NULL, num, nears, score, &disc, hash, hash2, hash3 );	// ï¿½ï¿½ï¿½ï¿½
+//	CheckByPPVar( ps, num, score );	// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•ï¿½ï¿½Uï¿½Åƒ`ï¿½Fï¿½bï¿½N
 //	end = timeGetTime();
 	end = GetProcTimeMicroSec();
 //	printf("retrieval time : %d\n", end - start);
-	printf("retrieval time : %dƒÊs\n", end - start);
+	printf("retrieval time : %dï¿½ï¿½s\n", end - start);
 	fpp = fopen( "prob.txt", "w" );
 	fp = fopen( ePNFileName, "r" );
 	for ( i = 0; i < kMaxDocNum; i++ ) {
 		fgets(line, kMaxLineLen, fp );
 		sscanf(line, "%d", &pn);
 		fprintf(fpp, "%d,%d\n", pn, score[i]);
-		score[i] = (int)((double)score[i] - (double)pn * eProp);	// CBDAR‚Å‚Ì•â³
+		score[i] = (int)((double)score[i] - (double)pn * eProp);	// CBDARï¿½Å‚Ì•â³
 //		score[i] = (int)((double)score[i] * (double)kMaxPointNum / (double)(pn+800));
 //		score[i] = (int)((double)score[i] * (double)kMaxPointNum / sqrt(pn));
 	}
@@ -321,8 +320,8 @@ int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, str
 	return max_doc;
 }
 
-int RetrieveNN5Cor(CvPoint *ps, int num, int *nears[], CvSize size, int *score, int pcor[][2], int *pcornum0, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚éi‘Î‰“_‚ğ•Ô‚·ƒo[ƒWƒ‡ƒ“j
+int RetrieveNN5Cor(cv::Point *ps, int num, int *nears[], cv::Size size, int *score, int pcor[][2], int *pcornum0, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Î‰ï¿½ï¿½_ï¿½ï¿½Ô‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	int i, j, max_score = 0, max_doc = 0;
 	int start, end;
@@ -332,46 +331,46 @@ int RetrieveNN5Cor(CvPoint *ps, int num, int *nears[], CvSize size, int *score, 
 	int pn;
 
 	start = GetProcTimeMiliSec();
-	// ‘g‚İ‡‚í‚¹‚Ìì¬
+	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
 //	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-	// “_‘Î‰ƒe[ƒuƒ‹‚Ìì¬
+	// ï¿½_ï¿½Î‰ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 //	for ( i = 0; i < kMaxPointNum; i++ ) {
 //		for ( j = 0; j < kMaxDocNum; j++ ) {
 //			corres[i][j] = -1;
 //		}
 //	}
 	memset( (void *)corres, 0xff, sizeof(int) * num * kMaxDocNum );
-	// flag2‚Ì‰Šú‰»
+	// flag2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 //	for ( i = 0; i < kMaxDocNum; i++ ) {
 //		for ( j = 0; j < kMaxPointNum; j++ ) {
 //			flag2[i][j] = 0;
 //		}
 //	}
 	memset( (void *)flag2, 0x00, sizeof(char) * eDbDocs * kMaxPointNum );
-//	LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒe[ƒuƒ‹‚Ìì¬
+//	LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 	end = GetProcTimeMiliSec();
 //	printf("ret_init : %dms\n", end - start);
 	start = GetProcTimeMiliSec();
-	if ( eRotateOnce )	CalcScore4(ps, NULL, num, nears, score, disc, hash, hash2, hash3);	// ŒŸõ
-	else				CalcScore3(ps, NULL, num, nears, score, disc, hash, hash2, hash3);	// ŒŸõ
+	if ( eRotateOnce )	CalcScore4(ps, NULL, num, nears, score, disc, hash, hash2, hash3);	// ï¿½ï¿½ï¿½ï¿½
+	else				CalcScore3(ps, NULL, num, nears, score, disc, hash, hash2, hash3);	// ï¿½ï¿½ï¿½ï¿½
 	end = GetProcTimeMiliSec();
 //	printf("ret_main : %dms\n", end - start);
 	fp = fopen( ePNFileName, "r" );
-//	eProp = 0.0;	// ƒXƒRƒA“¾•[”‚É‚·‚é
+//	eProp = 0.0;	// ï¿½Xï¿½Rï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 	for ( i = 0; i < kMaxDocNum; i++ ) {
 		fgets(line, kMaxLineLen, fp );
 		sscanf(line, "%d", &pn);
-		score[i] = (int)((double)score[i] - (double)pn * eProp);	// CBDAR‚Å‚Ì•â³
+		score[i] = (int)((double)score[i] - (double)pn * eProp);	// CBDARï¿½Å‚Ì•â³
 	}
 	fclose(fp);
-	// “¾•[”Å‘å‚Ì‚à‚Ì‚ğ’T‚·
+	// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Å‘ï¿½Ì‚ï¿½ï¿½Ì‚ï¿½Tï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
 		if ( score[i] > max_score ) {
 			max_doc = i;
 			max_score = score[i];
 		}
 	}
-	// ‘Î‰“_‚ğŠi”[‚·‚é
+	// ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0, j = 0; i < num; i++ ) {
 		if ( corres[i][max_doc] >= 0 )	{
 			pcor[j][0] = i;
@@ -383,12 +382,12 @@ int RetrieveNN5Cor(CvPoint *ps, int num, int *nears[], CvSize size, int *score, 
 	return max_doc;
 }
 
-int RetrieveAndRecover(CvPoint *ps, int num, int *nears[], CvSize size, char *img_fname, int mode, strHList **hash, strHList2 **hash2, HENTRY *hash3)
-// ƒnƒbƒVƒ…‚©‚çŒŸõ‚·‚é
+int RetrieveAndRecover(cv::Point *ps, int num, int *nears[], cv::Size size, char *img_fname, int mode, strHList **hash, strHList2 **hash2, HENTRY *hash3)
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½çŒŸï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int score[kMaxDocNum], i, max_score = 0, max_doc = 0;
 //	DWORD start, end;
-	IplImage *img, *exp;
+	cv::Mat img, exp;
 	strDisc disc;
 
 //	start = timeGetTime();
@@ -409,13 +408,13 @@ int RetrieveAndRecover(CvPoint *ps, int num, int *nears[], CvSize size, char *im
 //	start = timeGetTime();
 	switch ( mode ) {
 		case RETRIEVE_MODE:
-			img = cvLoadImage( img_fname, 0 );
+			img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
             RecovPT(ps, num, max_doc, size, img);
 			break;
 		case RET_MP_MODE:
-			img = cvLoadImage( img_fname, 0 );
-			exp = cvCreateImage( size, 8, 1 );
-			cvResize( img, exp, CV_INTER_CUBIC );
+			img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
+			exp = cv::Mat::zeros(size, CV_8UC1);
+			cv::resize(img, exp, exp.size(), 0, 0, cv::INTER_CUBIC);
 			OutPutImage( exp );
 			RecovPT(ps, num, max_doc, size, exp);
 			break;
@@ -436,7 +435,7 @@ void ClearFlag2( void )
 {
 	int i, j;
 
-	// flag2‚Ì‰Šú‰»
+	// flag2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < kMaxDocNum; i++ ) {
 		for ( j = 0; j < kMaxPointNum; j++ ) {
 			flag2[i][j] = 0;
@@ -448,7 +447,7 @@ void ClearCorres( void )
 {
 	int i, j;
 
-	// “_‘Î‰ƒe[ƒuƒ‹‚Ìì¬
+	// ï¿½_ï¿½Î‰ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìì¬
 	for ( i = 0; i < kMaxPointNum; i++ ) {
 		for ( j = 0; j < kMaxDocNum; j++ ) {
 			corres[i][j] = -1;
@@ -463,9 +462,9 @@ int randps_compare( const strRandPs *a, const strRandPs *b )
 	else	return 0;
 }
 
-void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
-// Še•¶‘‚Ì“¾“_‚ğŒvZ‚»‚Ì3
-// 07/07/23 ‰ñ“]‘“–‚½‚èƒ‚[ƒh‚Ì‚İ‚É•ÏX
+void CalcScore3(cv::Point *ps, double *areas, int num, int *nears[], int *score, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
+// ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½_ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½3
+// 07/07/23 ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½èƒ‚ï¿½[ï¿½hï¿½Ì‚İ‚É•ÏX
 {
 	char *hindex, *hindex_area;
 	int h, i=0, j, k, l, st, tmp, max_vote = 0;
@@ -476,13 +475,13 @@ void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 	strRandPs randps[kMaxPointNum];
 	HENTRY *phe;
 
-	// ‘Å‚¿Ø‚èŠÖŒW
+	// ï¿½Å‚ï¿½ï¿½Ø‚ï¿½ÖŒW
 	if ( eTerminate != TERM_NON ) {
-		for ( i = 0; i < num; i++ ) {	// “_‚ÌƒCƒ“ƒfƒbƒNƒX‚Æ—”‚ğŠi”[
+		for ( i = 0; i < num; i++ ) {	// ï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½Æ—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½[
 			randps[i].pindex = i;
 			randps[i].rand_value = rand();
 		}
-		// ƒ\[ƒg
+		// ï¿½\ï¿½[ï¿½g
 		qsort(randps, num, sizeof(strRandPs), (int(*)(const void*, const void*))randps_compare);
 	}
 
@@ -495,10 +494,10 @@ void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 	for ( i = 0; i < kMaxDocNum; i++ )	score[i] = 0;
 	for ( h = 0; h < num; h++ ) {
 		switch ( eTerminate ) {
-			case TERM_NON:	// ‘Å‚¿Ø‚è‚È‚µ
+			case TERM_NON:	// ï¿½Å‚ï¿½ï¿½Ø‚ï¿½È‚ï¿½
 				i = h;
 				break;
-			case TERM_PNUM:	// “Á’¥“_”
+			case TERM_PNUM:	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½
 				if ( h >= kTermPNum )	goto end_calcscore3_loop;
 				i = randps[h].pindex;
 				break;
@@ -509,11 +508,11 @@ void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 //		ClearPVote();
 		ClearFlag1();
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Šen“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½enï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];
 
-			for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
-                for ( k = 0; k < eNumCom2; k++ ) {	// Šem“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+			for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
+                for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½emï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 //                	if ( eIncludeCentre || eInvType == SIMILAR ) {
                 	if ( eIncludeCentre ) {
 						idxcom2[0] = i;
@@ -532,7 +531,7 @@ void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 							cr = CalcAffineInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]], ps[idxcom2[3]]);
 							break;
 						case SIMILAR:
-//							cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// Šp“x‚ğŒvZ
+//							cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// ï¿½pï¿½xï¿½ï¿½ï¿½vï¿½Z
 							cr = CalcSimilarInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);
 						default:
 							break;
@@ -552,8 +551,8 @@ void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 					hl = ReadHash(hindex, hindex_area, disc->num, hash);
 					max_vote = VoteDirectlyByHL( hl, score, hindex, hindex_area, i );
 				}
-				if ( eTerminate == TERM_VNUM && max_vote >= eTermVNum )	goto end_calcscore3_loop;	// “¾•[”‚É‚æ‚é‘Å‚¿Ø‚è
-				// ‰ñ“]
+				if ( eTerminate == TERM_VNUM && max_vote >= eTermVNum )	goto end_calcscore3_loop;	// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚ï¿½ï¿½Å‚ï¿½ï¿½Ø‚ï¿½
+				// ï¿½ï¿½]
 				tmp = idxcom1[0];
 				for ( k = 0; k < eGroup2Num-1; k++ )	idxcom1[k] = idxcom1[k+1];
 				idxcom1[eGroup2Num-1] = tmp;
@@ -562,7 +561,7 @@ void CalcScore3(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 //		CalcPointCor( i );
 	}
 end_calcscore3_loop:
-//	for ( i = 0; i < kMaxDocNum; i++ ) {	// ƒXƒRƒA‚ÌŠm”F
+//	for ( i = 0; i < kMaxDocNum; i++ ) {	// ï¿½Xï¿½Rï¿½Aï¿½ÌŠmï¿½F
 //		if ( score[i] > 0 ) {
 //			printf("%03d : %d\n", i, score[i]);
 //		}
@@ -575,8 +574,8 @@ end_calcscore3_loop:
 }
 
 
-void CalcScore4(CvPoint *ps, double *areas, int num, int *nears[], int *score, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
-// Še•¶‘‚Ì“¾“_‚ğŒvZ‚»‚Ì4i‰ñ“]ˆê‰ñ‚¾‚¯‰ü—Ç”Åj
+void CalcScore4(cv::Point *ps, double *areas, int num, int *nears[], int *score, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
+// ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½_ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½4ï¿½iï¿½ï¿½]ï¿½ï¿½ñ‚¾‚ï¿½ï¿½ï¿½ï¿½Ç”Åj
 {
 	char *hindex, **hindex_array, *inv_array, *hindex_area;
 	int h, i=0, j, k, l, st, tmp, max_vote = 0, src, dst;
@@ -587,13 +586,13 @@ void CalcScore4(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 	strRandPs randps[kMaxPointNum];
 	HENTRY *phe;
 
-	// ‘Å‚¿Ø‚èŠÖŒW
+	// ï¿½Å‚ï¿½ï¿½Ø‚ï¿½ÖŒW
 	if ( eTerminate != TERM_NON ) {
-		for ( i = 0; i < num; i++ ) {	// “_‚ÌƒCƒ“ƒfƒbƒNƒX‚Æ—”‚ğŠi”[
+		for ( i = 0; i < num; i++ ) {	// ï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½Æ—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½[
 			randps[i].pindex = i;
 			randps[i].rand_value = rand();
 		}
-		// ƒ\[ƒg
+		// ï¿½\ï¿½[ï¿½g
 		qsort(randps, num, sizeof(strRandPs), (int(*)(const void*, const void*))randps_compare);
 	}
 
@@ -603,16 +602,16 @@ void CalcScore4(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 	idxcom1 = (int *)calloc( eGroup2Num, sizeof(int) );
 	idxcom1bak = (int *)calloc( eGroup2Num, sizeof(int) );
 	idxcom2 = (int *)calloc( eGroup3Num, sizeof(int) );
-	// ‰ñ“]•s•ÏE‰ü—Ç”Å
+	// ï¿½ï¿½]ï¿½sï¿½ÏEï¿½ï¿½ï¿½Ç”ï¿½
 	inv_array = (char *)calloc( eGroup2Num, sizeof(char) );
 
 	for ( i = 0; i < kMaxDocNum; i++ )	score[i] = 0;
 	for ( h = 0; h < num; h++ ) {
 		switch ( eTerminate ) {
-			case TERM_NON:	// ‘Å‚¿Ø‚è‚È‚µ
+			case TERM_NON:	// ï¿½Å‚ï¿½ï¿½Ø‚ï¿½È‚ï¿½
 				i = h;
 				break;
-			case TERM_PNUM:	// “Á’¥“_”
+			case TERM_PNUM:	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½
 				if ( h >= kTermPNum )	goto end_calcscore4_loop;
 				i = randps[h].pindex;
 				break;
@@ -623,11 +622,11 @@ void CalcScore4(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 //		ClearPVote();
 		ClearFlag1();
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Šen“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
-			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];	// m“_‚Ì’Šo
-			// ŠJn“_‚ÌŒˆ’è
-			for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
-				switch ( eInvType ) {	// ‘±‚­f“_‚©‚ç•s•Ï—Ê‚ğŒvZ
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½enï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
+			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];	// mï¿½_ï¿½Ì’ï¿½ï¿½o
+			// ï¿½Jï¿½nï¿½_ï¿½ÌŒï¿½ï¿½ï¿½
+			for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
+				switch ( eInvType ) {	// ï¿½ï¿½ï¿½ï¿½fï¿½_ï¿½ï¿½ï¿½ï¿½sï¿½Ï—Ê‚ï¿½ï¿½vï¿½Z
 					case CR_INTER:
 						cr = CalcCR5(ps[idxcom1[st]], ps[idxcom1[(st+1)%eGroup2Num]], ps[idxcom1[(st+2)%eGroup2Num]], ps[idxcom1[(st+3)%eGroup2Num]], ps[idxcom1[(st+4)%eGroup2Num]]);
 						break;
@@ -642,19 +641,19 @@ void CalcScore4(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 					default:
 						break;
 				}
-				inv_array[st] = Con2DiscCR( cr, disc );	// —£U‰»‚µ‚Ä•Û‘¶
+				inv_array[st] = Con2DiscCR( cr, disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½Ä•Û‘ï¿½
 			}
-			st = FindStartPoint( inv_array );	// •s•Ï—Ê‚©‚çŠJn“_‚ğŒ©‚Â‚¯‚é
-			// st‚ğŠJn“_‚Æ‚µ‚Ä‰ñ“]‚³‚¹‚é
+			st = FindStartPoint( inv_array );	// ï¿½sï¿½Ï—Ê‚ï¿½ï¿½ï¿½Jï¿½nï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+			// stï¿½ï¿½ï¿½Jï¿½nï¿½_ï¿½Æ‚ï¿½ï¿½Ä‰ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			for ( k = 0; k < eGroup2Num; k++ ) {
 				idxcom1bak[k] = idxcom1[k];
 			}
 			for ( k = 0; k < eGroup2Num; k++ ) {
 				idxcom1[k] = idxcom1bak[(k+st) % eGroup2Num];
 			}
-			// ˆÈã‚Å‰ñ“]•s•Ïˆ—‚ÍŠ®—¹
-			for ( k = 0; k < eNumCom2; k++ ) {	// Šem“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
-				// ’FeIncludeCentre‚Ì’†S“_‚ğŠÜ‚Şˆ—‚ÍŠO‚µ‚½
+			// ï¿½Èï¿½Å‰ï¿½]ï¿½sï¿½Ïï¿½ï¿½ï¿½ï¿½ÍŠï¿½ï¿½ï¿½
+			for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½emï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
+				// ï¿½ï¿½ï¿½FeIncludeCentreï¿½Ì’ï¿½ï¿½Sï¿½_ï¿½ï¿½ï¿½Ü‚Şï¿½ï¿½ï¿½ï¿½ÍŠOï¿½ï¿½ï¿½ï¿½
 				for ( l = 0; l < eGroup3Num; l++ )	idxcom2[l] = idxcom1[com2[k][l]];
 				switch ( eInvType ) {
 					case CR_INTER:
@@ -701,11 +700,11 @@ void CalcScore4(CvPoint *ps, double *areas, int num, int *nears[], int *score, s
 				}
 			}
 			*/
-			if ( eTerminate == TERM_VNUM && max_vote >= eTermVNum )	goto end_calcscore4_loop;	// “¾•[”‚É‚æ‚é‘Å‚¿Ø‚è
+			if ( eTerminate == TERM_VNUM && max_vote >= eTermVNum )	goto end_calcscore4_loop;	// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚ï¿½ï¿½Å‚ï¿½ï¿½Ø‚ï¿½
 		}
 	}
 end_calcscore4_loop:
-//	for ( i = 0; i < kMaxDocNum; i++ ) {	// ƒXƒRƒA‚ÌŠm”F
+//	for ( i = 0; i < kMaxDocNum; i++ ) {	// ï¿½Xï¿½Rï¿½Aï¿½ÌŠmï¿½F
 //		if ( score[i] > 0 ) {
 //			printf("%03d : %d\n", i, score[i]);
 //		}
@@ -719,11 +718,11 @@ end_calcscore4_loop:
 //	free( hindex_array );
 }
 
-int HaveEnoughSimilarVector( CvPoint start, CvPoint end, int idx )
-// •¶‘idx‚É‚¨‚¢‚Ästart‚ÌüˆÍ‚Éstart->endƒxƒNƒgƒ‹‚Æ‹ß‚¢ƒxƒNƒgƒ‹‚ğ‚Â“_‚ª\•ª‚ ‚é
+int HaveEnoughSimilarVector( cv::Point start, cv::Point end, int idx )
+// ï¿½ï¿½ï¿½ï¿½idxï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½startï¿½Ìï¿½ï¿½Í‚ï¿½start->endï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½Æ‹ß‚ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â“_ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int count = 0;
-	CvPoint v, p, vp;
+	cv::Point v, p, vp;
 	strCorMap *cm;
 
 	v.x = end.x - start.x;
@@ -731,9 +730,9 @@ int HaveEnoughSimilarVector( CvPoint start, CvPoint end, int idx )
 	for ( cm = GetCM(idx); cm != NULL; cm = cm->next ) {
 		p.x = cm->x;
 		p.y = cm->y;
-		if ( cm->cor_num > 1 )	continue;	// ‚Æ‚è‚ ‚¦‚¸2“_ˆÈã‚ ‚é‚Æ‚«‚ÍƒpƒX
+		if ( cm->cor_num > 1 )	continue;	// ï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½2ï¿½_ï¿½Èã‚ ï¿½ï¿½Æ‚ï¿½ï¿½Íƒpï¿½X
 //		printf("%f\n", GetPointsDistance( start, p ));
-		if ( GetPointsDistance( start, p ) > kDistNeighbor ) {	// üˆÍ‚Ì“_‚Å‚È‚¯‚ê‚ÎƒpƒX
+		if ( GetPointsDistance( start, p ) > kDistNeighbor ) {	// ï¿½ï¿½ï¿½Í‚Ì“_ï¿½Å‚È‚ï¿½ï¿½ï¿½Îƒpï¿½X
 //			if ( idx == 3)	printf("neighbor\n");
 			continue;
 		}
@@ -747,27 +746,27 @@ int HaveEnoughSimilarVector( CvPoint start, CvPoint end, int idx )
 	return 0;
 }
 
-/* DrawCor ‹Œƒo[ƒWƒ‡ƒ“ig‚Á‚Ä‚È‚¢Hj
+/* DrawCor ï¿½ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½iï¿½gï¿½ï¿½ï¿½Ä‚È‚ï¿½ï¿½Hï¿½j
 void DrawCor( void )
-// “_‚Æ‘Î‰“_‚ÌŠÖŒW‚ğ‰æ‘œ‚É•`‰æ‚·‚é
+// ï¿½_ï¿½Æ‘Î‰ï¿½ï¿½_ï¿½ÌŠÖŒWï¿½ï¿½ï¿½æ‘œï¿½É•`ï¿½æ‚·ï¿½ï¿½
 {
 	int i;
-	IplImage *img = cvCreateImage( cvSize(3139, 4500), 8, 3);
-	CvPoint p1, p2;
+	cv::Mat img = cv::Mat::zeros(cv::Size(3139, 4500), CV_8UC3);
+	cv::Point p1, p2;
 	strCorMap *cm;
 	strCorList *cl;
 
 	for ( i = 3; i < 4; i++ ) {
-		cvZero(img);
+		img.setTo(cv::Scalar::all(0));
 		for ( cm = GetCM(i); cm != NULL; cm = cm->next ) {
 			p1.x = cm->x;
 			p1.y = cm->y;
-			cvCircle(img, p1, 4, cWhite, 1, 8, 0);
+			cv::circle(img, p1, 4, cWhite, 1, 8, 0);
 //			if ( cm->cor_num > 1 )	continue;
 			for ( cl = cm->cor; cl != NULL; cl = cl->next) {
                 p2.x = cl->x;
                 p2.y = cl->y;
-                cvLine(img, p1, p2, cWhite, 2, 8, 0);
+                cv::line(img, p1, p2, cWhite, 2, 8, 0);
 			}
 		}
 		OutPutImage(img);
@@ -784,72 +783,70 @@ void DrawCor( void )
 #define	kDrawCorPtRad	(4)
 #define	kDrawCorLineThick	(4)
 
-void DrawCor( CvPoint *ps, int num, CvSize img_size, int res, CvPoint *corps, int cornum, CvSize corsize, int pcor[][2], int pcornum )
+void DrawCor( cv::Point *ps, int num, cv::Size img_size, int res, cv::Point *corps, int cornum, cv::Size corsize, int pcor[][2], int pcornum )
 {
 	int i, width_all, height_all;
-	IplImage *img;
+	cv::Mat img;
 	
 	width_all = kDrawCorHMargin * 2 + kDrawCorSpace + img_size.width + (int)(corsize.width * kDrawCorScale);
 	height_all = kDrawCorVMargin * 2 + max( img_size.height, (int)(corsize.height * kDrawCorScale) );
 //	printf( "%d,%d\n", width_all, height_all );
-	img = cvCreateImage( cvSize( width_all, height_all ), IPL_DEPTH_8U, 3 );
-	cvSet( img, cWhite, NULL );	// ”’‚Å“h‚è‚Â‚Ô‚·
+	img = cv::Mat::zeros(cv::Size( width_all, height_all ), CV_8UC3);
+	img.setTo(cWhite);	// ï¿½ï¿½ï¿½Å“hï¿½ï¿½Â‚Ô‚ï¿½
 
-	// ŒŸõ¿–â‚Ì˜g‚ğ•`‰æ
-	cvRectangle( img, cvPoint( kDrawCorHMargin, kDrawCorVMargin ), \
-		cvPoint( kDrawCorHMargin + img_size.width, kDrawCorVMargin + img_size.height ), \
-		cBlack, kDrawCorRectThick, CV_AA, 0 );
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì˜gï¿½ï¿½`ï¿½ï¿½
+	cv::rectangle( img, cv::Point( kDrawCorHMargin, kDrawCorVMargin ), \
+		cv::Point( kDrawCorHMargin + img_size.width, kDrawCorVMargin + img_size.height ), \
+		cBlack, kDrawCorRectThick, cv::LINE_AA, 0 );
 	
-	// ŒŸõ¿–â‚Ì“Á’¥“_‚Ì•`‰æ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½Ì•`ï¿½ï¿½
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( img, cvPoint( kDrawCorHMargin + ps[i].x, kDrawCorVMargin + ps[i].y ), kDrawCorPtRad, cBlack, -1, CV_AA, 0 );
+		cv::circle( img, cv::Point( kDrawCorHMargin + ps[i].x, kDrawCorVMargin + ps[i].y ), kDrawCorPtRad, cBlack, -1, cv::LINE_AA, 0 );
 	}
-	// “o˜^‰æ‘œ‚Ì˜g‚ğ•`‰æ
-	cvRectangle( img, cvPoint( kDrawCorHMargin + img_size.width + kDrawCorSpace, kDrawCorVMargin), \
-		cvPoint( kDrawCorHMargin + img_size.width + kDrawCorSpace + (int)(corsize.width * kDrawCorScale), kDrawCorVMargin + (int)(corsize.height * kDrawCorScale) ), \
-		cBlack, kDrawCorRectThick, CV_AA, 0 );
-	// “o˜^‰æ‘œ‚Ì“Á’¥“_‚Ì•`‰æ
+	// ï¿½oï¿½^ï¿½æ‘œï¿½Ì˜gï¿½ï¿½`ï¿½ï¿½
+	cv::rectangle( img, cv::Point( kDrawCorHMargin + img_size.width + kDrawCorSpace, kDrawCorVMargin), \
+		cv::Point( kDrawCorHMargin + img_size.width + kDrawCorSpace + (int)(corsize.width * kDrawCorScale), kDrawCorVMargin + (int)(corsize.height * kDrawCorScale) ), \
+		cBlack, kDrawCorRectThick, cv::LINE_AA, 0 );
+	// ï¿½oï¿½^ï¿½æ‘œï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½Ì•`ï¿½ï¿½
 	for ( i = 0; i < cornum; i++ ) {
-		cvCircle( img, cvPoint( kDrawCorHMargin + img_size.width + kDrawCorSpace + (int)(corps[i].x * kDrawCorScale), kDrawCorVMargin + (int)(corps[i].y * kDrawCorScale) ), \
-		kDrawCorPtRad, cBlack, -1, CV_AA, 0 );
+		cv::circle( img, cv::Point( kDrawCorHMargin + img_size.width + kDrawCorSpace + (int)(corps[i].x * kDrawCorScale), kDrawCorVMargin + (int)(corps[i].y * kDrawCorScale) ), \
+		kDrawCorPtRad, cBlack, -1, cv::LINE_AA, 0 );
 	}
-	// ‘Î‰ŠÖŒW‚Ì•`‰æ
+	// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½Ì•`ï¿½ï¿½
 	for ( i = 0; i < pcornum; i++ ) {
-		cvLine( img, cvPoint( kDrawCorHMargin + ps[pcor[i][0]].x, kDrawCorVMargin + ps[pcor[i][0]].y ), \
-		cvPoint( kDrawCorHMargin + img_size.width + kDrawCorSpace + (int)(corps[pcor[i][1]].x * kDrawCorScale), kDrawCorVMargin + (int)(corps[pcor[i][1]].y * kDrawCorScale) ), \
-		cRed, kDrawCorLineThick, CV_AA, 0 );
+		cv::line( img, cv::Point( kDrawCorHMargin + ps[pcor[i][0]].x, kDrawCorVMargin + ps[pcor[i][0]].y ), \
+		cv::Point( kDrawCorHMargin + img_size.width + kDrawCorSpace + (int)(corps[pcor[i][1]].x * kDrawCorScale), kDrawCorVMargin + (int)(corps[pcor[i][1]].y * kDrawCorScale) ), \
+		cRed, kDrawCorLineThick, cv::LINE_AA, 0 );
 	}
 	OutPutImage( img );
-	cvReleaseImage( &img );
 }
 
-void DrawPointAttribute(  CvPoint *ps, int num, CvSize img_size, char *pattr )
-// “_‚Ì³‰ğEŒë‚èE–¢‘Î‰‚ğ•`‰æ
+void DrawPointAttribute(  cv::Point *ps, int num, cv::Size img_size, char *pattr )
+// ï¿½_ï¿½Ìï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½Î‰ï¿½ï¿½ï¿½`ï¿½ï¿½
 {
 	int i;
-	IplImage *img;
+	cv::Mat img;
 
-	img = cvCreateImage( img_size, IPL_DEPTH_8U, 3 );
-	cvNot( img, img );
+	img = cv::Mat::zeros(img_size, CV_8UC3);
+	cv::bitwise_not( img, img );
 	for ( i = 0; i < num; i++ ) {
 		switch ( pattr[i] ) {
-			case 1:	// ³‰ğ
-				cvCircle( img, ps[i], 10, cRed, -1, CV_AA, 0 );
+			case 1:	// ï¿½ï¿½ï¿½ï¿½
+				cv::circle( img, ps[i], 10, cRed, -1, cv::LINE_AA, 0 );
 				break;
-			case -1: // •s³‰ğ
-				cvCircle( img, ps[i], 10, cBlue, -1, CV_AA, 0 );
+			case -1: // ï¿½sï¿½ï¿½ï¿½ï¿½
+				cv::circle( img, ps[i], 10, cBlue, -1, cv::LINE_AA, 0 );
 				break;
-			default: // –¢‘Î‰
-				cvCircle( img, ps[i], 10, cBlack, -1, CV_AA, 0 );
+			default: // ï¿½ï¿½ï¿½Î‰ï¿½
+				cv::circle( img, ps[i], 10, cBlack, -1, cv::LINE_AA, 0 );
 				break;
 		}
 	}
 	OutPutImage( img );
-	cvReleaseImage( &img );
 }
 	
-void CalcCRDiscriptorNN5(CvPoint *ps, int num, int *nears[])
-// ‹ß–T5“_‚Å•¡”ä‚ğŒvZ‚·‚é
+void CalcCRDiscriptorNN5(cv::Point *ps, int num, int *nears[])
+// ï¿½ß–T5ï¿½_ï¿½Å•ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, idx[5]/*, hindex[5]*/;
 //	unsigned int crint;
@@ -872,8 +869,8 @@ void CalcCRDiscriptorNN5(CvPoint *ps, int num, int *nears[])
 
 }
 
-void CalcOrderCW( int pt, CvPoint *ps, int *nears[], int idx[] )
-// Œv‰ñ‚è‚É‹ß–T“_‚ğ”z—ñ‚É“ü‚ê‚é
+void CalcOrderCW( int pt, cv::Point *ps, int *nears[], int idx[] )
+// ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½É‹ß–Tï¿½_ï¿½ï¿½zï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½
 {
 	int i, j, tmp_i;
 	double angs[5], tmp_a;
@@ -897,8 +894,8 @@ void CalcOrderCW( int pt, CvPoint *ps, int *nears[], int idx[] )
 	}
 }
 
-void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
-// Œv‰ñ‚è‚É‹ß–T“_‚ğ”z—ñ‚É“ü‚ê‚éi‚“_ƒo[ƒWƒ‡ƒ“j
+void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num )
+// ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½É‹ß–Tï¿½_ï¿½ï¿½zï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½_ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
 {
 	int i, j, tmp_i;
 	double *angs, tmp_a;
@@ -924,8 +921,8 @@ void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
 	free(angs);
 }
 
-void CalcOrderCWFromNearest( int pt, CvPoint *ps, int *nears[], int idx_ret[] )
-// Œv‰ñ‚è‚É‹ß–T“_‚ğ”z—ñ‚É“ü‚ê‚éiÅ‹ß–T“_‚ğŠJn“_‚Æ‚·‚éj
+void CalcOrderCWFromNearest( int pt, cv::Point *ps, int *nears[], int idx_ret[] )
+// ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½É‹ß–Tï¿½_ï¿½ï¿½zï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½iï¿½Å‹ß–Tï¿½_ï¿½ï¿½ï¿½Jï¿½nï¿½_ï¿½Æ‚ï¿½ï¿½ï¿½j
 {
 	int i, j, tmp_i, idx[5];
 	double angs[5], tmp_a;
@@ -958,10 +955,10 @@ void CalcOrderCWFromNearest( int pt, CvPoint *ps, int *nears[], int idx_ret[] )
 
 }
 
-double CalcCR5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
-// •½–Êã‚Ì5“_‚Å•¡”ä‚ğŒvZ‚·‚é
+double CalcCR5( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
+// ï¿½ï¿½ï¿½Êï¿½ï¿½5ï¿½_ï¿½Å•ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
-	CvPoint p1325, p1425;
+	cv::Point p1325, p1425;
 
 	CalcInterPoint( p1, p3, p2, p5, &p1325 );
 	CalcInterPoint( p1, p4, p2, p5, &p1425 );
@@ -969,10 +966,10 @@ double CalcCR5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
 	return CalcCR(p2, p1325, p1425, p5);
 }
 
-double CalcJI5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
-// •½–Êã‚Ì5“_‚Å•¡”ä‚ğŒvZ‚·‚é
+double CalcJI5( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
+// ï¿½ï¿½ï¿½Êï¿½ï¿½5ï¿½_ï¿½Å•ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
-	CvPoint p1325, p1425;
+	cv::Point p1325, p1425;
 
 	CalcInterPoint( p1, p3, p2, p5, &p1325 );
 	CalcInterPoint( p1, p4, p2, p5, &p1425 );
@@ -981,7 +978,7 @@ double CalcJI5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
 }
 
 int CalcPerm(int n, int r, int i, int rslt[])
-// nirŒ…‚Ì‡—ñ‚Ìi”Ô–Ú‚ğ‹‚ß‚Ärslt‚É“ü‚ê‚éDi”Ô–Ú‚ªƒ_ƒ‚È‚ç0‚ğ•Ô‚·D
+// nï¿½irï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½iï¿½Ô–Ú‚ï¿½ï¿½ï¿½ï¿½ß‚ï¿½rsltï¿½É“ï¿½ï¿½ï¿½ï¿½Diï¿½Ô–Ú‚ï¿½ï¿½_ï¿½ï¿½ï¿½È‚ï¿½0ï¿½ï¿½Ô‚ï¿½ï¿½D
 {
 	int j, tmp, *fl;
 	tmp = i;
@@ -999,13 +996,13 @@ int CalcPerm(int n, int r, int i, int rslt[])
 	return 1;
 }
 
-void CalcCRDiscriptorNN5Test(CvPoint *ps, int num, int *nears[])
-// ‹ß–T5“_‚Å•¡”ä‚ğŒvZ‚·‚é
+void CalcCRDiscriptorNN5Test(cv::Point *ps, int num, int *nears[])
+// ï¿½ß–T5ï¿½_ï¿½Å•ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 {
-	CvPoint p1, p2, p3, p4, p5, p1325, p1425;
-	IplImage *img = cvCreateImage( cvSize(150, 150), 8, 3 );
+	cv::Point p1, p2, p3, p4, p5, p1325, p1425;
+	cv::Mat img = cv::Mat::zeros(cv::Size(150, 150), CV_8UC3);
 
-	cvZero(img);
+	img.setTo(cv::Scalar::all(0));
 
 	p1.x = 50;
 	p1.y = 10;
@@ -1020,18 +1017,18 @@ void CalcCRDiscriptorNN5Test(CvPoint *ps, int num, int *nears[])
 
 	CalcInterPoint( p1, p3, p2, p5, &p1325 );
 	CalcInterPoint( p1, p4, p2, p5, &p1425 );
-	cvCircle( img, p1, 2, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
-	cvCircle( img, p2, 2, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
-	cvCircle( img, p3, 2, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
-	cvCircle( img, p4, 2, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
-	cvCircle( img, p5, 2, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
-	cvCircle( img, p1325, 2, cRed, -1, 1, 0 );	// “_‚Ì•`‰æ
-	cvCircle( img, p1425, 2, cRed, -1, 1, 0 );	// “_‚Ì•`‰æ
+	cv::circle( img, p1, 2, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+	cv::circle( img, p2, 2, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+	cv::circle( img, p3, 2, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+	cv::circle( img, p4, 2, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+	cv::circle( img, p5, 2, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+	cv::circle( img, p1325, 2, cRed, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+	cv::circle( img, p1425, 2, cRed, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
 	OutPutImage(img);
 }
 
-void CalcInterPoint( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint *p1234 )
-// “_p1‚Æp2‚Ì’Ê‚é’¼üC“_p3‚Æp4‚Ì’Ê‚é’¼ü‚Ì2’¼ü‚ÌŒğ“_‚ğ‹‚ß‚é
+void CalcInterPoint( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point *p1234 )
+// ï¿½_p1ï¿½ï¿½p2ï¿½Ì’Ê‚é’¼ï¿½ï¿½ï¿½Cï¿½_p3ï¿½ï¿½p4ï¿½Ì’Ê‚é’¼ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ÌŒï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 {
 	double x1, x2, x3, x4, y1, y2, y3, y4, a1, a2, b1, b2;
 
@@ -1055,7 +1052,7 @@ void CalcInterPoint( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint *p1
 
 #if 0
 void ConstructHashAdd(int mode)
-// ƒnƒbƒVƒ…‚ğ\’zi’Ç‰Áj‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½iï¿½Ç‰ï¿½ï¿½jï¿½ï¿½ï¿½ï¿½
 {
 	int n = 0;
 #ifdef	WIN32
@@ -1070,32 +1067,32 @@ void ConstructHashAdd(int mode)
 	FILE *fp;
 	strDisc disc;
 
-	fp = fopen(eDBCorFileName, "r");	// ƒtƒ@ƒCƒ‹‚Æ”Ô†‚Ì‘Î‰ƒtƒ@ƒCƒ‹
+	fp = fopen(eDBCorFileName, "r");	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Æ”Ôï¿½ï¿½Ì‘Î‰ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
 	for ( n = 0; fgets(line, kMaxLineLen, fp) != NULL; n++ );
 	fclose(fp);
-	LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+	LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	LoadHash(disc.num);
 
-	fp = fopen(eDBCorFileName, "a");	// ƒtƒ@ƒCƒ‹‚Æ”Ô†‚Ì‘Î‰ƒtƒ@ƒCƒ‹
+	fp = fopen(eDBCorFileName, "a");	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Æ”Ôï¿½ï¿½Ì‘Î‰ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
 
 #ifdef	WIN32
-	hSearch=FindFirstFile(eHashSrcPath, &fFind); /* Œ³‰æ‘œƒfƒBƒŒƒNƒgƒŠ‚Ì’TõŠJn */
+	hSearch=FindFirstFile(eHashSrcPath, &fFind); /* ï¿½ï¿½ï¿½æ‘œï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ì’Tï¿½ï¿½ï¿½Jï¿½n */
 	fprintf(fp, "%d %s\n", n, fFind.cFileName);
 	printf("%s : %d\n", fFind.cFileName, n);
 //	strcpy(fname, eHashSrcDir);
-	GetDir( eHashSrcPath, kMaxPathLen, fname );	// ƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
-	strcat(fname, fFind.cFileName);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX‚Ìì¬
-	ConstructHashSub( fname, n++, mode, &disc);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚ÅƒnƒbƒVƒ…‚ğ\’z
+	GetDir( eHashSrcPath, kMaxPathLen, fname );	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾
+	strcat(fname, fFind.cFileName);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìï¿½Îƒpï¿½Xï¿½Ìì¬
+	ConstructHashSub( fname, n++, mode, &disc);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Åƒnï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½z
 //	puts(fFind.cFileName);
-    while (FindNextFile(hSearch,&fFind)) { /* ‘Sƒtƒ@ƒCƒ‹‚ğˆ— */
+    while (FindNextFile(hSearch,&fFind)) { /* ï¿½Sï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 //		puts(fFind.cFileName);
 		fprintf(fp, "%d %s\n", n, fFind.cFileName);
 		printf("%s : %d\n", fFind.cFileName, n);
 //		strcpy(fname, eHashSrcDir);
-		GetDir( eHashSrcPath, kMaxPathLen, fname );	// ƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
-		strcat(fname, fFind.cFileName);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX‚Ìì¬
-		ConstructHashSub( fname, n++, mode, &disc);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚ÅƒnƒbƒVƒ…‚ğ\’z
+		GetDir( eHashSrcPath, kMaxPathLen, fname );	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾
+		strcat(fname, fFind.cFileName);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìï¿½Îƒpï¿½Xï¿½Ìì¬
+		ConstructHashSub( fname, n++, mode, &disc);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Åƒnï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½z
 	}
 #else
 	glob(eHashSrcPath, GLOB_NOCHECK, errfunc, &gt);
@@ -1107,13 +1104,13 @@ void ConstructHashAdd(int mode)
 	globfree(&gt);
 #endif
 
-	SaveHash();	// ƒnƒbƒVƒ…‚Ì•Û‘¶
+	SaveHash();	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì•Û‘ï¿½
 	fclose(fp);
 }
 #endif
 
-int ConstructHash2( int doc_num, CvPoint **pss, double **areass, int *nums, strDisc *disc, strHList ***ptr_hash, strHList2 ***ptr_hash2, HENTRY **ptr_hash3 )
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚é2
+int ConstructHash2( int doc_num, cv::Point **pss, double **areass, int *nums, strDisc *disc, strHList ***ptr_hash, strHList2 ***ptr_hash2, HENTRY **ptr_hash3 )
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½2
 {
 	int i, **nears, ret = 1;
 	strHList **hash = NULL;
@@ -1121,27 +1118,27 @@ int ConstructHash2( int doc_num, CvPoint **pss, double **areass, int *nums, strD
 	HENTRY *hash3 = NULL;
 
 	if ( eNoHashList ) {
-		hash3 = InitHash3();	// ƒŠƒXƒg‚È‚µƒ‚[ƒh
-		if ( hash3 == NULL )	ret = 0;
+		hash3 = InitHash3();	// ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½[ï¿½h
+		if (hash3 == NULL)	ret = 0;
 	} else if ( eCompressHash ) {
-		hash2 = InitHash2();	// ˆ³kƒ‚[ƒh
-		if ( hash2 == NULL )	ret = 0;
+		hash2 = InitHash2();	// ï¿½ï¿½ï¿½kï¿½ï¿½ï¿½[ï¿½h
+		if (hash2 == NULL)	ret = 0;
 	} else {
-		hash = InitHash();	// ˆ³k‚È‚µƒ‚[ƒh‚ÅƒnƒbƒVƒ…‚Ì‰Šú‰»
-		if ( hash == NULL )		ret = 0;
+		hash = InitHash();	// ï¿½ï¿½ï¿½kï¿½È‚ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Åƒnï¿½bï¿½Vï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+		if (hash == NULL)		ret = 0;
 	}
 	if ( ret == 0 ) {
 		fprintf( stderr, "error: hash allocation error\n" );
 		return 0;
 	}
 
-	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );	// ‘g‚İ‡‚í‚¹‚Ìì¬
+	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
 
 	for ( i = 0; i < doc_num; i++ ) {
 		fprintf( stderr, "(%d/%d)[%ld]\n", i+1, doc_num, allocated_hash );
-		MakeNearsFromCentres( pss[i], nums[i], &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
+		MakeNearsFromCentres( pss[i], nums[i], &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 		if ( eRotateOnce )
-			ConstructHashSubSub2( pss[i], areass[i], nums[i], nears, i, disc, hash, hash2, hash3 );	// ƒnƒbƒVƒ…‚ğ\’z‚ÌƒTƒu
+			ConstructHashSubSub2( pss[i], areass[i], nums[i], nears, i, disc, hash, hash2, hash3 );	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ÌƒTï¿½u
 		else
 			ConstructHashSubSub( pss[i], areass[i], nums[i], nears, i, disc, hash, hash2, hash3 );
 		ReleaseNears( nears, nums[i] );
@@ -1155,7 +1152,7 @@ int ConstructHash2( int doc_num, CvPoint **pss, double **areass, int *nums, strD
 
 #if 0
 void ConstructHash(int mode)
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½
 {
 	int n = 0, num;
 #ifdef	WIN32
@@ -1174,41 +1171,41 @@ void ConstructHash(int mode)
 
 //	printf("const\n");
 	if ( mode != USEPF_MODE )
-		fp = fopen(eDBCorFileName, "w");	// ƒtƒ@ƒCƒ‹‚Æ”Ô†‚Ì‘Î‰ƒtƒ@ƒCƒ‹
-	InitHash();	// ƒnƒbƒVƒ…‚Ì‰Šú‰»
-	LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+		fp = fopen(eDBCorFileName, "w");	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Æ”Ôï¿½ï¿½Ì‘Î‰ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+	InitHash();	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
 #ifdef	WIN32
 	if ( mode == USEPF_MODE ) {
 		sprintf(pf_path, "%s*%s", ePFPrefix, ePFSuffix);
-		hSearch = FindFirstFile( pf_path, &fFind );	// Å‰‚Ìƒtƒ@ƒCƒ‹‚ğŒŸõiƒtƒ@ƒCƒ‹–¼‚Íg‚í‚¸‚É”‚¾‚¯g‚¤j
+		hSearch = FindFirstFile( pf_path, &fFind );	// ï¿½Åï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ígï¿½í‚¸ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½j
 		ret = TRUE;
 		for ( i = 0; ret != FALSE; i++ ) {
 			ConstructHashSub( NULL, i, mode, &disc );
-			ret = FindNextFile( hSearch, &fFind );	// Ÿ‚Ìƒtƒ@ƒCƒ‹‚ğŒŸõ
+			ret = FindNextFile( hSearch, &fFind );	// ï¿½ï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
 		FindClose( hSearch );
 		eDbDocs = i;
 	}
 	else {
-		fprintf( stderr, "¡‚Ì‚Æ‚±‚ëWindows‚Å‚±‚Ìƒ‚[ƒh‚Í‘Î‰‚µ‚Ä‚¢‚Ü‚¹‚ñ\n" );
+		fprintf( stderr, "ï¿½ï¿½ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Windowsï¿½Å‚ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½Í‘Î‰ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n" );
 	}
-//	hSearch=FindFirstFile(eHashSrcPath, &fFind); /* Œ³‰æ‘œƒfƒBƒŒƒNƒgƒŠ‚Ì’TõŠJn */
+//	hSearch=FindFirstFile(eHashSrcPath, &fFind); /* ï¿½ï¿½ï¿½æ‘œï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ì’Tï¿½ï¿½ï¿½Jï¿½n */
 //	fprintf(fp, "%d %s\n", n, fFind.cFileName);
 //	printf("%s : %d\n", fFind.cFileName, n);
 ////	strcpy(fname, eHashSrcDir);
-//	GetDir( eHashSrcPath, kMaxPathLen, fname );	// ƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
-//	strcat(fname, fFind.cFileName);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX‚Ìì¬
-//	ConstructHashSub( fname, n++, mode, &disc);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚ÅƒnƒbƒVƒ…‚ğ\’z
+//	GetDir( eHashSrcPath, kMaxPathLen, fname );	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾
+//	strcat(fname, fFind.cFileName);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìï¿½Îƒpï¿½Xï¿½Ìì¬
+//	ConstructHashSub( fname, n++, mode, &disc);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Åƒnï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½z
 ////	puts(fFind.cFileName);
-//    while (FindNextFile(hSearch,&fFind)) { /* ‘Sƒtƒ@ƒCƒ‹‚ğˆ— */
+//    while (FindNextFile(hSearch,&fFind)) { /* ï¿½Sï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 ////		puts(fFind.cFileName);
 //		fprintf(fp, "%d %s\n", n, fFind.cFileName);
 //		printf("%s : %d\n", fFind.cFileName, n);
 ////		strcpy(fname, eHashSrcDir);
-//		GetDir( eHashSrcPath, kMaxPathLen, fname );	// ƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
-//		strcat(fname, fFind.cFileName);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX‚Ìì¬
-//		ConstructHashSub( fname, n++, mode, &disc);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚ÅƒnƒbƒVƒ…‚ğ\’z
+//		GetDir( eHashSrcPath, kMaxPathLen, fname );	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾
+//		strcat(fname, fFind.cFileName);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìï¿½Îƒpï¿½Xï¿½Ìì¬
+//		ConstructHashSub( fname, n++, mode, &disc);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Åƒnï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½z
 //	}
 #else
 	if ( mode == USEPF_MODE ) {
@@ -1237,18 +1234,18 @@ void ConstructHash(int mode)
 	}
 #endif
 		
-//	SaveHash();	// ƒnƒbƒVƒ…‚Ì•Û‘¶@ˆê“I‚Éœ‹
+//	SaveHash();	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì•Û‘ï¿½ï¿½@ï¿½êï¿½Iï¿½Éï¿½ï¿½ï¿½
 	if ( mode != USEPF_MODE )	fclose(fp);
 }
 
 int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚éiƒTƒuj
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½iï¿½Tï¿½uï¿½j
 {
     int num = 0, **nears = 0;
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img;
 	FILE *fp;
 
 	img_size.width = 0;
@@ -1258,9 +1255,9 @@ int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **ha
 	sprintf(nstr, "%d", n);
 	strcat(pfname, nstr);
 	strcat(pfname, ePFSuffix);
-	if ( mode == USEPF_MODE ) {	// ƒ|ƒCƒ“ƒgƒtƒ@ƒCƒ‹‚ğ—˜—p
+	if ( mode == USEPF_MODE ) {	// ï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ğ—˜—p
 		if ( (fp = fopen(pfname, "r")) == NULL )	return 0;
-		ps = (CvPoint *)calloc(kMaxPointNum, sizeof(CvPoint));
+		ps = (cv::Point *)calloc(kMaxPointNum, sizeof(cv::Point));
 		num = 0;
 		fgets(line, kMaxLineLen, fp);	// skip size of image
 		sscanf( line, "%d,%d", &img_size.width, &img_size.height );
@@ -1269,10 +1266,10 @@ int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **ha
 			num++;
 		}
 		fclose(fp);
-	} else {	// ƒ|ƒCƒ“ƒgƒtƒ@ƒCƒ‹‚Å‚È‚¢i‰æ‘œ or Dat or Txtj
-		if ( IsDat( fname ) || IsTxt( fname ) ) {	// datƒtƒ@ƒCƒ‹iƒ|ƒCƒ“ƒgƒtƒ@ƒCƒ‹jor txtƒtƒ@ƒCƒ‹iƒTƒCƒY‚È‚µj
+	} else {	// ï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½iï¿½æ‘œ or Dat or Txtï¿½j
+		if ( IsDat( fname ) || IsTxt( fname ) ) {	// datï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½iï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½jor txtï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½iï¿½Tï¿½Cï¿½Yï¿½È‚ï¿½ï¿½j
 			if ( (fp = fopen(fname, "r")) == NULL )	return 0;
-			ps = (CvPoint *)calloc(kMaxPointNum, sizeof(CvPoint));
+			ps = (cv::Point *)calloc(kMaxPointNum, sizeof(cv::Point));
 			num = 0;
 			if ( IsDat( fname ) )	{
 				fgets(line, kMaxLineLen, fp);	// skip size of image
@@ -1284,15 +1281,14 @@ int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **ha
 			}
 			fclose(fp);
 		}
-		else {	// ‰æ‘œƒtƒ@ƒCƒ‹
-			if ( mode == CONNECTED_MODE ) {	// ’PŒê‚ÌdS
+		else {	// ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½
+			if ( mode == CONNECTED_MODE ) {	// ï¿½Pï¿½ï¿½Ìdï¿½S
 				img = GetConnectedImage( fname, CONST_HASH_MODE );
 				num = MakeCentresFromImage( &ps, img, &img_size, NULL );
-			} else if ( mode == ENCLOSED_MODE ) {	// ˆÍ‚Ü‚ê‚½—Ìˆæ
-				img = cvLoadImage( fname, 0 );
+			} else if ( mode == ENCLOSED_MODE ) {	// ï¿½Í‚Ü‚ê‚½ï¿½Ìˆï¿½
+				img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
 				num = MakeFeaturePointsFromImage( &ps, img, &img_size );
 			}
-			cvReleaseImage( &img );
 		}
 		SavePointFile(pfname, ps, num, &img_size, NULL);
 	}
@@ -1300,7 +1296,7 @@ int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **ha
 	if ( num == 0 ) return 0;
 //	printf("%d, %d\n", img_size.width, img_size.height );
 //	DrawPoints( img_size, ps, num );
-	MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
+	MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 
 	ConstructHashSubSub( ps, NULL, num, nears, n, disc );
 
@@ -1311,9 +1307,9 @@ int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **ha
 }
 #endif
 
-void ConstructHashSubSub(CvPoint *ps, double *areas, int num, int *nears[], int n, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚éiƒTƒu‚ÌƒTƒuj
-// 07/07/23 ‰ñ“]‘“–‚½‚è‚Ì‚İ‚É•ÏX
+void ConstructHashSubSub(cv::Point *ps, double *areas, int num, int *nears[], int n, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½iï¿½Tï¿½uï¿½ÌƒTï¿½uï¿½j
+// 07/07/23 ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚İ‚É•ÏX
 {
 	char *hindex, *hindex_area;
 	int i, j, k, l, st, tmp;
@@ -1328,11 +1324,11 @@ void ConstructHashSubSub(CvPoint *ps, double *areas, int num, int *nears[], int 
 
 	for ( i = 0; i < num; i++ ) {
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Še8“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½e8ï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];
 
-			for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
-				for ( k = 0; k < eNumCom2; k++ ) {	// Še5“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+			for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
+				for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½e5ï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 //					if ( eIncludeCentre || eInvType == SIMILAR ) {
 					if ( eIncludeCentre ) {
 						idxcom2[0] = i;
@@ -1351,21 +1347,21 @@ void ConstructHashSubSub(CvPoint *ps, double *areas, int num, int *nears[], int 
 							cr = CalcAffineInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]], ps[idxcom2[3]]);
 							break;
 						case SIMILAR:
-//							cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// Šp“x‚ğŒvZ
+//							cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// ï¿½pï¿½xï¿½ï¿½ï¿½vï¿½Z
 							cr = CalcSimilarInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);
 						default:
 							break;
 					}
 					hindex[k] = Con2DiscCR( cr, disc );
 				}
-				if ( !eRotateOnce ) {	// ‰ñ“]‘“–‚½‚èƒ‚[ƒhi“o˜^‚Ì‚Í“K“–‚È‚P’Ê‚è‚Ì‚İj
+				if ( !eRotateOnce ) {	// ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½èƒ‚ï¿½[ï¿½hï¿½iï¿½oï¿½^ï¿½Ìï¿½ï¿½Í“Kï¿½ï¿½ï¿½È‚Pï¿½Ê‚ï¿½Ì‚İj
 					if ( eUseArea )	CalcHindexArea( idxcom1, areas, hindex_area );
-					if ( eNoHashList )			AddHash3( hindex, hindex_area, disc->num, n, i, hash3 );	// ƒŠƒXƒg‚È‚µƒ‚[ƒh
-					else if ( eCompressHash )	AddHash2( hindex, hindex_area, disc->num, n, i, hash2 );	// ˆ³kƒ‚[ƒh‚Ìê‡
+					if ( eNoHashList )			AddHash3( hindex, hindex_area, disc->num, n, i, hash3 );	// ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½[ï¿½h
+					else if ( eCompressHash )	AddHash2( hindex, hindex_area, disc->num, n, i, hash2 );	// ï¿½ï¿½ï¿½kï¿½ï¿½ï¿½[ï¿½hï¿½Ìê‡
 					else						AddHash( hindex, hindex_area, disc->num, n, i, hash );
-					break;	// ‘“–‚½‚è‚Í‚â‚ç‚È‚¢
+					break;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½È‚ï¿½
 				}
-				// ‰ñ“]
+				// ï¿½ï¿½]
 				tmp = idxcom1[0];
 				for ( k = 0; k < eGroup2Num-1; k++ )	idxcom1[k] = idxcom1[k+1];
 				idxcom1[eGroup2Num-1] = tmp;
@@ -1379,11 +1375,11 @@ void ConstructHashSubSub(CvPoint *ps, double *areas, int num, int *nears[], int 
 	free( idxcom2 );
 }
 
-void ConstructHashSubSub2(CvPoint *ps, double *areas, int num, int *nears[], int n, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
-// ƒnƒbƒVƒ…‚ğ\’z‚·‚éiƒTƒu‚ÌƒTƒuj‚»‚Ì2i‰ñ“]ˆê‰ñ‚¾‚¯‰ü—Ç”Åj
-// 07/07/11 ‰ñ“]‘“–‚½‚èi“o˜^‚Í“K“–‚Èˆê’Ê‚è‚Ì‚İj‚ğ“‡
-// ÀÛ‚ÍŒŸõ‚É‘“–‚½‚è‚·‚é‚Ì‚ÅŠJn“_‚ğ’è‚ß‚Ä‚à\‚í‚È‚¢‚ªC
-// –³‘Ê‚Èˆ—‚ÌÈ—ª•Õ“Ë‚Ì‰ñ”ğ‚Ì‚½‚ßŠJn“_‚ÉŠî‚Ã‚­•À‚×‘Ö‚¦ˆ—‚ğÈ‚­
+void ConstructHashSubSub2(cv::Point *ps, double *areas, int num, int *nears[], int n, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3)
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½iï¿½Tï¿½uï¿½ÌƒTï¿½uï¿½jï¿½ï¿½ï¿½ï¿½2ï¿½iï¿½ï¿½]ï¿½ï¿½ñ‚¾‚ï¿½ï¿½ï¿½ï¿½Ç”Åj
+// 07/07/11 ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½Í“Kï¿½ï¿½ï¿½Èˆï¿½Ê‚ï¿½Ì‚İjï¿½ğ“ï¿½
+// ï¿½ï¿½ï¿½Û‚ÍŒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‚·ï¿½ï¿½Ì‚ÅŠJï¿½nï¿½_ï¿½ï¿½ï¿½ß‚Ä‚ï¿½ï¿½\ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½C
+// ï¿½ï¿½ï¿½Ê‚Èï¿½ï¿½ï¿½ï¿½ÌÈ—ï¿½ï¿½ï¿½ï¿½Õ“Ë‚Ì‰ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ßŠJï¿½nï¿½_ï¿½ÉŠï¿½Ã‚ï¿½ï¿½ï¿½ï¿½×‘Ö‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 {
 	char *hindex, **hindex_array, *inv_array, *hindex_area;
 	int i, j, k, l, st, tmp;
@@ -1396,17 +1392,17 @@ void ConstructHashSubSub2(CvPoint *ps, double *areas, int num, int *nears[], int
 	idxcom1 = (int *)calloc( eGroup2Num, sizeof(int) );
 	idxcom1bak = (int *)calloc( eGroup2Num, sizeof(int) );
 	idxcom2 = (int *)calloc( eGroup3Num, sizeof(int) );
-	// ‰ñ“]•s•ÏE‰ü—Ç”Å
+	// ï¿½ï¿½]ï¿½sï¿½ÏEï¿½ï¿½ï¿½Ç”ï¿½
 	inv_array = (char *)calloc( eGroup2Num, sizeof(char) );
 
 	for ( i = 0; i < num; i++ ) {
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Šen“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
-			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];	// m“_‚Ì’Šo
-			if ( eRotateOnce ) {	// ‰ñ“]ˆê’Ê‚èƒ‚[ƒh‚È‚çCŠJn“_‚ğŒˆ‚ß‚Ä•À‚×‘Ö‚¦‚é
-				// ŠJn“_‚ÌŒˆ’è
-				for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
-					switch ( eInvType ) {	// ‘±‚­f“_‚©‚ç•s•Ï—Ê‚ğŒvZ
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½enï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
+			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];	// mï¿½_ï¿½Ì’ï¿½ï¿½o
+			if ( eRotateOnce ) {	// ï¿½ï¿½]ï¿½ï¿½Ê‚èƒ‚ï¿½[ï¿½hï¿½È‚ï¿½Cï¿½Jï¿½nï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ä•ï¿½ï¿½×‘Ö‚ï¿½ï¿½ï¿½
+				// ï¿½Jï¿½nï¿½_ï¿½ÌŒï¿½ï¿½ï¿½
+				for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
+					switch ( eInvType ) {	// ï¿½ï¿½ï¿½ï¿½fï¿½_ï¿½ï¿½ï¿½ï¿½sï¿½Ï—Ê‚ï¿½ï¿½vï¿½Z
 						case CR_INTER:
 							cr = CalcCR5(ps[idxcom1[st]], ps[idxcom1[(st+1)%eGroup2Num]], ps[idxcom1[(st+2)%eGroup2Num]], ps[idxcom1[(st+3)%eGroup2Num]], ps[idxcom1[(st+4)%eGroup2Num]]);
 							break;
@@ -1421,16 +1417,16 @@ void ConstructHashSubSub2(CvPoint *ps, double *areas, int num, int *nears[], int
 						default:
 							break;
 					}
-					inv_array[st] = Con2DiscCR( cr, disc );	// —£U‰»‚µ‚Ä•Û‘¶
+					inv_array[st] = Con2DiscCR( cr, disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½Ä•Û‘ï¿½
 				}
-				st = FindStartPoint( inv_array );	// •s•Ï—Ê‚©‚çŠJn“_‚ğŒ©‚Â‚¯‚é
-				// st‚ğŠJn“_‚Æ‚µ‚Ä‰ñ“]‚³‚¹‚é
+				st = FindStartPoint( inv_array );	// ï¿½sï¿½Ï—Ê‚ï¿½ï¿½ï¿½Jï¿½nï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+				// stï¿½ï¿½ï¿½Jï¿½nï¿½_ï¿½Æ‚ï¿½ï¿½Ä‰ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				for ( k = 0; k < eGroup2Num; k++ ) idxcom1bak[k] = idxcom1[k];
 				for ( k = 0; k < eGroup2Num; k++ ) idxcom1[k] = idxcom1bak[(k+st) % eGroup2Num];
-				// ˆÈã‚Å‰ñ“]•s•Ïˆ—‚ÍŠ®—¹
+				// ï¿½Èï¿½Å‰ï¿½]ï¿½sï¿½Ïï¿½ï¿½ï¿½ï¿½ÍŠï¿½ï¿½ï¿½
 			}
-			for ( k = 0; k < eNumCom2; k++ ) {	// Šem“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
-				// ’FeIncludeCentre‚Ì’†S“_‚ğŠÜ‚Şˆ—‚ÍŠO‚µ‚½
+			for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½emï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
+				// ï¿½ï¿½ï¿½FeIncludeCentreï¿½Ì’ï¿½ï¿½Sï¿½_ï¿½ï¿½ï¿½Ü‚Şï¿½ï¿½ï¿½ï¿½ÍŠOï¿½ï¿½ï¿½ï¿½
 				for ( l = 0; l < eGroup3Num; l++ )	idxcom2[l] = idxcom1[com2[k][l]];
 				switch ( eInvType ) {
 					case CR_INTER:
@@ -1443,16 +1439,16 @@ void ConstructHashSubSub2(CvPoint *ps, double *areas, int num, int *nears[], int
 						cr = CalcAffineInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]], ps[idxcom2[3]]);
 						break;
 					case SIMILAR:
-//						cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// Šp“x‚ğŒvZ
+//						cr = CalcAngleFromThreePoints(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);	// ï¿½pï¿½xï¿½ï¿½ï¿½vï¿½Z
 						cr = CalcSimilarInv(ps[idxcom2[0]], ps[idxcom2[1]], ps[idxcom2[2]]);
 					default:
 						break;
 				}
 				hindex[k] = Con2DiscCR( cr, disc );
 			}
-			if ( eUseArea )	CalcHindexArea( idxcom1, areas, hindex_area );	// –ÊÏ“Á’¥—Ê‚ÌŒvZ
-			if ( eNoHashList )			AddHash3( hindex, hindex_area, disc->num, n, i, hash3 );	// ƒŠƒXƒg‚È‚µƒ‚[ƒh‚Ìê‡
-			else if ( eCompressHash )	AddHash2( hindex, hindex_area, disc->num, n, i, hash2 );	// ˆ³kƒ‚[ƒh‚Ìê‡
+			if ( eUseArea )	CalcHindexArea( idxcom1, areas, hindex_area );	// ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚ÌŒvï¿½Z
+			if ( eNoHashList )			AddHash3( hindex, hindex_area, disc->num, n, i, hash3 );	// ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Ìê‡
+			else if ( eCompressHash )	AddHash2( hindex, hindex_area, disc->num, n, i, hash2 );	// ï¿½ï¿½ï¿½kï¿½ï¿½ï¿½[ï¿½hï¿½Ìê‡
 			else						AddHash( hindex, hindex_area, disc->num, n, i, hash );
 			/*
 			if ( eUseArea ) {
@@ -1460,7 +1456,7 @@ void ConstructHashSubSub2(CvPoint *ps, double *areas, int num, int *nears[], int
 				AddHashArea( hindex, hindex_area, disc->num, n, i );
 			}
 			else {
-				if ( eCompressHash )	AddHash2( hindex, disc->num, n, i );	// ˆ³kƒ‚[ƒh‚Ìê‡
+				if ( eCompressHash )	AddHash2( hindex, disc->num, n, i );	// ï¿½ï¿½ï¿½kï¿½ï¿½ï¿½[ï¿½hï¿½Ìê‡
 				else					AddHash( hindex, disc->num, n, i );
 			}
 			*/
@@ -1475,20 +1471,20 @@ void ConstructHashSubSub2(CvPoint *ps, double *areas, int num, int *nears[], int
 	free( inv_array );
 }
 
-void SavePointFile( char *fname, CvPoint *ps, int num, CvSize *size, double *areas )
-// “_ƒf[ƒ^‚ğ•Û‘¶‚·‚é
-// –ÊÏ‚Ì•Û‘¶‚ğ’Ç‰Á 06/01/13
+void SavePointFile( char *fname, cv::Point *ps, int num, cv::Size *size, double *areas )
+// ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ï¿½
+// ï¿½ÊÏ‚Ì•Û‘ï¿½ï¿½ï¿½Ç‰ï¿½ 06/01/13
 {
 	int i;
 	char dir[kMaxPathLen], base[kMaxPathLen], area_fname[kMaxPathLen];
 	FILE *fp;
 
 	fp = fopen(fname, "w");
-	fprintf(fp, "%d,%d\n", size->width, size->height);	// æ“ª‚ÉƒTƒCƒY‚ğ•Û‘¶‚·‚é
+	fprintf(fp, "%d,%d\n", size->width, size->height);	// ï¿½æ“ªï¿½ÉƒTï¿½Cï¿½Yï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0; i < num; i++ )
 		fprintf(fp, "%d,%d\n", ps[i].x, ps[i].y);
 	fclose(fp);
-	if ( areas == NULL )	return;	// –ÊÏ‚ªŠi”[‚³‚ê‚Ä‚¢‚È‚¢
+	if (areas == NULL)	return;	// ï¿½ÊÏ‚ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½
 	GetDir( fname, kMaxPathLen, dir );
 	GetBasename( fname, kMaxPathLen, base );
 	strcpy( area_fname, dir );
@@ -1498,7 +1494,7 @@ void SavePointFile( char *fname, CvPoint *ps, int num, CvSize *size, double *are
 }
 
 void SaveAreaFile( char *fname, double *areas, int num )
-// –ÊÏ‚Ì”z—ñarea‚©‚çnumŒÂ‚ÌÀ”‚ğfname‚É‘‚«o‚·
+// ï¿½ÊÏ‚Ì”zï¿½ï¿½areaï¿½ï¿½ï¿½ï¿½numï¿½Â‚Ìï¿½ï¿½ï¿½ï¿½ï¿½fnameï¿½Éï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
 {
 	int i;
 	FILE *fp;
@@ -1513,18 +1509,18 @@ void SaveAreaFile( char *fname, double *areas, int num )
 	fclose( fp );
 }
 
-int LoadPointFile( char *fname, CvPoint **ps0, CvSize *size )
-// “_ƒf[ƒ^‚ğ“Ç‚İ‚Ş
+int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size )
+// ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
 {
 	int num;
 	char line[kMaxLineLen];
 	FILE *fp;
-	CvPoint *ps;
+	cv::Point *ps;
 	
 	if ( (fp = fopen(fname, "r")) == NULL )	return 0;
 	fgets(line, kMaxLineLen, fp);
 	sscanf(line, "%d,%d", &(size->width), &(size->height));
-	ps = (CvPoint *)calloc(kMaxPointNum, sizeof(CvPoint));
+	ps = (cv::Point *)calloc(kMaxPointNum, sizeof(cv::Point));
 	*ps0 = ps;
 	num = 0;
 	while ( fgets(line, kMaxLineLen, fp) != NULL && num < kMaxPointNum ) {
@@ -1535,17 +1531,17 @@ int LoadPointFile( char *fname, CvPoint **ps0, CvSize *size )
 	return num;
 }
 
-void LoadPointFileAll( CvPoint ***psall0, CvSize **sizeall0, int **numall0 )
-// “o˜^“_ƒtƒ@ƒCƒ‹‚ğ‚·‚×‚Ä“Ç‚İ‚Ş
+void LoadPointFileAll( cv::Point ***psall0, cv::Size **sizeall0, int **numall0 )
+// ï¿½oï¿½^ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×‚Ä“Ç‚İï¿½ï¿½ï¿½
 {
-	CvPoint **psall;
-	CvSize *sizeall;
+	cv::Point **psall;
+	cv::Size *sizeall;
 	int i, *numall;
 	char fname[kMaxPathLen];
 	
 //	printf("%s\n%s\n%d\n", ePFPrefix, ePFSuffix, eDbDocs);
-	psall = (CvPoint **)calloc( eDbDocs, sizeof(CvPoint *) );
-	sizeall = (CvSize *)calloc( eDbDocs, sizeof(CvSize) );
+	psall = (cv::Point **)calloc( eDbDocs, sizeof(cv::Point *) );
+	sizeall = (cv::Size *)calloc( eDbDocs, sizeof(cv::Size) );
 	numall = (int *)calloc( eDbDocs, sizeof(int) );
 	for ( i = 0; i < eDbDocs; i++ ) {
 		sprintf(fname, "%s%d%s", ePFPrefix, i, ePFSuffix);
@@ -1559,21 +1555,21 @@ void LoadPointFileAll( CvPoint ***psall0, CvSize **sizeall0, int **numall0 )
 
 #define	USE073
 
-void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
-// ‹ß–T5“_‚ğ•`‰æ‚·‚é
+void DrawNeighbor( cv::Size size, cv::Point *ps, int num, int *nears[] )
+// ï¿½ß–T5ï¿½_ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½
 {
 	int i, j, k, idx[1024]/*, hindex[10]*/, flag, fail[8];
 	char txt[10];
 //	double cr;
-//	IplImage *img = cvCreateImage( size, 8, 3);
+//	cv::Mat img = cv::Mat::zeros(size, CV_8UC3);
 #ifdef USE073
-	IplImage *img = cvLoadImage("07s.bmp", 1);
+	cv::Mat img = cv::imread("07s.bmp", cv::IMREAD_COLOR);
 #else
-	IplImage *img = cvLoadImage("04s.bmp", 1);
+	cv::Mat img = cv::imread("04s.bmp", cv::IMREAD_COLOR);
 #endif
-	CvScalar color;
-	CvFont font;
-	CvPoint p[kPNum], mid;
+	cv::Scalar color;
+	// CvFont removed in OpenCV 4.x
+	cv::Point p[kPNum], mid;
 
 	for ( i = 0; i < kPNum; i++ ) {
 		p[i].x = 0;
@@ -1615,10 +1611,10 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 	p[7].y = 800;
 #endif
 
-//	cvZero(img);
+//	img.setTo(cv::Scalar::all(0));
 	for ( i = 0; i < num; i++ ) {
 		color = cWhite;
-//		cvCircle(img, ps[i], 2, color, 2, 8, 0);
+//		cv::circle(img, ps[i], 2, color, 2, 8, 0);
 		for ( flag = 0, j = 0; j < kPNum; j++ ) {
 			if ( GetPointsDistance(ps[i], p[j]) < 10 ) {
 				flag = 1;
@@ -1628,7 +1624,7 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 		if ( !flag )	continue;
 		
 //		color = cWhite;
-//		cvCircle(img, ps[i], 6, color, 2, 8, 0);
+//		cv::circle(img, ps[i], 6, color, 2, 8, 0);
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
 /*		for ( j = 0; j < 10; j++ ) {
 			cr = CalcCR5(ps[idx[j%10]], ps[idx[(j+1)%10]], ps[idx[(j+2)%10]], ps[idx[(j+3)%10]], ps[idx[(j+4)%10]]);
@@ -1674,25 +1670,25 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 	//		}
 	//		printf("\n");
 	//	}
-		for ( j = 0; j < eGroup1Num; j++ ) {	// Šp“x‡‚É’†S‚©‚çü‚ğˆø‚­
-//			cvLine(img, ps[i], ps[idx[j]], color, 1, 8, 0);
+		for ( j = 0; j < eGroup1Num; j++ ) {	// ï¿½pï¿½xï¿½ï¿½ï¿½É’ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//			cv::line(img, ps[i], ps[idx[j]], color, 1, 8, 0);
 			sprintf(txt, "%d", j+1);
 			mid.x = (ps[idx[j]].x + ps[i].x)/2;
 			mid.y = (ps[idx[j]].y + ps[i].y)/2;
-			cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0.1, 0, 1);
-//			cvPutText( img, txt, mid, &font, cGreen );
-			cvCircle(img, ps[idx[j]], 8, cBlack, -1, 8, 0);
-			cvCircle(img, ps[idx[j]], 8, cWhite, 2, 8, 0);
-//			cvCircle(img, ps[idx[j]], 5, cWhite, 1, 8, 0);
+			// cvInitFont removed - use cv::putText directly
+//			cv::putText(img, txt, mid, cv::FONT_HERSHEY_PLAIN, 1.0, cGreen );
+			cv::circle(img, ps[idx[j]], 8, cBlack, -1, 8, 0);
+			cv::circle(img, ps[idx[j]], 8, cWhite, 2, 8, 0);
+//			cv::circle(img, ps[idx[j]], 5, cWhite, 1, 8, 0);
 		}
 
 /*		for ( j = 0; j < eGroup1Num; j++ ) {
-			cvLine(img, ps[i], ps[nears[i][j]], color, 1, 8, 0);
+			cv::line(img, ps[i], ps[nears[i][j]], color, 1, 8, 0);
 			sprintf(txt, "%d", j+1);
 			mid.x = (ps[nears[i][j]].x + ps[i].x)/2;
 			mid.y = (ps[nears[i][j]].y + ps[i].y)/2;
-			cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0.1, 0, 1);
-			cvPutText( img, txt, mid, &font, cGreen );
+			// cvInitFont removed - use cv::putText directly
+			cv::putText(img, txt, mid, cv::FONT_HERSHEY_PLAIN, 1.0, cGreen );
 		}
 */	}
 	for ( j = 0; j < eNumCom1; j++ ) {
@@ -1706,12 +1702,11 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 	}
 
 	OutPutImage( img );
-	cvReleaseImage( &img );
 }
 
 /*
 void VoteByHL( strHList *hl )
-// ƒnƒbƒVƒ…ƒŠƒXƒg‚ğ“Ç‚ñ‚Åvote‚·‚é
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½Ç‚ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½
 {
 	strHList *hp;
 	strVoteList *vp;
@@ -1723,7 +1718,7 @@ void VoteByHL( strHList *hl )
 				break;
 			}
 		}
-		if ( vp == NULL ) {	// Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚Æ‚«
+		if (vp == NULL) {	// ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½
 			vp = (strVoteList *)malloc(sizeof(strVoteList));
 			vp->doc = hp->doc;
 			vp->point = hp->point;
@@ -1736,7 +1731,7 @@ void VoteByHL( strHList *hl )
 }
 */
 void VoteByVL( int *score )
-// “Š•[ƒŠƒXƒg‚Åvote‚·‚é
+// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½
 {
 	strVoteList *vp;
 
@@ -1746,7 +1741,7 @@ void VoteByVL( int *score )
 }
 
 void ClearVL( void )
-// “Š•[ƒŠƒXƒg‚ğƒNƒŠƒA‚·‚é
+// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½
 {
 	strVoteList *vp, *vp_n;
 	for ( vp = vl; vp != NULL; ) {
@@ -1758,36 +1753,36 @@ void ClearVL( void )
 }
 
 int VoteDirectlyByHL( strHList *hl, int *score, char *idx, char *idx_area, int p )
-// ƒnƒbƒVƒ…ƒŠƒXƒg‚©‚ç’¼‚Évote‚·‚é
-// ¡‰ñvote‚µ‚½’†‚ÅÅ‘å‚Ì‚à‚Ì‚ğ•Ô‚·
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ç’¼ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅÅ‘ï¿½Ì‚ï¿½ï¿½Ì‚ï¿½Ô‚ï¿½
 {
 	strHList *hp;
 	static int max_vote = -1;
     
 	for ( hp = hl; hp != NULL; hp = hp->next) {
 //		if ( memcmp(hp->idx, idx, eNumCom2) == 0 && flag1[hp->doc] == 0 && flag2[hp->doc][hp->point] == 0) {
-		// ‘Î‰ŠÖŒWƒ`ƒFƒbƒN && ( ƒxƒNƒgƒ‹ƒ`ƒFƒbƒN‚È‚µ || ƒxƒNƒgƒ‹ˆê’v )
-		// 07/07/04 !eVectorCheck‚ğeNoCompareInv‚É•ÏX
-		if ( flag1[hp->doc] == 0 && /* ‘Î‰“_ƒtƒ‰ƒOƒ`ƒFƒbƒN */ \
+		// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½`ï¿½Fï¿½bï¿½N && ( ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½È‚ï¿½ || ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½v )
+		// 07/07/04 !eVectorCheckï¿½ï¿½eNoCompareInvï¿½É•ÏX
+		if ( flag1[hp->doc] == 0 && /* ï¿½Î‰ï¿½ï¿½_ï¿½tï¿½ï¿½ï¿½Oï¿½`ï¿½Fï¿½bï¿½N */ \
 //			 flag2[hp->doc][hp->point] == 0 ) {
 			 flag2[hp->doc][hp->point] == 0 && \
-			 ( eNoCompareInv || memcmp(hp->idx, idx, eNumCom2) == 0 ) /* “Á’¥—Ê‚Ì”äŠr */ ) {
-//			 ( eNoCompareInv || !eUseArea || memcmp(hp->idx + eNumCom2, idx_area, eGroup2Num) ) /* –ÊÏ“Á’¥—Ê‚Ì”äŠr */ \
+			 ( eNoCompareInv || memcmp(hp->idx, idx, eNumCom2) == 0 ) /* ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚Ì”ï¿½r */ ) {
+//			 ( eNoCompareInv || !eUseArea || memcmp(hp->idx + eNumCom2, idx_area, eGroup2Num) ) /* ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Ì”ï¿½r */ \
 //			) {
-			score[hp->doc]++;	// “Š•[
-			if ( score[hp->doc] > max_vote )	max_vote = score[hp->doc];	// Å‘å‚È‚çXV
+			score[hp->doc]++;	// ï¿½ï¿½ï¿½[
+			if ( score[hp->doc] > max_vote )	max_vote = score[hp->doc];	// ï¿½Å‘ï¿½È‚ï¿½Xï¿½V
 			corres[p][hp->doc] = hp->point;
-			flag1[hp->doc] = 1;	// hp->doc‚Í“Š•[Ï‚İ
-			flag2[hp->doc][hp->point] = 1;	// hp-doc‚Ìhp->point‚Í“Š•[Ï‚İ
+			flag1[hp->doc] = 1;	// hp->docï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
+			flag2[hp->doc][hp->point] = 1;	// hp-docï¿½ï¿½hp->pointï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
 		}
 	}
 	return max_vote;
 }
 
 int VoteDirectlyByHL2( strHList2 *hl, int *score, char *idx, char *idx_area, int p )
-// ƒnƒbƒVƒ…ƒŠƒXƒg‚©‚ç’¼‚Évote‚·‚é
-// ¡‰ñvote‚µ‚½’†‚ÅÅ‘å‚Ì‚à‚Ì‚ğ•Ô‚·
-// ˆ³k”Å
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ç’¼ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅÅ‘ï¿½Ì‚ï¿½ï¿½Ì‚ï¿½Ô‚ï¿½
+// ï¿½ï¿½ï¿½kï¿½ï¿½
 {
 	strHList2 *hp;
 	static int max_vote = -1;
@@ -1798,22 +1793,22 @@ int VoteDirectlyByHL2( strHList2 *hl, int *score, char *idx, char *idx_area, int
 	o = (char *)calloc( eGroup2Num, sizeof(char) );
 	for ( hp = hl; hp != NULL; hp = hp->next) {
 //		if ( memcmp(hp->idx, idx, eNumCom2) == 0 && flag1[hp->doc] == 0 && flag2[hp->doc][hp->point] == 0) {
-		// ‘Î‰ŠÖŒWƒ`ƒFƒbƒN && ( ƒxƒNƒgƒ‹ƒ`ƒFƒbƒN‚È‚µ || ƒxƒNƒgƒ‹ˆê’v )
+		// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½`ï¿½Fï¿½bï¿½N && ( ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½È‚ï¿½ || ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½v )
 		ReadHList2Dat( hp->dat, &doc, &point, r, o );
 //		printf("%d, %d\n", doc, point );
-		// 07/07/04 !eVectorChech‚ğœ‹CeUseArea‚ª‰½ŒÌ“ü‚Á‚Ä‚¢‚é‚©‚Í•s–¾
+		// 07/07/04 !eVectorChechï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CeUseAreaï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Í•sï¿½ï¿½
 //		if ( flag1[doc] == 0 && flag2[doc][point] == 0 && ( eUseArea || eNoCompareInv  || memcmp(r, idx, eNumCom2) == 0 ) ) {
-		// 07/07/20 ğŒ‚ğ’²®
-		if ( flag1[doc] == 0 && /* ƒtƒ‰ƒOƒ`ƒFƒbƒN */ \
+		// 07/07/20 ï¿½ï¿½ï¿½ï¿½ï¿½ğ’²ï¿½
+		if ( flag1[doc] == 0 && /* ï¿½tï¿½ï¿½ï¿½Oï¿½`ï¿½Fï¿½bï¿½N */ \
 			flag2[doc][point] == 0 && \
-			( eNoCompareInv || memcmp(r, idx, eNumCom2) == 0 ) && /* “Á’¥—Ê‚Ì”äŠr */ \
-			( eNoCompareInv || !eUseArea || memcmp(o, idx_area, eGroup2Num ) ) /* –ÊÏ“Á’¥—Ê‚Ì”äŠr */ \
+			( eNoCompareInv || memcmp(r, idx, eNumCom2) == 0 ) && /* ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚Ì”ï¿½r */ \
+			( eNoCompareInv || !eUseArea || memcmp(o, idx_area, eGroup2Num ) ) /* ï¿½ÊÏ“ï¿½ï¿½ï¿½ï¿½Ê‚Ì”ï¿½r */ \
 			) {
-			score[doc]++;	// “Š•[
-			if ( score[doc] > max_vote )	max_vote = score[doc];	// Å‘å‚È‚çXV
+			score[doc]++;	// ï¿½ï¿½ï¿½[
+			if ( score[doc] > max_vote )	max_vote = score[doc];	// ï¿½Å‘ï¿½È‚ï¿½Xï¿½V
 			corres[p][doc] = point;
-			flag1[doc] = 1;	// hp->doc‚Í“Š•[Ï‚İ
-			flag2[doc][point] = 1;	// hp-doc‚Ìhp->point‚Í“Š•[Ï‚İ
+			flag1[doc] = 1;	// hp->docï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
+			flag2[doc][point] = 1;	// hp-docï¿½ï¿½hp->pointï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
 		}
 	}
 	free( r );
@@ -1822,20 +1817,20 @@ int VoteDirectlyByHL2( strHList2 *hl, int *score, char *idx, char *idx_area, int
 }
 
 int VoteByHashEntry( HENTRY *phe, int *score, int p )
-// ƒnƒbƒVƒ…ƒe[ƒuƒ‹‚ÌƒGƒ“ƒgƒŠ‚©‚çvote‚·‚é
-// ƒŠƒXƒg‚È‚µƒo[ƒWƒ‡ƒ“
+// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÌƒGï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½voteï¿½ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½Xï¿½gï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
 {
 	static int max_vote = -1;
 	int doc, point;
 
-	if ( *phe == kFreeEntry || *phe == kInvalidEntry )	return max_vote;	// ‹ó‚«‚Ü‚½‚Í–³Œø‚ÈƒGƒ“ƒgƒŠ
+	if ( *phe == kFreeEntry || *phe == kInvalidEntry )	return max_vote;	// ï¿½ó‚«‚Ü‚ï¿½ï¿½Í–ï¿½ï¿½ï¿½ï¿½ÈƒGï¿½ï¿½ï¿½gï¿½ï¿½
 	ReadHashEntry( phe, &doc, &point );
 	if ( flag1[doc] == 0 && flag2[doc][point] == 0 ) {
-		score[doc]++;	// “Š•[
-		if ( score[doc] > max_vote )	max_vote = score[doc];	// Å‘å‚È‚çXV
+		score[doc]++;	// ï¿½ï¿½ï¿½[
+		if ( score[doc] > max_vote )	max_vote = score[doc];	// ï¿½Å‘ï¿½È‚ï¿½Xï¿½V
 		corres[p][doc] = point;
-		flag1[doc] = 1;	// hp->doc‚Í“Š•[Ï‚İ
-		flag2[doc][point] = 1;	// hp-doc‚Ìhp->point‚Í“Š•[Ï‚İ
+		flag1[doc] = 1;	// hp->docï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
+		flag2[doc][point] = 1;	// hp-docï¿½ï¿½hp->pointï¿½Í“ï¿½ï¿½[ï¿½Ï‚ï¿½
 	}
 	return max_vote;
 }
@@ -1866,103 +1861,103 @@ void CalcPointCor( int n )
 	pcor[n][1] = max_point;
 }
 
-void DrawCross( IplImage *img, CvPoint center, int length, CvScalar color, int thickness )
-// img‚Ìcenter‚É~‚ğ•`‚­
+void DrawCross( cv::Mat img, cv::Point center, int length, cv::Scalar color, int thickness )
+// imgï¿½ï¿½centerï¿½É~ï¿½ï¿½`ï¿½ï¿½
 {
-	CvPoint p1, p2;
+	cv::Point p1, p2;
 
 	p1.x = center.x - length;
 	p1.y = center.y - length;
 	p2.x = center.x + length;
 	p2.y = center.y + length;
-	cvLine( img, p1, p2, color, thickness, 8, 0 );
+	cv::line( img, p1, p2, color, thickness, 8, 0 );
 	p1.x = center.x + length;
 	p1.y = center.y - length;
 	p2.x = center.x - length;
 	p2.y = center.y + length;
-	cvLine( img, p1, p2, color, thickness, 8, 0 );
+	cv::line( img, p1, p2, color, thickness, 8, 0 );
 }
 
-void DrawP2P( CvPoint *ps, int num, int cor_doc, CvSize size )
-// “_‚©‚ç“_‚Öü‚ğˆø‚­
+void DrawP2P( cv::Point *ps, int num, int cor_doc, cv::Size size )
+// ï¿½_ï¿½ï¿½ï¿½ï¿½_ï¿½Öï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
 	int ori_num, i;
 	FILE *fp;
-	CvPoint corps[kMaxPointNum];
-	IplImage *img;
-	CvSize size2, size_all;
+	cv::Point corps[kMaxPointNum];
+	cv::Mat img;
+	cv::Size size2, size_all;
 
-	// ƒf[ƒ^ƒx[ƒX‚Ì“_ƒtƒ@ƒCƒ‹–¼‚ğì‚Á‚ÄŠJ‚­
+	// ï¿½fï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½Ì“_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄŠJï¿½ï¿½
 	strcpy(pfname, ePFPrefix);
 //	itoa(cor_doc, nstr, 10);
 	sprintf(nstr, "%d", cor_doc);
 	strcat(pfname, nstr);
 	strcat(pfname, ePFSuffix);
 	fp = fopen(pfname, "r");
-	// “_ƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚ğcorps‚ÉŠi”[‚·‚é
+	// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½corpsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 	ori_num = 0;
 	fgets(line, kMaxLineLen, fp);
-	sscanf(line, "%d,%d", &(size2.width), &(size2.height));	// 1s–Ú‚ÍƒTƒCƒY
+	sscanf(line, "%d,%d", &(size2.width), &(size2.height));	// 1ï¿½sï¿½Ú‚ÍƒTï¿½Cï¿½Y
 	while( fgets(line, kMaxLineLen, fp) != NULL ) {
 		sscanf(line, "%d,%d", &(corps[ori_num].x), &(corps[ori_num].y));
 		ori_num++;
 	}
 	fclose(fp);
-	// •`‰æ‚·‚é‰æ‘œ‚Ìì¬‚Æ‚©
+	// ï¿½`ï¿½æ‚·ï¿½ï¿½æ‘œï¿½Ìì¬ï¿½Æ‚ï¿½
 	size_all.width = size.width + size2.width;
 	size_all.height = max(size.height, size2.height);
-	img = cvCreateImage(size_all, 8, 3);
-	cvZero(img);
+	img = cv::Mat::zeros(size_all, CV_8UC3);
+	img.setTo(cv::Scalar::all(0));
 
-	cvRectangle( img, cvPoint(1, 1), cvPoint(size.width-5, size.height-5), cWhite, 3, 8, 0 );
-	// ‘S“_‚Ì•`‰æiƒNƒGƒŠj
-	for ( i = 0; i < num; i++ )	cvCircle( img, ps[i], 8, cWhite, 3, 8, 0);
-	cvRectangle( img, cvPoint(size.width, 1), cvPoint(size.width + size2.width-5, size2.height-5), cWhite, 3, 8, 0);
-	// ‘S“X‚Ì•`‰æiƒf[ƒ^ƒx[ƒXj
-	for ( i = 0; i < ori_num; i++ )	DrawCross( img, cvPoint(size.width + corps[i].x, corps[i].y), 8, cWhite, 3 );
+	cv::rectangle( img, cv::Point(1, 1), cv::Point(size.width-5, size.height-5), cWhite, 3, 8, 0 );
+	// ï¿½Sï¿½_ï¿½Ì•`ï¿½ï¿½iï¿½Nï¿½Gï¿½ï¿½ï¿½j
+	for ( i = 0; i < num; i++ )	cv::circle( img, ps[i], 8, cWhite, 3, 8, 0);
+	cv::rectangle( img, cv::Point(size.width, 1), cv::Point(size.width + size2.width-5, size2.height-5), cWhite, 3, 8, 0);
+	// ï¿½Sï¿½Xï¿½Ì•`ï¿½ï¿½iï¿½fï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½j
+	for ( i = 0; i < ori_num; i++ )	DrawCross( img, cv::Point(size.width + corps[i].x, corps[i].y), 8, cWhite, 3 );
 	for ( i = 0; i < num; i++ ) {
 		if ( corres[i][cor_doc] >= 0 ) {
-			cvLine(img, ps[i], cvPoint(size.width + corps[corres[i][cor_doc]].x, corps[corres[i][cor_doc]].y), cWhite, 3, 8, 0);
+			cv::line(img, ps[i], cv::Point(size.width + corps[corres[i][cor_doc]].x, corps[corres[i][cor_doc]].y), cWhite, 3, 8, 0);
 		}
 //		if ( pcor[i][0] != cor_doc )	continue;
-		// ü‚ğˆø‚­
-//		cvLine(img, ps[i], cvPoint(size.width + corps[pcor[i][1]].x, corps[pcor[i][1]].y), cWhite, 3, 8, 0);
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//		cv::line(img, ps[i], cv::Point(size.width + corps[pcor[i][1]].x, corps[pcor[i][1]].y), cWhite, 3, 8, 0);
 	}
 /*	for ( i = 0; i < ori_num; i++ )	DrawCross( img, corps[i], 8, cWhite, 3 );
 	for ( i = 0; i < num; i++ ) {
 		if ( pcor[i][0] != cor_doc )	continue;
-		cvLine(img, ps[i], corps[pcor[i][1]], cWhite, 3, 8, 0);
+		cv::line(img, ps[i], corps[pcor[i][1]], cWhite, 3, 8, 0);
 	}*/
 	OutPutImage(img);
 }
 
-void RecovPT( CvPoint *ps, int num, int cor_doc, CvSize size0, IplImage *img )
-// Ë‰e•ÏŠ·‚Ì•â³ƒgƒbƒv
+void RecovPT( cv::Point *ps, int num, int cor_doc, cv::Size size0, cv::Mat img )
+// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½Ì•â³ï¿½gï¿½bï¿½v
 {
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
 	int ori_num, i, cor[kMaxPointNum][2], cor_num = 0;
 	FILE *fp;
-	CvPoint corps[kMaxPointNum];
-	CvSize size;
+	cv::Point corps[kMaxPointNum];
+	cv::Size size;
 
-	// ƒf[ƒ^ƒx[ƒX‚Ì“_ƒtƒ@ƒCƒ‹–¼‚ğì‚Á‚ÄŠJ‚­
+	// ï¿½fï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½Ì“_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄŠJï¿½ï¿½
 	strcpy(pfname, ePFPrefix);
 //	itoa(cor_doc, nstr, 10);
 	sprintf(nstr, "%d", cor_doc);
 	strcat(pfname, nstr);
 	strcat(pfname, ePFSuffix);
 	fp = fopen(pfname, "r");
-	// “_ƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚ğcorps‚ÉŠi”[‚·‚é
+	// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½corpsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 	ori_num = 0;
 	fgets(line, kMaxLineLen, fp);
-	sscanf(line, "%d,%d", &(size.width), &(size.height));	// 1s–Ú‚ÍƒTƒCƒY
+	sscanf(line, "%d,%d", &(size.width), &(size.height));	// 1ï¿½sï¿½Ú‚ÍƒTï¿½Cï¿½Y
 	while( fgets(line, kMaxLineLen, fp) != NULL ) {
 		sscanf(line, "%d,%d", &(corps[ori_num].x), &(corps[ori_num].y));
 		ori_num++;
 	}
 	fclose(fp);
-	// —LŒø‚Èi•¶‘ID‚ª³‚µ‚­C‘Î‰“_‚Ì‚ ‚éj“_‚ğæ‚èo‚·iÀ‚Í‚à‚¤­‚µ—LŒø‚È“_‚ğ‘‚â‚·•û–@‚à‚ ‚éj
+	// ï¿½Lï¿½ï¿½ï¿½Èiï¿½ï¿½ï¿½ï¿½IDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½Î‰ï¿½ï¿½_ï¿½Ì‚ï¿½ï¿½ï¿½jï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½È“_ï¿½ğ‘‚â‚·ï¿½ï¿½ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
 	for ( i = 0; i < num; i++ ) {
 		if ( pcor[i][0] == cor_doc ) {
 			cor[cor_num][0] = i;
@@ -1972,39 +1967,39 @@ void RecovPT( CvPoint *ps, int num, int cor_doc, CvSize size0, IplImage *img )
 	}
 #if 0
 	fp = fopen( "temp.dat", "w" );
-	fprintf(fp, "%d\n", num);	// “_‚Ì”
-	for ( i = 0; i < num; i++ )	fprintf(fp, "%d,%d\n", ps[i].x, ps[i].y);	// “_‚ÌÀ•W
-	fprintf(fp, "%d\n", ori_num);	// ‘Î‰•¶‘‚Ì“_‚Ì”
-	for ( i = 0; i < ori_num; i++ )	fprintf(fp, "%d,%d\n", corps[i].x, corps[i].y);	// ‘Î‰•¶‘‚Ì“_‚ÌÀ•W
-	fprintf(fp, "%d\n", cor_num);	// ‘Î‰ŠÖŒW‚Ì”
-	for ( i = 0; i < cor_num; i++ )	fprintf(fp, "%d,%d\n", cor[i][0], cor[i][1]);	// ‘Î‰ŠÖŒW
-	fprintf(fp, "%d,%d\n", size.width, size.height);	// ƒTƒCƒY
-	fprintf(fp, "%s\n", img_fname);	// ‰æ‘œƒtƒ@ƒCƒ‹–¼
+	fprintf(fp, "%d\n", num);	// ï¿½_ï¿½Ìï¿½
+	for ( i = 0; i < num; i++ )	fprintf(fp, "%d,%d\n", ps[i].x, ps[i].y);	// ï¿½_ï¿½Ìï¿½ï¿½W
+	fprintf(fp, "%d\n", ori_num);	// ï¿½Î‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì“_ï¿½Ìï¿½
+	for ( i = 0; i < ori_num; i++ )	fprintf(fp, "%d,%d\n", corps[i].x, corps[i].y);	// ï¿½Î‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì“_ï¿½Ìï¿½ï¿½W
+	fprintf(fp, "%d\n", cor_num);	// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½Ìï¿½
+	for ( i = 0; i < cor_num; i++ )	fprintf(fp, "%d,%d\n", cor[i][0], cor[i][1]);	// ï¿½Î‰ï¿½ï¿½ÖŒW
+	fprintf(fp, "%d,%d\n", size.width, size.height);	// ï¿½Tï¿½Cï¿½Y
+	fprintf(fp, "%s\n", img_fname);	// ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½
 	fclose(fp);
 #endif
-	RecovPTSub( ps, corps, cor, cor_num, size, img );	// ƒTƒu‚É”C‚¹‚é
+	RecovPTSub( ps, corps, cor, cor_num, size, img );	// ï¿½Tï¿½uï¿½É”Cï¿½ï¿½ï¿½ï¿½
 }
 
 void RecovPTFromTemp( void )
-// Ë‰e•ÏŠ·•â³‚ÌƒeƒXƒg
+// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½â³ï¿½Ìƒeï¿½Xï¿½g
 {
 	int num, ori_num, i, cor[kMaxPointNum][2], cor_num = 0;
 	char line[kMaxLineLen], img_fname[kMaxPathLen];
 	FILE *fp;
-	CvSize size;
-	CvPoint *ps, *corps;
+	cv::Size size;
+	cv::Point *ps, *corps;
 
 	fp = fopen("temp.dat", "r");
 	fgets(line, kMaxLineLen, fp);
 	sscanf(line, "%d", &num);
-	ps = (CvPoint *)calloc(num, sizeof(CvPoint));
+	ps = (cv::Point *)calloc(num, sizeof(cv::Point));
 	for ( i = 0; i < num; i++ ) {
 		fgets(line, kMaxLineLen, fp);
 		sscanf(line, "%d,%d", &(ps[i].x), &(ps[i].y));
 	}
 	fgets(line, kMaxLineLen, fp);
 	sscanf(line, "%d", &ori_num);
-	corps = (CvPoint *)calloc(ori_num, sizeof(CvPoint));
+	corps = (cv::Point *)calloc(ori_num, sizeof(cv::Point));
 	for ( i = 0; i < ori_num; i++ ) {
 		fgets(line, kMaxLineLen, fp);
 		sscanf(line, "%d,%d", &(corps[i].x), &(corps[i].y));
@@ -2023,38 +2018,38 @@ void RecovPTFromTemp( void )
 	fclose(fp);
 
 	printf("%d, %d, %d\n", num, ori_num, cor_num);
-//	RecovPTSub( ps, corps, cor, cor_num, size, img_fname );	// ƒTƒu‚É”C‚¹‚é
+//	RecovPTSub( ps, corps, cor, cor_num, size, img_fname );	// ï¿½Tï¿½uï¿½É”Cï¿½ï¿½ï¿½ï¿½
 }
 
-void CheckByPPVar( CvPoint *ps, int num, int *score )
+void CheckByPPVar( cv::Point *ps, int num, int *score )
 {
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
 	int ori_num, i, j, cor[kMaxPointNum][2], cor_doc, cor_num = 0;
 	FILE *fp;
-	CvPoint corps[kMaxPointNum];
+	cv::Point corps[kMaxPointNum];
 	strScore *strscr;
 	double ppvar[kCheckPPVarNum], var, v1;
 	
-	strscr = (strScore *)malloc(sizeof(strScore) * kMaxDocNum);	// strScore\‘¢‘Ì‚ÌŠm•Û
-	SetAndSortScore( strscr, score, kMaxDocNum );	// strScore‚É‚¢‚ê‚Äƒ\[ƒg
+	strscr = (strScore *)malloc(sizeof(strScore) * kMaxDocNum);	// strScoreï¿½\ï¿½ï¿½ï¿½Ì‚ÌŠmï¿½ï¿½
+	SetAndSortScore( strscr, score, kMaxDocNum );	// strScoreï¿½É‚ï¿½ï¿½ï¿½Äƒ\ï¿½[ï¿½g
 	for ( i = 0; i < kCheckPPVarNum; i++ ) {
-		// ƒf[ƒ^ƒx[ƒX‚Ì“_ƒtƒ@ƒCƒ‹–¼‚ğì‚Á‚ÄŠJ‚­
-		cor_doc = strscr[i].n;	// ‘Î‰•¶‘ID
+		// ï¿½fï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½Ì“_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄŠJï¿½ï¿½
+		cor_doc = strscr[i].n;	// ï¿½Î‰ï¿½ï¿½ï¿½ï¿½ï¿½ID
 		strcpy(pfname, ePFPrefix);
 		sprintf(nstr, "%d", cor_doc);
 		strcat(pfname, nstr);
 		strcat(pfname, ePFSuffix);
 		fp = fopen(pfname, "r");
-		// “_ƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚ğcorps‚ÉŠi”[‚·‚é
+		// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½corpsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
 		ori_num = 0;
 		fgets(line, kMaxLineLen, fp);
-//		sscanf(line, "%d,%d", &(size.width), &(size.height));	// 1s–Ú‚ÍƒTƒCƒY
+//		sscanf(line, "%d,%d", &(size.width), &(size.height));	// 1ï¿½sï¿½Ú‚ÍƒTï¿½Cï¿½Y
 		while( fgets(line, kMaxLineLen, fp) != NULL ) {
 			sscanf(line, "%d,%d", &(corps[ori_num].x), &(corps[ori_num].y));
 			ori_num++;
 		}
 		fclose(fp);
-		// —LŒø‚Èi•¶‘ID‚ª³‚µ‚­C‘Î‰“_‚Ì‚ ‚éj“_‚ğæ‚èo‚·
+		// ï¿½Lï¿½ï¿½ï¿½Èiï¿½ï¿½ï¿½ï¿½IDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½Î‰ï¿½ï¿½_ï¿½Ì‚ï¿½ï¿½ï¿½jï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
 		for ( j = 0, cor_num=0; j < num; j++ ) {
 			if ( corres[j][cor_doc] >= 0 ) {
 				cor[cor_num][0] = j;
@@ -2077,7 +2072,7 @@ void CheckByPPVar( CvPoint *ps, int num, int *score )
 }
 
 void InitCom( int ***com0, int num1, int num2 )
-// com1/com2‚ğ‰Šú‰»‚·‚é
+// com1/com2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	int i, **com;
 	com = (int **)calloc( num1, sizeof(int *) );
@@ -2091,9 +2086,9 @@ void GenerateCombination( int inv_type, int g1, int g2, int g3, void (*setcom1)(
 {
 //	int i;
 
-// Œ´ˆö•s–¾‚¾‚ªƒGƒ‰[‚ªo‚é‚Ì‚ÅƒRƒƒ“ƒgƒAƒEƒgDƒƒ‚ƒŠƒŠ[ƒN‚É‚È‚é
-//	if ( com1 != NULL )		free( com1 );
-//	if ( com2 != NULL )		free( com2 );
+// ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½oï¿½ï¿½Ì‚ÅƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Aï¿½Eï¿½gï¿½Dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Nï¿½É‚È‚ï¿½
+//	if ( com1 != NULL)		free( com1 );
+//	if ( com2 != NULL)		free( com2 );
 	InitCom( &com1, eNumCom1, eGroup2Num );
 	InitCom( &com2, eNumCom2, eGroup3Num );
 	gencomb(g1, g2, setcom1);
@@ -2108,15 +2103,15 @@ void GenerateCombination( int inv_type, int g1, int g2, int g3, void (*setcom1)(
 }
 
 void CreatePointFile2( void )
-// “Á’¥“_’Šoƒ‚[ƒh2
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½h2
 {
 	int n;
 	FILE *fp, *fp_pn;
     int num = 0, **nears = 0;
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img;
 #ifdef	WIN32
 	WIN32_FIND_DATA fFind;
 	HANDLE hSearch;
@@ -2129,15 +2124,15 @@ void CreatePointFile2( void )
 #endif
 
 	n = eCPF2StartNum;
-	fp = fopen( eDBCorFileName, "w" );	// ƒtƒ@ƒCƒ‹‚Æ”Ô†‚Ì‘Î‰ƒtƒ@ƒCƒ‹
+	fp = fopen( eDBCorFileName, "w" );	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Æ”Ôï¿½ï¿½Ì‘Î‰ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
 	fp_pn = fopen( ePNFileName, "w" );
 
 #ifdef	WIN32
-	hSearch = FindFirstFile( eHashSrcPath, &fFind );	// Å‰‚Ìƒtƒ@ƒCƒ‹‚ğŒŸõ
+	hSearch = FindFirstFile( eHashSrcPath, &fFind );	// ï¿½Åï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	for ( i = 0, ret = TRUE; ret != FALSE; i++, n++, ret = FindNextFile( hSearch, &fFind ) ) {
-		GetDir( eHashSrcPath, kMaxPathLen, fname );	// ƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
+		GetDir( eHashSrcPath, kMaxPathLen, fname );	// ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾
 		puts(fname);
-		strcat(fname, fFind.cFileName);	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX‚Ìì¬
+		strcat(fname, fFind.cFileName);	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìï¿½Îƒpï¿½Xï¿½Ìì¬
 		puts(fname);
 
 		fprintf( fp, "%d %s\n", n, fname );
@@ -2150,17 +2145,16 @@ void CreatePointFile2( void )
 		sprintf(nstr, "%d", n);
 		strcat(pfname, nstr);
 		strcat(pfname, ePFSuffix);
-//	ƒ‚[ƒh‚ÍŒˆ‚ß‚¤‚¿‚É‚µ‚½
-//		if ( mode == CONNECTED_MODE ) {	// ’PŒê‚ÌdS
+//	ï¿½ï¿½ï¿½[ï¿½hï¿½ÍŒï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
+//		if ( mode == CONNECTED_MODE ) {	// ï¿½Pï¿½ï¿½Ìdï¿½S
 			puts(fname);
 			img = GetConnectedImage( fname, CONST_HASH_MODE );
 			num = MakeCentresFromImage( &ps, img, &img_size, NULL );
 			puts("end centre");
-//		} else if ( mode == ENCLOSED_MODE ) {	// ˆÍ‚Ü‚ê‚½—Ìˆæ
-//			img = cvLoadImage( gt.gl_pathv[i], 0 );
+//		} else if ( mode == ENCLOSED_MODE ) {	// ï¿½Í‚Ü‚ê‚½ï¿½Ìˆï¿½
+//			img = cv::imread(gt.gl_pathv[i], cv::IMREAD_GRAYSCALE);
 //			num = MakeFeaturePointsFromImage( &ps, img, &img_size );
 //		}
-		cvReleaseImage( &img );
 		puts("end release");
 		puts(pfname);
 		SavePointFile( pfname, ps, num, &img_size, NULL );
@@ -2191,15 +2185,14 @@ void CreatePointFile2( void )
 		sprintf(nstr, "%d", n);
 		strcat(pfname, nstr);
 		strcat(pfname, ePFSuffix);
-//	ƒ‚[ƒh‚ÍŒˆ‚ß‚¤‚¿‚É‚µ‚½
-//		if ( mode == CONNECTED_MODE ) {	// ’PŒê‚ÌdS
+//	ï¿½ï¿½ï¿½[ï¿½hï¿½ÍŒï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
+//		if ( mode == CONNECTED_MODE ) {	// ï¿½Pï¿½ï¿½Ìdï¿½S
 			img = GetConnectedImage( gt.gl_pathv[i], CONST_HASH_MODE );
 			num = MakeCentresFromImage( &ps, img, &img_size, NULL );
-//		} else if ( mode == ENCLOSED_MODE ) {	// ˆÍ‚Ü‚ê‚½—Ìˆæ
-//			img = cvLoadImage( gt.gl_pathv[i], 0 );
+//		} else if ( mode == ENCLOSED_MODE ) {	// ï¿½Í‚Ü‚ê‚½ï¿½Ìˆï¿½
+//			img = cv::imread(gt.gl_pathv[i], cv::IMREAD_GRAYSCALE);
 //			num = MakeFeaturePointsFromImage( &ps, img, &img_size );
 //		}
-		cvReleaseImage( &img );
 		SavePointFile( pfname, ps, num, &img_size, NULL );
 
 		ReleaseCentres( ps );
@@ -2212,67 +2205,66 @@ void CreatePointFile2( void )
 	fclose(fp);
 }
 
-int CreatePointFile3( CvPoint ***p_reg_pss, CvSize **p_reg_sizes, int **p_reg_nums, char ***p_dbcors )
-// “Á’¥“_’Šoƒ‚[ƒh3iŒöŠJ—p‚É‰ü•Ïj
+int CreatePointFile3( cv::Point ***p_reg_pss, cv::Size **p_reg_sizes, int **p_reg_nums, char ***p_dbcors )
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½h3ï¿½iï¿½ï¿½ï¿½Jï¿½pï¿½É‰ï¿½ï¿½Ïj
 {
 	int i, j, n;
 	FILE *fp, *fp_pn;
     int num = 0, **nears = 0;
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img;
 	char search_path[kMaxPathLen], pdat_fname[kMaxPathLen];
-	CvPoint **reg_pss;
-	CvSize *reg_sizes;
+	cv::Point **reg_pss;
+	cv::Size *reg_sizes;
 	int *reg_nums;
 	char **dbcors, **files;
 
-	sprintf( search_path, "%s*.%s", eHashSrcDir, eHashSrcSuffix );	// ŒŸõƒpƒX‚Ìì¬
-	sprintf( pdat_fname, "%s%s", eDirsDir, ePointDatFileName );	// point.dat‚ÌƒpƒX‚ğì¬
+	sprintf( search_path, "%s*.%s", eHashSrcDir, eHashSrcSuffix );	// ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Xï¿½Ìì¬
+	sprintf( pdat_fname, "%s%s", eDirsDir, ePointDatFileName );	// point.datï¿½Ìƒpï¿½Xï¿½ï¿½ï¿½ì¬
 	if ( ( fp = fopen( pdat_fname, "w" ) ) == NULL ) {
 		fprintf( stderr, "error: %s cannot be opened\n", pdat_fname );
 		return 0;
 	}
 	eDbDocs = FindPath( search_path, &files );
 	if ( eDbDocs <= 0 )	return 0;
-	// ƒƒ‚ƒŠ‚ÌŠm•Û
-	reg_pss = (CvPoint **)calloc( eDbDocs, sizeof(CvPoint *) );
-	reg_sizes = (CvSize *)calloc( eDbDocs, sizeof(CvSize) );
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½ï¿½
+	reg_pss = (cv::Point **)calloc( eDbDocs, sizeof(cv::Point *) );
+	reg_sizes = (cv::Size *)calloc( eDbDocs, sizeof(cv::Size) );
 	reg_nums = (int *)calloc( eDbDocs, sizeof(int) );
 	dbcors = (char **)calloc( eDbDocs, sizeof(char *) );
 	for ( i = 0; i < eDbDocs; i++ ) {
 		dbcors[i] = (char *)calloc( kMaxPathLen, sizeof(char) );
 	}
-	// ƒtƒ@ƒCƒ‹o—Í•Ši”[
-	fprintf( fp, "%d\n", eDbDocs );	// ƒtƒ@ƒCƒ‹”‚Ìo—Í
+	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½oï¿½Íï¿½ï¿½iï¿½[
+	fprintf( fp, "%d\n", eDbDocs );	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ìoï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
 		fprintf( stderr, "%s(%d/%d)\n", files[i], i+1, eDbDocs );
-		fprintf( fp, "%s\n", files[i] );	// Œ³‰æ‘œƒtƒ@ƒCƒ‹–¼‚ğo—Í
-		strcpy( dbcors[i], files[i] );	// Œ³‰æ‘œƒtƒ@ƒCƒ‹–¼‚ğ•Û‘¶
-		if ( IsDat( files[i] ) ) {	// datƒtƒ@ƒCƒ‹‚Ìê‡
+		fprintf( fp, "%s\n", files[i] );	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
+		strcpy( dbcors[i], files[i] );	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û‘ï¿½
+		if ( IsDat( files[i] ) ) {	// datï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡
 			reg_nums[i] = LoadPointFile( files[i], &(reg_pss[i]), &(reg_sizes[i]) );
 		}
-		else {	// ‰æ‘œƒtƒ@ƒCƒ‹‚Ìê‡
-			img = GetConnectedImage2( files[i], CONST_HASH_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
+		else {	// ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡
+			img = GetConnectedImage2( files[i], CONST_HASH_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
 //			OutPutImage( img );
-			reg_nums[i] = MakeCentresFromImage( &(reg_pss[i]), img, &(reg_sizes[i]), NULL );	// “Á’¥“_‚ğ’Šo
-			cvReleaseImage( &img );	// ‰æ‘œ‚ğ‰ğ•ú
+			reg_nums[i] = MakeCentresFromImage( &(reg_pss[i]), img, &(reg_sizes[i]), NULL );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
 		}
 //		SavePointFile( pfname, ps, num, &img_size, NULL );
-		// “Á’¥“_î•ñ‚ğo—Í
-		fprintf( fp, "%d,%d\n", reg_sizes[i].width, reg_sizes[i].height );	// ƒTƒCƒY‚ğo—Í
-		fprintf( fp, "%d\n", reg_nums[i] );	// “Á’¥“_”‚ğo—Í
+		// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
+		fprintf( fp, "%d,%d\n", reg_sizes[i].width, reg_sizes[i].height );	// ï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½oï¿½ï¿½
+		fprintf( fp, "%d\n", reg_nums[i] );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
 		for ( j = 0; j < reg_nums[i]; j++ ) {
-			fprintf( fp, "%d,%d\n", reg_pss[i][j].x, reg_pss[i][j].y );	// “Á’¥“_‚ÌÀ•W‚ğo—Í
+			fprintf( fp, "%d,%d\n", reg_pss[i][j].x, reg_pss[i][j].y );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½oï¿½ï¿½
 		}
 	}
-	// ƒ|ƒCƒ“ƒ^‚ÉŠi”[
+	// ï¿½|ï¿½Cï¿½ï¿½ï¿½^ï¿½ÉŠiï¿½[
 	*p_reg_pss = reg_pss;
 	*p_reg_nums = reg_nums;
 	*p_reg_sizes = reg_sizes;
 	*p_dbcors = dbcors;
-	// ‰ğ•ú
+	// ï¿½ï¿½ï¿½
 	fclose( fp );
 	for ( i = 0; i < eDbDocs; i++ ) {
 		free( files[i] );
@@ -2282,69 +2274,68 @@ int CreatePointFile3( CvPoint ***p_reg_pss, CvSize **p_reg_sizes, int **p_reg_nu
 	return i;
 }
 
-int CreatePointFile4( CvPoint ***p_reg_pss, double ***p_reg_areass, CvSize **p_reg_sizes, int **p_reg_nums, char ***p_dbcors )
-// “Á’¥“_’Šoƒ‚[ƒh4i–ÊÏ‚ÉŠÖ‚·‚éˆ—‚ğ’Ç‰Áj
+int CreatePointFile4( cv::Point ***p_reg_pss, double ***p_reg_areass, cv::Size **p_reg_sizes, int **p_reg_nums, char ***p_dbcors )
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½h4ï¿½iï¿½ÊÏ‚ÉŠÖ‚ï¿½ï¿½éˆï¿½ï¿½ï¿½ï¿½Ç‰ï¿½ï¿½j
 {
 	int i, j, n;
 	FILE *fp, *fp_pn;
     int num = 0, **nears = 0;
 	char pfname[kMaxPathLen], nstr[8], line[kMaxLineLen];
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img;
 	char search_path[kMaxPathLen], pdat_fname[kMaxPathLen];
-	CvPoint **reg_pss;
+	cv::Point **reg_pss;
 	double **reg_areass;
-	CvSize *reg_sizes;
+	cv::Size *reg_sizes;
 	int *reg_nums;
 	char **dbcors, **files;
 
-	sprintf( search_path, "%s*.%s", eHashSrcDir, eHashSrcSuffix );	// ŒŸõƒpƒX‚Ìì¬
-	sprintf( pdat_fname, "%s%s", eDirsDir, ePointDatFileName );	// point.dat‚ÌƒpƒX‚ğì¬
+	sprintf( search_path, "%s*.%s", eHashSrcDir, eHashSrcSuffix );	// ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Xï¿½Ìì¬
+	sprintf( pdat_fname, "%s%s", eDirsDir, ePointDatFileName );	// point.datï¿½Ìƒpï¿½Xï¿½ï¿½ï¿½ì¬
 	if ( ( fp = fopen( pdat_fname, "w" ) ) == NULL ) {
 		fprintf( stderr, "error: %s cannot be opened\n", pdat_fname );
 		return 0;
 	}
 	eDbDocs = FindPath( search_path, &files );
 	if ( eDbDocs <= 0 )	return 0;
-	if ( eDbDocs > kMaxDocNum ) {	// •¶‘”‚ªkMaxDocNum‚ğ’´‚¦‚½
+	if ( eDbDocs > kMaxDocNum ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½kMaxDocNumï¿½ğ’´‚ï¿½ï¿½ï¿½
 		fprintf( stderr, "error: # of images(%d) exceeds max(%d)\n", eDbDocs, kMaxDocNum );
 		return 0;
 	}
-	// ƒƒ‚ƒŠ‚ÌŠm•Û
-	reg_pss = (CvPoint **)calloc( eDbDocs, sizeof(CvPoint *) );
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½ï¿½
+	reg_pss = (cv::Point **)calloc( eDbDocs, sizeof(cv::Point *) );
 	reg_areass = (double **)calloc( eDbDocs, sizeof(double *) );
-	reg_sizes = (CvSize *)calloc( eDbDocs, sizeof(CvSize) );
+	reg_sizes = (cv::Size *)calloc( eDbDocs, sizeof(cv::Size) );
 	reg_nums = (int *)calloc( eDbDocs, sizeof(int) );
 	dbcors = (char **)calloc( eDbDocs, sizeof(char *) );
 	for ( i = 0; i < eDbDocs; i++ ) {
 		dbcors[i] = (char *)calloc( kMaxPathLen, sizeof(char) );
 	}
-	// ƒtƒ@ƒCƒ‹o—Í•Ši”[
-	fprintf( fp, "%d\n", eDbDocs );	// ƒtƒ@ƒCƒ‹”‚Ìo—Í
+	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½oï¿½Íï¿½ï¿½iï¿½[
+	fprintf( fp, "%d\n", eDbDocs );	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ìoï¿½ï¿½
 	for ( i = 0; i < eDbDocs; i++ ) {
 		fprintf( stderr, "%s(%d/%d)\n", files[i], i+1, eDbDocs );
-		fprintf( fp, "%s\n", files[i] );	// Œ³‰æ‘œƒtƒ@ƒCƒ‹–¼‚ğo—Í
-		strcpy( dbcors[i], files[i] );	// Œ³‰æ‘œƒtƒ@ƒCƒ‹–¼‚ğ•Û‘¶
-		// datƒtƒ@ƒCƒ‹‚Ìê‡‚Ìˆ—‚ÍíœB–ÊÏ‚ª‚È‚¢‚Ì‚Å
-		if ( eIsJp )	img = GetConnectedImageJp2( files[i], CONST_HASH_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
-		else			img = GetConnectedImage2( files[i], CONST_HASH_MODE );	// Œ‹‘œ‰æ‘œ‚ğì¬
-		reg_nums[i] = MakeCentresFromImage( &(reg_pss[i]), img, &(reg_sizes[i]), &(reg_areass[i]) );	// “Á’¥“_‚ğ’Šo
-		cvReleaseImage( &img );	// ‰æ‘œ‚ğ‰ğ•ú
-		// “Á’¥“_î•ñ‚ğo—Í
-		fprintf( fp, "%d,%d\n", reg_sizes[i].width, reg_sizes[i].height );	// ƒTƒCƒY‚ğo—Í
-		fprintf( fp, "%d\n", reg_nums[i] );	// “Á’¥“_”‚ğo—Í
+		fprintf( fp, "%s\n", files[i] );	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
+		strcpy( dbcors[i], files[i] );	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û‘ï¿½
+		// datï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½Ìï¿½ï¿½ï¿½ï¿½Ííœï¿½Bï¿½ÊÏ‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚ï¿½
+		if ( eIsJp )	img = GetConnectedImageJp2( files[i], CONST_HASH_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+		else			img = GetConnectedImage2( files[i], CONST_HASH_MODE );	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
+		reg_nums[i] = MakeCentresFromImage( &(reg_pss[i]), img, &(reg_sizes[i]), &(reg_areass[i]) );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
+		// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
+		fprintf( fp, "%d,%d\n", reg_sizes[i].width, reg_sizes[i].height );	// ï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½oï¿½ï¿½
+		fprintf( fp, "%d\n", reg_nums[i] );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
 		for ( j = 0; j < reg_nums[i]; j++ ) {
-			fprintf( fp, "%d,%d,%lf\n", reg_pss[i][j].x, reg_pss[i][j].y, reg_areass[i][j] );	// “Á’¥“_‚ÌÀ•W‚Æ–ÊÏ‚ğo—Í
+			fprintf( fp, "%d,%d,%lf\n", reg_pss[i][j].x, reg_pss[i][j].y, reg_areass[i][j] );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìï¿½ï¿½Wï¿½Æ–ÊÏ‚ï¿½ï¿½oï¿½ï¿½
 		}
 	}
-	// ƒ|ƒCƒ“ƒ^‚ÉŠi”[
+	// ï¿½|ï¿½Cï¿½ï¿½ï¿½^ï¿½ÉŠiï¿½[
 	*p_reg_pss = reg_pss;
 	*p_reg_areass = reg_areass;
 	*p_reg_nums = reg_nums;
 	*p_reg_sizes = reg_sizes;
 	*p_dbcors = dbcors;
-	// ‰ğ•ú
+	// ï¿½ï¿½ï¿½
 	fclose( fp );
 	for ( i = 0; i < eDbDocs; i++ ) {
 		free( files[i] );
@@ -2354,15 +2345,15 @@ int CreatePointFile4( CvPoint ***p_reg_pss, double ***p_reg_areass, CvSize **p_r
 	return i;
 }
 
-int LoadPointFile2( char *fname, CvPoint ***p_reg_pss, double ***p_reg_areass, CvSize **p_reg_sizes, int **p_reg_nums, char ***p_dbcors )
-// “Á’¥“_’Šoƒ‚[ƒh3iŒöŠJ—p‚É‰ü•Ïj
+int LoadPointFile2( char *fname, cv::Point ***p_reg_pss, double ***p_reg_areass, cv::Size **p_reg_sizes, int **p_reg_nums, char ***p_dbcors )
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½h3ï¿½iï¿½ï¿½ï¿½Jï¿½pï¿½É‰ï¿½ï¿½Ïj
 {
 	FILE *fp;
     int i, j, doc_num;
 	char line[kMaxLineLen];
-	CvPoint **reg_pss;
+	cv::Point **reg_pss;
 	double **reg_areass;
-	CvSize *reg_sizes;
+	cv::Size *reg_sizes;
 	int *reg_nums;
 	char **dbcors;
 
@@ -2372,35 +2363,35 @@ int LoadPointFile2( char *fname, CvPoint ***p_reg_pss, double ***p_reg_areass, C
 	}
 	fgets( line, kMaxLineLen, fp );
 	sscanf( line, "%d", &doc_num );
-	if ( doc_num != eDbDocs ) {	// “o˜^•¶‘”‚ªˆê’v‚µ‚È‚¢
+	if ( doc_num != eDbDocs ) {	// ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½È‚ï¿½
 //		fprintf( stderr, "error: document number does not match\n" );
 //		return 0;
-		eDbDocs = doc_num;	// config.dat‚ğ“Ç‚İ‚Ü‚È‚¢ê‡‚ª‚ ‚é‚½‚ß
+		eDbDocs = doc_num;	// config.datï¿½ï¿½Ç‚İï¿½ï¿½Ü‚È‚ï¿½ï¿½ê‡ï¿½ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ï¿½
 	}
-	// ƒƒ‚ƒŠ‚ÌŠm•Û
-	reg_pss = (CvPoint **)calloc( eDbDocs, sizeof(CvPoint *) );
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½ï¿½
+	reg_pss = (cv::Point **)calloc( eDbDocs, sizeof(cv::Point *) );
 	reg_areass = (double **)calloc( eDbDocs, sizeof(double *) );
-	reg_sizes = (CvSize *)calloc( eDbDocs, sizeof(CvSize) );
+	reg_sizes = (cv::Size *)calloc( eDbDocs, sizeof(cv::Size) );
 	reg_nums = (int *)calloc( eDbDocs, sizeof(int) );
 	dbcors = (char **)calloc( eDbDocs, sizeof(char *) );
 	for ( i = 0; i < eDbDocs; i++ ) {
 		dbcors[i] = (char *)calloc( kMaxPathLen, sizeof(char) );
 	}
-	// “Ç‚İ‚İ
+	// ï¿½Ç‚İï¿½ï¿½ï¿½
 	for ( i = 0; i < eDbDocs && fgets( line, kMaxLineLen, fp ) != NULL; i++ ) {
-		sscanf( line, "%s", dbcors[i] );	// Œ³‰æ‘œƒtƒ@ƒCƒ‹‚ÌƒpƒX
+		sscanf( line, "%s", dbcors[i] );	// ï¿½ï¿½ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒpï¿½X
 		fgets( line, kMaxLineLen, fp );
-		sscanf( line, "%d,%d", &(reg_sizes[i].width), &(reg_sizes[i].height) );	// ƒTƒCƒY
+		sscanf( line, "%d,%d", &(reg_sizes[i].width), &(reg_sizes[i].height) );	// ï¿½Tï¿½Cï¿½Y
 		fgets( line, kMaxLineLen, fp );
-		sscanf( line, "%d", &(reg_nums[i]) );	// “Á’¥“_”
-		reg_pss[i] = (CvPoint *)calloc( reg_nums[i], sizeof(CvPoint) );	// “Á’¥“_ƒf[ƒ^‚Ìƒƒ‚ƒŠŠm•Û
-		reg_areass[i] = (double *)calloc( reg_nums[i], sizeof(double) );	// –ÊÏƒf[ƒ^‚Ìƒƒ‚ƒŠŠm•Û
+		sscanf( line, "%d", &(reg_nums[i]) );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½
+		reg_pss[i] = (cv::Point *)calloc( reg_nums[i], sizeof(cv::Point) );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½Ìƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
+		reg_areass[i] = (double *)calloc( reg_nums[i], sizeof(double) );	// ï¿½ÊÏƒfï¿½[ï¿½^ï¿½Ìƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
 		for ( j = 0; j < reg_nums[i]; j++ ) {
 			fgets( line, kMaxLineLen, fp );
-			sscanf( line, "%d,%d,%lf", &(reg_pss[i][j].x), &(reg_pss[i][j].y), &(reg_areass[i][j]) );	// “Á’¥“_‚ÌÀ•W
+			sscanf( line, "%d,%d,%lf", &(reg_pss[i][j].x), &(reg_pss[i][j].y), &(reg_areass[i][j]) );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìï¿½ï¿½W
 		}
 	}
-	// ƒ|ƒCƒ“ƒ^‚ÉŠi”[
+	// ï¿½|ï¿½Cï¿½ï¿½ï¿½^ï¿½ÉŠiï¿½[
 	*p_reg_pss = reg_pss;
 	*p_reg_areass = reg_areass;
 	*p_reg_nums = reg_nums;
@@ -2411,34 +2402,32 @@ int LoadPointFile2( char *fname, CvPoint ***p_reg_pss, double ***p_reg_areass, C
 	return i;
 }
 
-void DrawPoints( CvSize img_size, CvPoint *ps, int num )
-// “Á’¥“_‚ğ•`‰æ
+void DrawPoints( cv::Size img_size, cv::Point *ps, int num )
+// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½`ï¿½ï¿½
 {
 	int i, width_all, height_all;
-	IplImage *pt;
+	cv::Mat pt;
 
 	width_all = kDrawCorHMargin * 2 + img_size.width;
 	height_all = kDrawCorVMargin * 2 + img_size.height;
 //	printf( "%d,%d\n", width_all, height_all );
-	pt = cvCreateImage( cvSize( width_all, height_all ), IPL_DEPTH_8U, 3 );
-	cvSet( pt, cWhite, NULL );	// ”’‚Å“h‚è‚Â‚Ô‚·
+	pt = cv::Mat::zeros(cv::Size( width_all, height_all ), CV_8UC3);
+	pt.setTo(cWhite);	// ï¿½ï¿½ï¿½Å“hï¿½ï¿½Â‚Ô‚ï¿½
 
-	// ŒŸõ¿–â‚Ì˜g‚ğ•`‰æ
-	cvRectangle( pt, cvPoint( kDrawCorHMargin, kDrawCorVMargin ), \
-		cvPoint( kDrawCorHMargin + img_size.width, kDrawCorVMargin + img_size.height ), \
-		cBlack, kDrawCorRectThick, CV_AA, 0 );
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì˜gï¿½ï¿½`ï¿½ï¿½
+	cv::rectangle( pt, cv::Point( kDrawCorHMargin, kDrawCorVMargin ), \
+		cv::Point( kDrawCorHMargin + img_size.width, kDrawCorVMargin + img_size.height ), \
+		cBlack, kDrawCorRectThick, cv::LINE_AA, 0 );
 	
-	// ŒŸõ¿–â‚Ì“Á’¥“_‚Ì•`‰æ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½Ì•`ï¿½ï¿½
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( pt, cvPoint( kDrawCorHMargin + ps[i].x, kDrawCorVMargin + ps[i].y ), kDrawCorPtRad, cBlack, -1, CV_AA, 0 );
+		cv::circle( pt, cv::Point( kDrawCorHMargin + ps[i].x, kDrawCorVMargin + ps[i].y ), kDrawCorPtRad, cBlack, -1, cv::LINE_AA, 0 );
 	}
 	OutPutImage( pt );
-
-	cvReleaseImage( &pt );
 }
 
-void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist )
-// •¡”ä‚ğŒvZ‚µ‚ÄƒqƒXƒgƒOƒ‰ƒ€‚É“ü‚ê‚é
+void CalcCRAndAddHist( cv::Point *ps, int num, int *nears[], strHist *hist )
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½Äƒqï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½
 {
 	int i=0, j, k, l, st, tmp, *idx;
 	int *idxcom1, *idxcom2;
@@ -2449,10 +2438,10 @@ void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist )
 	idxcom2 = (int *)calloc( eGroup3Num, sizeof(int) );
 	for ( i = 0; i < num; i++ ) {
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// Šen“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½enï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
 			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];
-			for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
-                for ( k = 0; k < eNumCom2; k++ ) {	// Šem“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
+			for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
+                for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½emï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
                 	if ( eIncludeCentre ) {
 						idxcom2[0] = i;
 						for ( l = 0; l < eGroup3Num; l++ )	idxcom2[l+1] = idxcom1[com2[k][l]];	//
@@ -2475,7 +2464,7 @@ void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist )
 						default:
 							break;
 					}
-					AddDataHist( hist, cr );	// ƒqƒXƒgƒOƒ‰ƒ€‚É’Ç‰Á
+					AddDataHist( hist, cr );	// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½É’Ç‰ï¿½
 //					printf("%lf\n", cr);
 				}
 
@@ -2491,14 +2480,14 @@ void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist )
 }
 
 int FindStartPoint( char *inv_array )
-// ŠJn“_‚ğŒ©‚Â‚¯‚é
+// ï¿½Jï¿½nï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
 {
 	int i, j, min;
 
 	for ( i = 1, min = 0; i < eGroup2Num; i++ ) {
-		// ‚Ü‚¸inv_array[min]‚Æinv_array[i]‚ğ”äŠr‚µC
-		// Ÿ‚Éinv_array[min+1]‚Æinv_array[i+1]‚Æ‚¢‚¤‚æ‚¤‚É‡‚É”äŠr‚µ‚Ä¬‚³‚¢‚Ù‚¤‚ğmin‚Æ‚·‚éD
-		// Ü‚è•Ô‚µ‚Ì‚½‚ßeGroup2Num‚Åmod‚ğæ‚é
+		// ï¿½Ü‚ï¿½inv_array[min]ï¿½ï¿½inv_array[i]ï¿½ï¿½ï¿½rï¿½ï¿½ï¿½C
+		// ï¿½ï¿½ï¿½ï¿½inv_array[min+1]ï¿½ï¿½inv_array[i+1]ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½æ‚¤ï¿½Éï¿½ï¿½É”ï¿½rï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù‚ï¿½ï¿½ï¿½minï¿½Æ‚ï¿½ï¿½ï¿½D
+		// ï¿½Ü‚ï¿½Ô‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½eGroup2Numï¿½ï¿½modï¿½ï¿½ï¿½ï¿½ï¿½
 		for ( j = 0; j < eGroup2Num; j++ ) {
 			if ( inv_array[(min+j)%eGroup2Num] < inv_array[(i+j)%eGroup2Num] ) {
 				break;
@@ -2512,8 +2501,8 @@ int FindStartPoint( char *inv_array )
 }
 
 void CalcHindexArea( int *idxcom1, double *areas, char *hindex_area )
-// –ÊÏ‚©‚çƒCƒ“ƒfƒbƒNƒX‚ğŒvZ
-// ‡ˆÊƒo[ƒWƒ‡ƒ“
+// ï¿½ÊÏ‚ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½vï¿½Z
+// ï¿½ï¿½ï¿½Êƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
 {
 	int i, j;
 	int *num_array, tmp_num;
