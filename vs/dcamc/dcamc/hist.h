@@ -13,4 +13,4 @@ int AddDataHist( strHist *hist, double dat );
 void OutPutHist( strHist *hist, int width, int height );
 void DisplayHistNum( strHist *hist);
 double GetMaxBin( strHist *hist );
-void DrawHist( IplImage *img, strHist *hist );
+void DrawHist( cv::Mat img, strHist *hist );

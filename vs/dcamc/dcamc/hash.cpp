@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "def_general.h"
-#include "cv.h"
+#include <opencv2/opencv.hpp>
 #include "highgui.h"
 #include "hash.h"
 //#include "dirs.h"

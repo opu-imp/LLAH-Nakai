@@ -1,8 +1,10 @@
+#if 0 // TODO: This file uses internal OpenCV APIs (GrFmtReader, grfmts.h, CV_CALL)
+// that were removed in OpenCV 4. Needs complete rewrite using cv::imread.
 //
 //  Loading and saving IPL images.
 //
 
-#include "_highgui.h"
+// #include "_highgui.h" // removed for OpenCV 4
 #include "grfmts.h"
 
 /****************************************************************************************\
@@ -41,15 +43,15 @@ static void*
 icvLoadImage_nakai( GrFmtReader* reader, int flags, bool load_as_matrix )
 {
   /*    GrFmtReader* reader = 0; */
-    IplImage* image = 0;
-    CvMat hdr, *matrix = 0;
+    cv::Mat  image = 0;
+    cv::Mat hdr, *matrix = 0;
     int depth = 8;
 
     CV_FUNCNAME( "cvLoadImage_nakai" );
 
     __BEGIN__;
 
-    CvSize size;
+    cv::Size size;
     int iscolor;
     int cn;
 
@@ -102,17 +104,15 @@ icvLoadImage_nakai( GrFmtReader* reader, int flags, bool load_as_matrix )
         if(reader->IsFloat() && depth != 8)
             type = IPL_DEPTH_32F;
         else
-            type = ( depth <= 8 ) ? IPL_DEPTH_8U : ( depth <= 16 ) ? IPL_DEPTH_16U : IPL_DEPTH_32S;
+            type = ( depth <= 8 ) ? CV_8U : ( depth <= 16 ) ? IPL_DEPTH_16U : IPL_DEPTH_32S;
         CV_CALL( image = cvCreateImage( size, type, cn ));
         matrix = cvGetMat( image, &hdr );
     }
 
     if( !reader->ReadData( matrix->data.ptr, matrix->step, iscolor ))
     {
-        if( load_as_matrix )
-            cvReleaseMat( &matrix );
-        else
-            cvReleaseImage( &image );
+        if( load_as_matrix ) // cvReleaseMat removed (cv::Mat auto-manages memory)
+        else // cvReleaseImage removed (cv::Mat auto-manages memory)
         EXIT;
     }
 
@@ -122,20 +122,20 @@ icvLoadImage_nakai( GrFmtReader* reader, int flags, bool load_as_matrix )
 
     if( cvGetErrStatus() < 0 )
     {
-        if( load_as_matrix )
-            cvReleaseMat( &matrix );
-        else
-            cvReleaseImage( &image );
+        if( load_as_matrix ) // cvReleaseMat removed (cv::Mat auto-manages memory)
+        else // cvReleaseImage removed (cv::Mat auto-manages memory)
     }
 
     return load_as_matrix ? (void*)matrix : (void*)image;
 }
 
 
-CV_IMPL IplImage*
+CV_IMPL cv::Mat 
 cvLoadImage_nakai( GrFmtReader* reader, int iscolor )
 {
-    return (IplImage*)icvLoadImage_nakai( reader, iscolor, false );
+    return (cv::Mat )icvLoadImage_nakai( reader, iscolor, false );
 }
 
 /* End of file. */
+
+#endif // if 0

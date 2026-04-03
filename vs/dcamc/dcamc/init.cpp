@@ -1,5 +1,5 @@
-#include <cv.h>			// OpneCV
-#include <highgui.h>	// OpenCV
+#include <opencv2/opencv.hpp>			// OpneCV
+// #include <highgui.h> // now in opencv2/opencv.hpp	// OpenCV
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -69,11 +69,11 @@ typedef struct _strHarrisRegParam {
 
 int DetectHarrisCam( char *fname, int mode );
 int DetectHarrisTest( char *fname, char *fname_anno );
-void DetectHarris( IplImage *src, IplImage *dst );
-void DetectGoodFeatures( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum );
-void DetectGoodFeaturesReg( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum   );
-void FindCorPoint( CvPoint *ps, int num, CvPoint *corps, int cornum, int *pcor, strProjParam *param );
-void DetectEngDocPoints( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum );
-void DetectEngDocPointsReg( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum  );
-void DetectJpDocPoints( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum );
-void DetectJpDocPointsReg( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum  );
+void DetectHarris( cv::Mat src, cv::Mat dst );
+void DetectGoodFeatures( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum );
+void DetectGoodFeaturesReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum   );
+void FindCorPoint( cv::Point *ps, int num, cv::Point *corps, int cornum, int *pcor, strProjParam *param );
+void DetectEngDocPoints( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum );
+void DetectEngDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum  );
+void DetectJpDocPoints( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum );
+void DetectJpDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum  );

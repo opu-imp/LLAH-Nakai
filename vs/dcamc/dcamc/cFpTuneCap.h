@@ -3,15 +3,15 @@
 class cFpTuneCap
 {
 private:
-	IplImage *gray, *inv;
+	cv::Mat gray, *inv;
 public:
-	IplImage *img, *bin1, *smt, *bin2, *pt, *overlap, *cor;
-	CvPoint2D32f *pfs;
+	cv::Mat img, *bin1, *smt, *bin2, *pt, *overlap, *cor;
+	cv::Point2f *pfs;
 	int adp_block, adp_sub, gparam, thr;
 
-	cFpTuneCap( IplImage *cap, int def_adp_block, int def_adp_sub, int def_gparam, int def_thr );
+	cFpTuneCap( cv::Mat cap, int def_adp_block, int def_adp_sub, int def_gparam, int def_thr );
 	int Extract( void );
-	int DrawCor( int pcor[][2], CvPoint2D32f *corpfs,  CvPoint cororig );
+	int DrawCor( int pcor[][2], cv::Point2f *corpfs,  cv::Point cororig );
 public:
 	~cFpTuneCap( void );
 };

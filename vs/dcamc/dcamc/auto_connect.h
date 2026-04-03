@@ -1,7 +1,7 @@
-IplImage *GetConnectedImage( char *fname, int mode );
-int AutoConnectTest( char *fname, CvSize *size );
-IplImage *GetConnectedImageCam( IplImage *src, IplImage *inv, int cam_gauss_mask_size );
-IplImage *GetConnectedImageCamJp( IplImage *src );
-IplImage *GetConnectedImageReg( IplImage *img );
-IplImage *GetConnectedImageRegJp( IplImage *src );
-IplImage *GetConnectedImageCamJp2( IplImage *src );
+cv::Mat GetConnectedImage( char *fname, int mode );
+int AutoConnectTest( char *fname, cv::Size *size );
+cv::Mat GetConnectedImageCam( cv::Mat src, cv::Mat inv, int cam_gauss_mask_size );
+cv::Mat GetConnectedImageCamJp( cv::Mat src );
+cv::Mat GetConnectedImageReg( cv::Mat img );
+cv::Mat GetConnectedImageRegJp( cv::Mat src );
+cv::Mat GetConnectedImageCamJp2( cv::Mat src );
