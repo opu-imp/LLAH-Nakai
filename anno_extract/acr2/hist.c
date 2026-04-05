@@ -80,44 +80,35 @@ void DisplayHistNum(strHist *hist)
 
 void HistTest( void )
 {
-    cv::Mat  src;
-    if( (src = cv::imread("img_0001.jpg", cv::IMREAD_COLOR))!= 0)
+    cv::Mat src = cv::imread("img_0001.jpg", cv::IMREAD_COLOR);
+    if( !src.empty() )
     {
-        cv::Mat  h_plane = cv::Mat::zeros(src.size(), CV_8UC1);
-        cv::Mat  s_plane = cv::Mat::zeros(src.size(), CV_8UC1);
-        cv::Mat  v_plane = cv::Mat::zeros(src.size(), CV_8UC1);
-        cv::Mat  planes[] = { h_plane, s_plane };
-        cv::Mat  hsv = cv::Mat::zeros(src.size(), CV_8UC3);
+        cv::Mat hsv;
         int h_bins = 30, s_bins = 32;
         int hist_size[] = {h_bins, s_bins};
-        float h_ranges[] = { 0, 180 }; /* hue varies from 0 (~0��red) to 180 (~360��red again) */
-        float s_ranges[] = { 0, 255 }; /* saturation varies from 0 (black-gray-white) to 255 (pure spectrum color) */
-        float* ranges[] = { h_ranges, s_ranges };
+        float h_ranges[] = { 0, 180 };
+        float s_ranges[] = { 0, 255 };
+        const float* ranges[] = { h_ranges, s_ranges };
+        int channels[] = {0, 1};
         int scale = 10;
-        cv::Mat  hist_img = cv::Mat::zeros(cv::Size(h_bins*scale,s_bins*scale), CV_8UC3);
-        CvHistogram* hist;
-        float max_value = 0;
-        int h, s;
+        cv::Mat hist_img = cv::Mat::zeros(cv::Size(h_bins*scale, s_bins*scale), CV_8UC3);
+        cv::Mat hist;
+        double max_value = 0;
 
-        cv::cvtColor( src, hsv, CV_BGR2HSV );
-        cvCvtPixToPlane( hsv, h_plane, s_plane, v_plane, 0 );
-        hist = cvCreateHist( 2, hist_size, CV_HIST_ARRAY, ranges, 1 );
-        cvCalcHist( planes, hist, 0, 0 );
-        cvGetMinMaxHistValue( hist, 0, &max_value, 0, 0 );
-        hist_img.setTo(cv::Scalar::all(0));
+        cv::cvtColor( src, hsv, cv::COLOR_BGR2HSV );
+        cv::calcHist( &hsv, 1, channels, cv::Mat(), hist, 2, hist_size, ranges, true, false );
+        cv::minMaxLoc( hist, 0, &max_value, 0, 0 );
 
-        for( h = 0; h < h_bins; h++ )
+        for( int h = 0; h < h_bins; h++ )
         {
-            for( s = 0; s < s_bins; s++ )
+            for( int s = 0; s < s_bins; s++ )
             {
-                float bin_val = cvQueryHistValue_2D( hist, h, s );
-                int intensity = cvRound(bin_val*255/max_value);
+                float bin_val = hist.at<float>(h, s);
+                int intensity = cvRound(bin_val * 255 / max_value);
                 cv::rectangle( hist_img, cv::Point( h*scale, s*scale ),
                              cv::Point( (h+1)*scale - 1, (s+1)*scale - 1),
-                             cv::Scalar(intensity,intensity,intensity), /* graw a grayscale histogram.
-                                                                       if you have idea how to do it
-                                                                       nicer let us know */
-                             1, cv::FILLED, 0 );
+                             cv::Scalar(intensity,intensity,intensity),
+                             cv::FILLED, cv::LINE_8, 0 );
             }
         }
 

@@ -128,6 +128,7 @@ int main( int argc, char *argv[] )
 	Hist2Disc( &hist, &disc, eDiscNum );
 	SaveDisc( fname, &disc );
 //	OutPutHist(&hist, 1000, 1000);
+	return 0;
 }
 
 void SaveDisc( char *fname, strDisc *disc )

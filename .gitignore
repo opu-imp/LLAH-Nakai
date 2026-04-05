@@ -7,6 +7,15 @@ demo_server/llahdoc
 old_stable/llahdoc
 old_stable/temp/llahdoc
 anno_extract/annex
+anno_extract/acr2/acr2
+
+# Test outputs
+test/test_doc*.jpg
+test/demo_db/
+test/old_db/
+test/annex_output/
+
+*.dat
 
 # Editor / OS artifacts
 .DS_Store
