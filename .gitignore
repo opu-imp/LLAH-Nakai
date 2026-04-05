@@ -15,6 +15,7 @@ test/demo_db/
 test/old_db/
 test/annex_output/
 
+*.jpg
 *.dat
 
 # Editor / OS artifacts
