@@ -330,11 +330,12 @@ int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
 	// �A�������̏d�S���v�Z
 	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 	// �܂����𐔂���
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
 		double d00;
 //		cv::Point p;
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// ����������A�������͏��O
 		i++;
@@ -342,11 +343,12 @@ int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
     // �m�ۂ���
     ps = (cv::Point *)calloc( i, sizeof( cv::Point ) );
     *ps0 = ps;
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
 		double d00;
 //		cv::Point p;
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// ����������A�������͏��O
 		ps[i].x = (int)(mom.m10 / d00);

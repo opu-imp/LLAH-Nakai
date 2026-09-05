@@ -1346,14 +1346,15 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 		*areas0 = areas;
 	}
 	// �A��������`��E�d�S���v�Z
-    for( i = 0; i < (int)contours.size() && i < num; )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size() && i < num; ci++ )
     {
 		double d00;
 #ifdef DRAW_PIC
 		cv::Scalar color;
 #endif
 
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// ����������A�������͏��O
 
@@ -1363,14 +1364,14 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 			areas[i] = d00;
 //			printf("%lf\n", areas[i]);
 		}
-//        cv::drawContours(img, contours, i, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
+//        cv::drawContours(img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
 		cv::circle( img, ps[i], 5, cWhite, -1, 1, 0 );
 
 #ifdef DRAW_PIC
 		color = cRandom;
-        cv::drawContours(dst, contours, i, color, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
-        cv::drawContours(out_img, contours, i, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
-//        cv::drawContours(centre_img, contours, i, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
+        cv::drawContours(dst, contours, ci, color, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
+        cv::drawContours(out_img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
+//        cv::drawContours(centre_img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
 		cv::circle( centre_img, ps[i], 0/*5*/, cWhite, -1, 1, 0 );
 #endif
 		i++;

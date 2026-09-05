@@ -194,15 +194,16 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 			nums[i]++;
 		}
 		clps[i] = (cv::Point *)calloc( nums[i], sizeof(cv::Point) );
-		for( j = 0; j < (int)contours.size(); j++ ) {
-			mom = cv::moments(contours[j]);
+		j = 0;
+		for( int ci = 0; ci < (int)contours.size(); ci++ ) {
+			mom = cv::moments(contours[ci]);
 			d00 = mom.m00;
 			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ����������A�������͏��O
 			clps[i][j].x = (int)(mom.m10 / d00 / eClScale );	// �����_�̍��W�̓��T�C�Y�O�̂��̂ɂ���
 			clps[i][j].y = (int)(mom.m01 / d00 / eClScale );
 			j++;
 #ifdef	CL_OUTPUT_IMAGE
-			cv::drawContours( climgs2[i], contours, j, cGreen, cv::FILLED, kDrawContourLineType );	// replace cv::FILLED with 1 to see the outlines
+			cv::drawContours( climgs2[i], contours, ci, cGreen, cv::FILLED, kDrawContourLineType );	// replace cv::FILLED with 1 to see the outlines
 #endif
 		}
 #ifdef	CL_OUTPUT_IMAGE

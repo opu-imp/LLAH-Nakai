@@ -101,9 +101,10 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 	// �A��������`��E�d�S���v�Z
 	InitHist( &hist, 100, 0, 1000 );
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 <= 0.5 ) continue;	// ����������A�������͏��O
 		AddDataHist( &hist, sqrt(d00) );
@@ -130,11 +131,12 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	cv::findContours(smt, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
 	// �A��������`��E�d�S���v�Z
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
 		double d00;
 		cv::Point p;
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// ����������A�������͏��O
 		p.x = (int)(mom.m10 / d00);
@@ -208,9 +210,10 @@ cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter 
 		cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 		// �A��������`��E�d�S���v�Z
 		InitHist( &hist, 1000, 0, 1000 );
-	    for( i = 0; i < (int)contours.size(); i++ )
+	    i = 0;
+	    for( int ci = 0; ci < (int)contours.size(); ci++ )
 	    {
-			mom = cv::moments(contours[i]);
+			mom = cv::moments(contours[ci]);
 			d00 = mom.m00;
 			if ( d00 <= 0.5 ) continue;	// ����������A�������͏��O
 			AddDataHist( &hist, sqrt(d00) );
@@ -357,10 +360,11 @@ int AutoConnectTest( char *fname, cv::Size *size )
 //	OutPutImage( inv );
 	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 	InitHist( &hist, 100, 0, 1000 );
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
 		double d00;
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 <= 0.5 ) continue;	// ����������A�������͏��O
 		AddDataHist( &hist, sqrt(d00) );
@@ -393,11 +397,12 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	// �A��������`��E�d�S���v�Z
 	InitHist( &hist, 100, 0, 1000 );
 //	InitHist( &hist, 200, 0, 20 );
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
 		double d00;
 
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 <= 0.5 ) continue;	// ����������A�������͏��O
 //		printf("%f\n", d00);
@@ -427,12 +432,13 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
 	// �A��������`��E�d�S���v�Z
-    for( i = 0; i < (int)contours.size(); i++ )
+    i = 0;
+    for( int ci = 0; ci < (int)contours.size(); ci++ )
     {
 		double d00;
 //		cv::Scalar color;
 
-		mom = cv::moments(contours[i]);
+		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// ����������A�������͏��O
 
