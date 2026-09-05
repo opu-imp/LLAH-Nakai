@@ -22,7 +22,7 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	cv::Mat img, bin, inv, smt;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
 //	cv::Point *ps;
 	strHist hist;
@@ -57,8 +57,8 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 //		OutPutImage( bin );
 		cv::bitwise_not(bin, inv);	// CBDAR�Ȍ�ɒǉ������m�C�Y��������
 //		OutPutImage( inv );
-		cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
-		for( int _ci = 0; _ci < (int)contours.size(); _ci++ ) {		// �A��������`��
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// �A��������`��
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
 			if ( d00 < 10 ) continue;	// ����������A�������͏��O
@@ -77,9 +77,9 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
 //		OutPutImage( bin );
 		cv::bitwise_not( bin, inv );
-		cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 		InitHist( &hist, 100, 0, 1000 );
-	    for( int _ci = 0; _ci < (int)contours.size(); _ci++ )
+	    for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] )
 	    {
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
@@ -97,11 +97,11 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	}
 	cv::bitwise_not( bin, inv );
 	// �����̑傫���𒲂ׂ�
-	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 	// �A��������`��E�d�S���v�Z
 	InitHist( &hist, 100, 0, 1000 );
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
@@ -127,11 +127,11 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	cv::bitwise_not( bin, smt );
 
 #if 0
-	cv::findContours(smt, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	cv::findContours(smt, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
 	// �A��������`��E�d�S���v�Z
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
 		cv::Point p;
@@ -161,7 +161,7 @@ cv::Mat GetConnectedImage2( const char *fname, int mode )
 	cv::Size img_size;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
 //	cv::Point *ps;
 	strHist hist;
@@ -190,8 +190,8 @@ cv::Mat GetConnectedImage2( const char *fname, int mode )
 //		OutPutImage( bin );
 		cv::bitwise_not(bin, inv);	// CBDAR�Ȍ�ɒǉ������m�C�Y��������
 //		OutPutImage( inv );
-		cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
-		for( int _ci = 0; _ci < (int)contours.size(); _ci++ ) {		// �A��������`��
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// �A��������`��
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
 			if ( d00 < 10 ) continue;	// ����������A�������͏��O
@@ -205,11 +205,11 @@ cv::Mat GetConnectedImage2( const char *fname, int mode )
 		cv::bitwise_not(smt, bin);
 		cv::bitwise_not( bin, inv );
 		// �����̑傫���𒲂ׂ�
-		cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 		// �A��������`��E�d�S���v�Z
 		InitHist( &hist, 1000, 0, 1000 );
 	    i = 0;
-	    for( int ci = 0; ci < (int)contours.size(); ci++ )
+	    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
 	    {
 			mom = cv::moments(contours[ci]);
 			d00 = mom.m00;
@@ -317,7 +317,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	cv::Mat img, bin, inv, smt, pt;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
 	cv::Point p;
 	strHist hist;
@@ -346,10 +346,10 @@ int AutoConnectTest( char *fname, cv::Size *size )
 #ifdef DIC_MODE
 	cv::bitwise_not( img, inv );
 //	OutPutImage( inv );
-	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 	InitHist( &hist, 100, 0, 1000 );
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
 		mom = cv::moments(contours[ci]);
@@ -376,17 +376,18 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	cv::bitwise_not( bin, inv );
 //	OutPutImage( inv );
 
-	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
 	// �_�̐����J�E���g�i�b��j
-	i = (int)contours.size();
+	i = 0;
+	for ( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 	num = i;
 
 	// �A��������`��E�d�S���v�Z
 	InitHist( &hist, 100, 0, 1000 );
 //	InitHist( &hist, 200, 0, 20 );
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
 
@@ -417,11 +418,11 @@ int AutoConnectTest( char *fname, cv::Size *size )
 //	OutPutImage( bin );
 	cv::bitwise_not( bin, inv );
 #ifdef DRAW_POINT
-	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
 	// �A��������`��E�d�S���v�Z
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
 //		cv::Scalar color;

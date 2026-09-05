@@ -1238,19 +1238,19 @@ int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **a
 	int num;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 
 	size->width = img.cols;
 	size->height = img.rows;
 
-    cv::findContours(img, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+    cv::findContours(img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
-	num = CalcCentres(ps, contours, size, areas);	// �e�A�������̏d�S���v�Z����
+	num = CalcCentres(ps, contours, hierarchy, size, areas);	// �e�A�������̏d�S���v�Z����
 
 	return num;
 }
 
-int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, cv::Size *size, double **areas0)
+int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
 // �d�S���v�Z����
 // 06/01/12	�ʐς̌v�Z��ǉ�
 {
@@ -1266,7 +1266,8 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 	img = cv::Mat::zeros(s, CV_8UC3);
 
 	// �_�̐����J�E���g�i�b��j
-	i = (int)contours.size();
+	i = 0;
+	for ( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 //	num = i;
 	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// �S�~���ŘA����������������Ƃ��i�{���͑傫���𒲂ׂ��肷�ׂ��j
 	// �_������z����m�ہinum�̒l�͐��m�ł͂Ȃ����C�傫�߂Ƃ������ƂŁj
@@ -1279,7 +1280,7 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 	}
 	// �A��������`��E�d�S���v�Z
     i = 0;
-    for( int ci = 0; ci < (int)contours.size() && i < num; ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] )
     {
 		double d00;
 #ifdef DRAW_PIC

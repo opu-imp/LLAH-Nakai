@@ -13,7 +13,7 @@ int MakeFeaturePointsFromImage(cv::Point **ps, cv::Mat img, cv::Size *size)
 	int i, num = 0;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
     cv::Mat bin, p;
 
 	size->width = img.cols;
@@ -25,9 +25,9 @@ int MakeFeaturePointsFromImage(cv::Point **ps, cv::Mat img, cv::Size *size)
 	OutPutImage( bin );
 	cv::floodFill(bin, cv::Point(300,300), cBlack, nullptr, cv::Scalar::all(0), cv::Scalar::all(0), 4);
 	OutPutImage( bin );
-    cv::findContours(bin, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+    cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 
-	num = CalcCentres(ps, contours, size, NULL);	// �e�A�������̏d�S���v�Z����
+	num = CalcCentres(ps, contours, hierarchy, size, NULL);	// �e�A�������̏d�S���v�Z����
 
 	p = cv::Mat::zeros(cv::Size(size->width, size->height), CV_8UC1);
 	for ( i = 0; i < num; i++ ) {

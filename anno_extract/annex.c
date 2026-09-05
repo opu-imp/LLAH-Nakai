@@ -275,7 +275,7 @@ int main( int argc, char *argv[] )
 	cv::Mat o631, o632, o633, o634, a631, o331, o332, o333, a331, o311, o312;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
 	double param[kMaxParamValNum];	// ����/�A�t�B���ϊ��p�����[�^
 
@@ -407,8 +407,8 @@ int main( int argc, char *argv[] )
 	start = GetProcTimeMiliSec();
 	clean = o311;
 	clean.setTo(0);
-	cv::findContours(bin, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
-	for( int _ci = 0; _ci < (int)contours.size(); _ci++ ) {		// �A��������`��
+	cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// �A��������`��
 		mom = cv::moments(contours[_ci]);
 		d00 = mom.m00;	// �ʐς����߂�
 		if ( d00 < eMinAreaMain ) continue;	// ����������A�������͏��O

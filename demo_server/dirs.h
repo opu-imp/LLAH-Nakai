@@ -122,7 +122,18 @@ int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0);
 double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
 void JInvariantTest(void);
 double CalcJI( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
-int CalcCentres(cv::Point **ps, std::vector<std::vector<cv::Point>> &contours, cv::Size *size, double **areas0);
+#ifndef FIRST_TOP_LEVEL_CONTOUR_DEFINED
+#define FIRST_TOP_LEVEL_CONTOUR_DEFINED
+// Index of the first top-level contour (parent == -1). Iterating
+//   for ( ci = FirstTopLevelContour( h ); ci >= 0; ci = h[ci][0] )
+// visits the same contours as the OpenCV 1.x/2.x  first_contour->h_next  chain.
+inline int FirstTopLevelContour( const std::vector<cv::Vec4i> &hierarchy )
+{
+	for ( size_t k = 0; k < hierarchy.size(); k++ )	if ( hierarchy[k][3] < 0 )	return (int)k;
+	return -1;
+}
+#endif
+int CalcCentres(cv::Point **ps, std::vector<std::vector<cv::Point>> &contours, std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0);
 int OutPutImage(cv::Mat img);
 int MakeCentresFromImage(cv::Point **ps, cv::Mat , cv::Size *size, double **areas);
 void ReleaseCentres( cv::Point *ps );

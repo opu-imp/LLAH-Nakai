@@ -168,7 +168,7 @@ int CalcHoughLinesImg(cv::Mat dst, strLineForCR **line_cr)
     cv::Mat color_dst;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
     // lines_vec declared at HoughLines call site
     // (CvSeq* lines removed)
     int i, w, h;

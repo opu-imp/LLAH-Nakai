@@ -307,7 +307,7 @@ int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
 	cv::Mat gray, bin, inv;
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
 	cv::Point *ps;
 
@@ -328,10 +328,10 @@ int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
 	cv::bitwise_not( bin, inv );
 	OutPutImage( inv );
 	// �A�������̏d�S���v�Z
-	cv::findContours(inv, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// �A�������𒊏o����
 	// �܂����𐔂���
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
 //		cv::Point p;
@@ -344,7 +344,7 @@ int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
     ps = (cv::Point *)calloc( i, sizeof( cv::Point ) );
     *ps0 = ps;
     i = 0;
-    for( int ci = 0; ci < (int)contours.size(); ci++ )
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
 //		cv::Point p;

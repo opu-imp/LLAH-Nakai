@@ -24,7 +24,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
     std::vector<std::vector<cv::Point>> contours;
 
 
-    cv::Vec4i hierarchy_unused;  // for hierarchy if needed
+    std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
 #ifdef CL_OUTPUT_IMAGE
 	color_tab[0] = cv::Scalar(0,0,255);
@@ -186,8 +186,8 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	for ( i = 0; i < cluster_count; i++ ) {
 		// �܂��͐��𐔂���
 		nums[i] = 0;
-	    cv::findContours( climgs[i], contours, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE );	// �A�������𒊏o����
-		for( int _ci = 0; _ci < (int)contours.size(); _ci++ ) {
+	    cv::findContours(climgs[i], contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE );	// �A�������𒊏o����
+		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
 			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ����������A�������͏��O
@@ -195,7 +195,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 		}
 		clps[i] = (cv::Point *)calloc( nums[i], sizeof(cv::Point) );
 		j = 0;
-		for( int ci = 0; ci < (int)contours.size(); ci++ ) {
+		for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) {
 			mom = cv::moments(contours[ci]);
 			d00 = mom.m00;
 			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ����������A�������͏��O
