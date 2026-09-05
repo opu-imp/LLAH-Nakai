@@ -230,7 +230,7 @@ rm -rf "$ANNEX_OUT"
 mkdir -p "$ANNEX_OUT"
 
 if [ -f "$ROOT_DIR/anno_extract/annex" ]; then
-    output=$(run_with_timeout "$ROOT_DIR/anno_extract/annex" -n5 -m5 -d50 -c2 -o "$ANNEX_OUT/" \
+    output=$(run_with_timeout "$ROOT_DIR/anno_extract/annex" -n5 -m5 -d50 -c2 -P "$ROOT_DIR/anno_extract/acr2/acr2" -o "$ANNEX_OUT/" \
         "$TEST_DIR/test_doc1.jpg" "$TEST_DIR/test_doc2.jpg")
 
     # 出力ファイルが生成されたか
