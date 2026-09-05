@@ -45,7 +45,7 @@
 #define	cRed	cv::Scalar(0,0,255)
 #define	cGreen	cv::Scalar(0,255,0)
 #define	cBlue	cv::Scalar(255,0,0)
-#define	cRandom	cv::Scalar(rand(,rand()%256,rand()%256)%256 )
+#define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
 // �S�̂̃��[�h
 #define	RETRIEVE_MODE	(0)
