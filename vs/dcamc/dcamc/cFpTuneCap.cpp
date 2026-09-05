@@ -53,7 +53,7 @@ int cFpTuneCap::Extract( void )
 	// グレイスケールに変換
 	cv::cvtColor( img, gray, cv::COLOR_BGR2GRAY );
 	// 適応二値化
-	cv::adaptiveThreshold( gray, bin1, 255, CV_ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, adp_block*2+1, adp_sub );
+	cv::adaptiveThreshold( gray, bin1, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, adp_block*2+1, adp_sub );
 	// ガウシアン
 	cv::GaussianBlur(bin1, smt, cv::Size(gparam*2+1, gparam*2+1), 0);
 	// 二値化
@@ -63,8 +63,8 @@ int cFpTuneCap::Extract( void )
 	if ( pfs != NULL )	free( pfs );
 	num = MakeFloatCentresFromImage( &pfs, inv, &size, NULL );
 	// 特徴点の描画
-	cvSet( pt, CV_RGB( 255, 255, 255 ), NULL );
-	cvCopy( img, overlap, 0 );
+	pt.setTo( CV_RGB( 255, 255, 255 ) );
+	img.copyTo( overlap );
 	for ( i = 0; i < num; i++ ) {
 		point.x = (int)pfs[i].x;
 		point.y = (int)pfs[i].y;
@@ -80,7 +80,7 @@ int cFpTuneCap::DrawCor( int pcor[][2], cv::Point2f *corpfs, cv::Point cororig )
 {
 	cv::Point p1, p2;
 
-	cvCopy( img, cor, 0 );
+	img.copyTo( cor );
 
 	if ( pfs == NULL || corpfs == NULL )	return 0;
 	p1.x = (int)pfs[0].x;

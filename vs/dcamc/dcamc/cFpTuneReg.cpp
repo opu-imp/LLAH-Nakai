@@ -19,7 +19,7 @@ cFpTuneReg::cFpTuneReg( char *fname, int def_gparam1, int def_adp_block, int def
 {
 	cv::Size size;
 
-	if ( (img = cv::imread(fname, cv::IMREAD_GRAYSCALE)) == NULL ) {
+	if ( ( img = cv::imread(fname, cv::IMREAD_GRAYSCALE) ).empty() ) {
 		fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 		return;
 	}
@@ -61,7 +61,7 @@ int cFpTuneReg::Extract( void )
 	cv::GaussianBlur(img, smt1, cv::Size(gparam1*2+1, gparam1*2+1), 0);
 	// 二値化（一回目）
 //	cv::threshold( smt1, bin1, thr1, 255, cv::THRESH_BINARY );
-	cv::adaptiveThreshold( smt1, bin1, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_ADAPTIVE_THRESH_MEAN_C, adp_block*2+1, adp_sub );
+	cv::adaptiveThreshold( smt1, bin1, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, adp_block*2+1, adp_sub );
 	// ガウシアン（二回目）
 	cv::GaussianBlur(bin1, smt2, cv::Size(gparam2*2+1, gparam2*2+1), 0);
 	// 二値化（二回目）
@@ -72,8 +72,8 @@ int cFpTuneReg::Extract( void )
 	if ( pfs != NULL )	free( pfs );
 	num = MakeFloatCentresFromImage( &pfs, inv, &size, NULL );
 	// 特徴点の描画
-	cvSet( pt, CV_RGB( 255, 255, 255 ), NULL );
-	cvCopy( img, overlap, 0 );
+	pt.setTo( CV_RGB( 255, 255, 255 ) );
+	img.copyTo( overlap );
 	for ( i = 0; i < num; i++ ) {
 		point.x = (int)pfs[i].x;
 		point.y = (int)pfs[i].y;
@@ -89,7 +89,7 @@ int cFpTuneReg::DrawCor( int pcor[][2], cv::Point2f *corpfs, cv::Point cororig )
 {
 	cv::Point p1, p2;
 
-	cvCopy( img, cor, 0 );
+	img.copyTo( cor );
 
 	if ( pfs == NULL || corpfs == NULL )	return 0;
 	p1.x = (int)pfs[0].x;

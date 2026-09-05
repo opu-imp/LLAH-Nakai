@@ -9,7 +9,7 @@ int SetPix( cv::Mat img, int x, int y, char *val )
 	int i, ws, bpp;
 
 	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// 画像の範囲を超える
-	ws = img.colsStep;
+	ws = img.step[0];
 	bpp = (int)((img.depth() & 0x0ff) / 8) * img.channels();	// ピクセルあたりのバイト数
 	for ( i = 0; i < bpp; i++ )
 		img.data[ws*y + x*bpp + i] = val[i];
@@ -22,7 +22,7 @@ int GetPix( cv::Mat img, int x, int y, char *val )
 	int i, ws, bpp;
 
 	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// 画像の範囲を超える
-	ws = img.colsStep;
+	ws = img.step[0];
 	bpp = (int)((img.depth() & 0x0ff) / 8) * img.channels();	// ピクセルあたりのバイト数
 	for ( i = 0; i < bpp; i++ )
 		val[i] = img.data[ws*y + x*bpp + i];
@@ -72,11 +72,11 @@ int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
 	if ( mode == MERGE_HOR ) {	// 左右に並べるモードで，
 		if ( mw > (img1.cols + img2.cols) )	// 左右に並べた長さより幅が大きいとき
 			orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// 余白の半分をorig_xにする
-		if ( mh > max(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
-			orig_y = (int)((double)(mh - max(img1.rows, img2.rows)) / 2.0L);
+		if ( mh > (std::max)(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
+			orig_y = (int)((double)(mh - (std::max)(img1.rows, img2.rows)) / 2.0L);
 	} else if ( mode == MERGE_VER ) {	// 上下に並べるモードで，
-		if ( mw > max(img1.cols, img2.cols) )	// 大きいほうの幅よりも全体の幅が大きいとき
-			orig_x = (int)((double)(mw - max(img1.cols, img2.cols)) / 2.0L);
+		if ( mw > (std::max)(img1.cols, img2.cols) )	// 大きいほうの幅よりも全体の幅が大きいとき
+			orig_x = (int)((double)(mw - (std::max)(img1.cols, img2.cols)) / 2.0L);
 		if ( mh > (img1.rows + img2.rows) )	// 上下に並べた長さより全体の長さが大きいとき
 			orig_y = (int)((double)(mh - (img1.rows+img2.rows)) / 2.0L);
 	}
@@ -109,8 +109,8 @@ int MergeImage3( cv::Mat img1, cv::Mat img2, cv::Mat img3, cv::Mat merge )
 	mh = merge.rows;
 	if ( mw > (img1.cols + img2.cols) )	// 左右に並べた長さより幅が大きいとき
 		orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// 余白の半分をorig_xにする
-	if ( mh > max(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
-		orig_y = (int)((double)(mh - max(img1.rows, img2.rows)) / 2.0L);
+	if ( mh > (std::max)(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
+		orig_y = (int)((double)(mh - (std::max)(img1.rows, img2.rows)) / 2.0L);
 
 	for ( j = 0; j < mh; j++ ) {
 		for ( i = 0; i < mw; i++ ) {
@@ -142,8 +142,8 @@ int MergeImage4( cv::Mat img1, cv::Mat img2, cv::Mat img3, cv::Mat img4, cv::Mat
 	mh = merge.rows;
 	if ( mw > (img1.cols + img2.cols) )	// 左右に並べた長さより幅が大きいとき
 		orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// 余白の半分をorig_xにする
-	if ( mh > max(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
-		orig_y = (int)((double)(mh - max(img1.rows, img2.rows)) / 2.0L);
+	if ( mh > (std::max)(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
+		orig_y = (int)((double)(mh - (std::max)(img1.rows, img2.rows)) / 2.0L);
 
 	for ( j = 0; j < mh; j++ ) {
 		for ( i = 0; i < mw; i++ ) {

@@ -40,13 +40,13 @@ strHarrisRegParam gHarrisRegParam = {
 	kDefaultHarrisParamKReg
 };
 
-void TrackCallbackHarrisCap( int param )
+void TrackCallbackHarrisCap( int param, void * )
 // キャプチャ画像のトラックバーのコールバック関数
 {
 	return;
 }
 
-void TrackCallbackHarrisReg( int param )
+void TrackCallbackHarrisReg( int param, void * )
 // 登録画像のトラックバーのコールバック関数
 {
 	return;
@@ -90,7 +90,7 @@ int DetectHarrisCam( char *fname, int mode )
 	int key, paused = -1;
 	long buff_size;
 	unsigned char *img_buff;
-	cv::Mat img_cap, *img_fp, *img_show, *img_reg, *img_reg_res, *img_reg_fp, *img_reg_smt, *img_reg_show;
+	cv::Mat img_cap, img_fp, img_show, img_reg, img_reg_res, img_reg_fp, img_reg_smt, img_reg_show;
 	cv::Point *ps = NULL, *ps0 = NULL, *regps = NULL;
 	cv::Point *frps[kMaxFramePoints];	/* FRame PointS : 複数フレームの特徴点集合 */
 	int frnum[kMaxFramePoints];	/* FRame NUMbers : frpsの特徴点数 */
@@ -146,10 +146,10 @@ int DetectHarrisCam( char *fname, int mode )
 	img_show = cv::Mat::zeros(img_show_size, CV_8UC3);	// 表示する縮小画像を作成
 	// 登録側の処理
 	img_reg = cv::imread( fname, cv::IMREAD_COLOR);
-	if ( img_reg == NULL )	return 0;
+	if ( img_reg.empty() )	return 0;
 	img_reg_size = cv::Size( (int)(img_reg.cols * kHarrisRegMag), (int)(img_reg.rows * kHarrisRegMag) );
 	img_reg_res = cv::Mat::zeros(img_reg_size, CV_8UC3);
-	cv::resize( img_reg, img_reg_res, CV_INTER_CUBIC );
+	cv::resize( img_reg, img_reg_res, img_reg_res.size(), 0, 0, cv::INTER_CUBIC );
 	img_reg_fp = cv::Mat::zeros(img_reg_size, CV_8UC3);
 	img_reg_smt = cv::Mat::zeros(img_reg_size, CV_8UC3);
 	img_reg_show_size = cv::Size( (int)(img_reg_size.width * kHarrisShowRegMag), (int)(img_reg_size.height * kHarrisShowRegMag) );
@@ -346,8 +346,8 @@ int DetectHarrisCam( char *fname, int mode )
 					break;
 			}
 			// 表示
-			cv::resize( img_fp, img_show, CV_INTER_CUBIC );
-			cv::resize( img_reg_fp, img_reg_show, CV_INTER_CUBIC );
+			cv::resize( img_fp, img_show, img_show.size(), 0, 0, cv::INTER_CUBIC );
+			cv::resize( img_reg_fp, img_reg_show, img_reg_show.size(), 0, 0, cv::INTER_CUBIC );
 			cv::imshow( "Capture", img_show );
 //			cv::imwrite( "harris.jpg", img_har );
 			cv::imshow( "Registered", img_reg_show );
@@ -366,8 +366,8 @@ int DetectHarrisCam( char *fname, int mode )
 							cv::circle( img_reg_fp, regps[pcor[i]], 5, CV_RGB(255,255,0), cv::LINE_AA, 0 );
 						}
 					}
-					cv::resize( img_fp, img_show, CV_INTER_CUBIC );
-					cv::resize( img_reg_fp, img_reg_show, CV_INTER_CUBIC );
+					cv::resize( img_fp, img_show, img_show.size(), 0, 0, cv::INTER_CUBIC );
+					cv::resize( img_reg_fp, img_reg_show, img_reg_show.size(), 0, 0, cv::INTER_CUBIC );
 					cv::imshow( "Capture", img_show );
 					cv::imshow( "Registered", img_reg_show );
 					for ( key = cv::waitKey(1); key < 0; key = cv::waitKey(1) );
@@ -396,8 +396,8 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 	int key, paused = -1;
 	long buff_size;
 	unsigned char *img_buff;
-	cv::Mat img_cap, *img_fp, *img_reg, *img_reg_res, *img_reg_fp, *img_reg_smt;
-	cv::Mat img_anno, *img_anno_res, *img_anno_fp, *img_anno_smt;
+	cv::Mat img_cap, img_fp, img_reg, img_reg_res, img_reg_fp, img_reg_smt;
+	cv::Mat img_anno, img_anno_res, img_anno_fp, img_anno_smt;
 	cv::Point *ps = NULL, *ps0 = NULL, *regps = NULL;
 	cv::Point *frps[kMaxFramePoints];	/* FRame PointS : 複数フレームの特徴点集合 */
 	int frnum[kMaxFramePoints];	/* FRame NUMbers : frpsの特徴点数 */
@@ -435,16 +435,16 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 	}
 	// 登録側の処理
 	img_reg = cv::imread( fname, cv::IMREAD_COLOR);
-	if ( img_reg == NULL )	return 0;
+	if ( img_reg.empty() )	return 0;
 	img_reg_res = cv::Mat::zeros( cv::Size( (int)(img_reg.cols * kHarrisTestMag), (int)(img_reg.rows * kHarrisTestMag) ), CV_8UC3 );
-	cv::resize( img_reg, img_reg_res, CV_INTER_CUBIC );
+	cv::resize( img_reg, img_reg_res, img_reg_res.size(), 0, 0, cv::INTER_CUBIC );
 	img_reg_fp = cv::Mat::zeros(cv::Size( img_reg_res.cols, img_reg_res.rows ), CV_8UC3);
 	img_reg_smt = cv::Mat::zeros(cv::Size( img_reg_res.cols, img_reg_res.rows ), CV_8UC3);
 	// 書き込み側の処理
 	img_anno = cv::imread( fname_anno, cv::IMREAD_COLOR);
-	if ( img_anno == NULL )	return 0;
+	if ( img_anno.empty() )	return 0;
 	img_anno_res = cv::Mat::zeros( cv::Size( (int)(img_anno.cols * kHarrisTestMag), (int)(img_anno.rows * kHarrisTestMag) ), CV_8UC3 );
-	cv::resize( img_anno, img_anno_res, CV_INTER_CUBIC );
+	cv::resize( img_anno, img_anno_res, img_anno_res.size(), 0, 0, cv::INTER_CUBIC );
 	img_anno_fp = cv::Mat::zeros(cv::Size( img_anno_res.cols, img_anno_res.rows ), CV_8UC3);
 	img_anno_smt = cv::Mat::zeros(cv::Size( img_anno_res.cols, img_anno_res.rows ), CV_8UC3);
 
@@ -516,7 +516,7 @@ void DetectHarris( cv::Mat src, cv::Mat dst )
 // Harrisを適用する
 {
 	double minVal = 0.0, maxVal = 0.0, scale, shift, min = 0, max = 255;
-	cv::Mat img_har, *img_gray, *img_out;
+	cv::Mat img_har, img_gray, img_out;
 	cv::Size img_size;
 
 	img_size.width = src.cols;
@@ -528,8 +528,8 @@ void DetectHarris( cv::Mat src, cv::Mat dst )
 
 	// Harrisを適用
 	cv::cvtColor( src, img_gray, cv::COLOR_RGB2GRAY );	// グレイスケールに変換
-	cvCornerHarris( img_gray, img_har, 3, 5, 0.04 );	// Harrisを適用
-	cvMinMaxLoc( img_har, &minVal, &maxVal, NULL, NULL, 0 );
+	cv::cornerHarris( img_gray, img_har, 3, 5, 0.04 );	// Harrisを適用
+	cv::minMaxLoc( img_har, &minVal, &maxVal );
 	scale = (max - min)/(maxVal - minVal);
 	shift = -minVal * scale + min;
 	cv::convertScaleAbs( img_har, img_out, scale, shift );
@@ -538,37 +538,37 @@ void DetectHarris( cv::Mat src, cv::Mat dst )
 //#define	CENTROID
 #define	SECOND_ORDER_MOMENT
 #define	kMaxNoiseArea	(10)
-int CalcCentresCH(cv::Point **ps0, CvSeq *contours, cv::Size *size, double **areas0)
+int CalcCentresCH(cv::Point **ps0, const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
 // 重心を計算する
 // 06/01/12	面積の計算を追加
 {
 	int i, num;
-	CvSeq *con0;
-	CvMoments mom;
+	cv::Moments mom;
 	cv::Point *ps;
 
 
 	// 点の数をカウント（暫定）
-	for ( i = 0, con0 = contours; con0 != 0; con0 = con0->h_next, i++ );
+	i = 0;
+	for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ゴミ等で連結成分が多すぎるとき（本来は大きさを調べたりすべき）
 	// 点を入れる配列を確保（numの値は正確ではないが，大きめということで）
 	ps = (cv::Point *)calloc(num, sizeof(cv::Point));
 	*ps0 = ps;
 	// 連結成分を描画・重心を計算
-    for( i = 0, con0 = contours; con0 != 0 && i < num ; con0 = con0->h_next )
-    {
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] ){
 		double d00;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+		mom = cv::moments( contours[ci] );
+		d00 = mom.m00;
 		if ( d00 < kMaxNoiseArea ) continue;	// 小さすぎる連結成分は除外
 
 #ifdef	CENTROID
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
+		ps[i].x = (int)(mom.m10 / d00);
+		ps[i].y = (int)(mom.m01 / d00);
 #endif
 #ifdef	SECOND_ORDER_MOMENT
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00 + cvGetNormalizedCentralMoment( &mom, 2, 0 ) );
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00 + cvGetNormalizedCentralMoment( &mom, 0, 2 ) );
+		ps[i].x = (int)(mom.m10 / d00 + mom.nu20 );
+		ps[i].y = (int)(mom.m01 / d00 + mom.nu02 );
 #endif
 		i++;
     }
@@ -583,19 +583,18 @@ int MakeCentresFromImageCH(cv::Point **ps, cv::Mat img, cv::Size *size, double *
 {
 	int num, ret;
     // CvMemStorage removed (not needed in OpenCV 4)
-	CvSeq *contours = 0;
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Vec4i> hierarchy;
 
-	size.cols = img.cols;
-	size.rows = img.rows;
+	size->width = img.cols;
+	size->height = img.rows;
 	
-    ret = cv::findContours( img, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0,0) );	// 連結成分を抽出する
+    cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// 連結成分を抽出する
 	if ( ret <= 0 ) {	// 連結成分が見つからなかった // cvReleaseMemStorage removed
 		return 0;
 	}
-	num = CalcCentresCH(ps, contours, size, areas);	// 各連結成分の重心を計算する
+	num = CalcCentresCH(ps, contours, hierarchy, size, areas);	// 各連結成分の重心を計算する
 
-	cvClearSeq( contours ); // cvReleaseMemStorage removed
 
 	return num;
 }
@@ -614,7 +613,7 @@ void DetectEngDocPoints( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
 		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
 		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
@@ -638,7 +637,7 @@ void DetectEngDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum
 	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
 		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
 		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
@@ -662,7 +661,7 @@ void DetectJpDocPoints( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
 		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
 		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
@@ -686,7 +685,7 @@ void DetectJpDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum 
 	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
 		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
 		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
@@ -700,7 +699,7 @@ void DetectJpDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum 
 void DetectGoodFeatures( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 // cvGoodFeaturesToTrackで特徴点を抽出する
 {
-	cv::Mat img_gray, *img_eig, *img_temp;
+	cv::Mat img_gray, img_eig, img_temp;
 	cv::Size img_size;
 	cv::Point pt, *ps;
 	cv::Point2f *corners = NULL;
@@ -721,11 +720,16 @@ void DetectGoodFeatures( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 	min_distance = (double)gHarrisCamParam.MinDistance;
 	block_size = gHarrisCamParam.BlockSize * 2 + 3;
 	k = 0.01 * (double)gHarrisCamParam.HarrisParamK;
-	cv::goodFeaturesToTrack( img_gray, img_eig, img_temp, corners, &cor_cnt, quality_level, min_distance, 0, block_size, gHarrisCamParam.UseHarris, k );
+	{
+		std::vector<cv::Point2f> corners_vec;
+		cv::goodFeaturesToTrack( img_gray, corners_vec, cor_cnt, quality_level, min_distance, cv::noArray(), block_size, gHarrisCamParam.UseHarris != 0, k );
+		cor_cnt = (int)corners_vec.size();
+		for ( int ci = 0; ci < cor_cnt; ci++ )	corners[ci] = corners_vec[ci];
+	}
 //	printf("cor_cnt : %d\n", cor_cnt);
 	ps = (cv::Point *)calloc( cor_cnt, sizeof(cv::Point) );
 //	dst.setTo(cv::Scalar::all(0));
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < cor_cnt; i++ ) {
 		pt.x = (int)corners[i].x;
 		pt.y = (int)corners[i].y;
@@ -742,7 +746,7 @@ void DetectGoodFeatures( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 void DetectGoodFeaturesReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum  )
 // cvGoodFeaturesToTrackで特徴点を抽出する（登録画像）
 {
-	cv::Mat img_gray, *img_eig, *img_temp;
+	cv::Mat img_gray, img_eig, img_temp;
 	cv::Size img_size;
 	cv::Point pt, *ps;
 	cv::Point2f *corners = NULL;
@@ -763,11 +767,16 @@ void DetectGoodFeaturesReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum
 	min_distance = (double)gHarrisRegParam.MinDistanceReg;
 	block_size = gHarrisRegParam.BlockSizeReg * 2 + 3;
 	k = 0.01 * (double)gHarrisRegParam.HarrisParamKReg;
-	cv::goodFeaturesToTrack( img_gray, img_eig, img_temp, corners, &cor_cnt, quality_level, min_distance, 0, block_size, gHarrisRegParam.UseHarrisReg, k );
+	{
+		std::vector<cv::Point2f> corners_vec;
+		cv::goodFeaturesToTrack( img_gray, corners_vec, cor_cnt, quality_level, min_distance, cv::noArray(), block_size, gHarrisRegParam.UseHarrisReg != 0, k );
+		cor_cnt = (int)corners_vec.size();
+		for ( int ci = 0; ci < cor_cnt; ci++ )	corners[ci] = corners_vec[ci];
+	}
 //	printf("cor_cnt : %d\n", cor_cnt);
 	ps = (cv::Point *)calloc( cor_cnt, sizeof(cv::Point) );
 //	dst.setTo(cv::Scalar::all(0));
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < cor_cnt; i++ ) {
 		pt.x = (int)corners[i].x;
 		pt.y = (int)corners[i].y;

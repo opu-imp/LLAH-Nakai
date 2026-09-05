@@ -25,7 +25,7 @@ cFpTuneCap *ptr_cap = NULL;
 int show_mode = SHOW_REG_IMG, cap_show_mode = SHOW_CAP_IMG, paused = -1;
 cv::Point caporig, regorig;
 
-void TrackCallbackReg( int param )
+void TrackCallbackReg( int param, void * )
 // 登録文書のトラックバーのコールバック関数
 {
 	if ( ptr_reg != NULL ) {
@@ -56,7 +56,7 @@ void TrackCallbackReg( int param )
 	}
 }
 
-void TrackCallbackCap( int param )
+void TrackCallbackCap( int param, void * )
 // キャプチャ画像のトラックバーのコールバック関数
 {
 	if ( ptr_cap != NULL && paused > 0 ) {

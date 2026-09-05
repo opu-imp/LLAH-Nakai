@@ -28,7 +28,7 @@
 #include "camharris.h"
 
 // マウスのコールバック関数用のグローバル変数
-cv::Mat g_thumb = NULL, *g_thumb_draw;
+cv::Mat g_thumb, g_thumb_draw;
 double g_ratio = 0.0;
 int g_paste_complete = 0;
 cv::Point g_p1, g_p2;
@@ -117,8 +117,10 @@ int SendImage( SOCKET sock, cv::Mat img )
 	size.width = img.cols;
 	size.height = img.rows;
 	send( sock, (const char *)&size, sizeof(cv::Size), SEND_FLAG );	// サイズを送信
-	send( sock, (const char *)&(img.channels()), sizeof(int), SEND_FLAG );	// チャネルを送信
-	send( sock, (const char *)&(img.depth()), sizeof(int), SEND_FLAG );	// ビット数を送信
+	int img_channels = img.channels();
+	int img_depth = (int)(img.elemSize1() * 8);	// IplImage.depth (IPL_DEPTH_8U == 8) and bits per channel
+	send( sock, (const char *)&img_channels, sizeof(int), SEND_FLAG );	// チャネルを送信
+	send( sock, (const char *)&img_depth, sizeof(int), SEND_FLAG );	// ビット数を送信
 	ret = send( sock, (const char *)((char*)img.data), ((int)img.total() * (int)img.elemSize()), SEND_FLAG );	// 画像本体を送信
 	
 	return 1;
@@ -205,7 +207,7 @@ void Buff2ImageData( unsigned char *buff, cv::Mat img )
 	int i;
 
 	for ( i = 0; i < img.rows; i++ ) {
-		memcpy( &(img.data[img.colsStep*(img.rows - i - 1)]), &(buff[img.cols*3*i]), img.cols*3 );
+		memcpy( &(img.data[img.step[0]*(img.rows - i - 1)]), &(buff[img.cols*3*i]), img.cols*3 );
 	}
 }
 
@@ -219,19 +221,19 @@ void ReleaseCentres( cv::Point *ps )
 //#define	kMaxNoiseArea	(10)
 #define	kMaxNoiseArea	(20)	// 裏写り対策
 
-int CalcCentres(cv::Point **ps0, CvSeq *contours, cv::Size *size, double **areas0)
+int CalcCentres(cv::Point **ps0, const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
 // 重心を計算する
 // 06/01/12	面積の計算を追加
 {
 	int i, num;
 	double *areas = NULL;
 //	double max_area = 0.0L;	// 連結成分の面積の最大値を調べる用
-	CvSeq *con0;
-	CvMoments mom;
+	cv::Moments mom;
 	cv::Point *ps;
 
 	// 点の数をカウント（暫定）
-	for ( i = 0, con0 = contours; con0 != 0; con0 = con0->h_next, i++ );
+	i = 0;
+	for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ゴミ等で連結成分が多すぎるとき（本来は大きさを調べたりすべき）
 	// 点を入れる配列を確保（numの値は正確ではないが，大きめということで）
 	ps = (cv::Point *)calloc(num, sizeof(cv::Point));
@@ -242,24 +244,24 @@ int CalcCentres(cv::Point **ps0, CvSeq *contours, cv::Size *size, double **areas
 		*areas0 = areas;
 	}
 	// 連結成分を描画・重心を計算
-    for( i = 0, con0 = contours; con0 != 0 && i < num ; con0 = con0->h_next )
-    {
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] ){
 		double d00;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+		mom = cv::moments( contours[ci] );
+		d00 = mom.m00;
 		if ( d00 < kMaxNoiseArea ) continue;	// 小さすぎる連結成分は除外
 
 #ifdef	CENTROID
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
+		ps[i].x = (int)(mom.m10 / d00);
+		ps[i].y = (int)(mom.m01 / d00);
 #endif
 #ifdef	SECOND_ORDER_MOMENT
 		// 07/05/30
 		// なぜこっちにしていたのか分からない。直し忘れか？
 		// どちらにせよあまり影響は与えていなかった（2次の項は1ピクセルにも満たない）。
-//		printf( "%f + %f, %f + %f\n", cvGetSpatialMoment( &mom, 1, 0 ) / d00, cvGetNormalizedCentralMoment( &mom, 2, 0 ), cvGetSpatialMoment( &mom, 0, 1 ) / d00, cvGetNormalizedCentralMoment( &mom, 0, 2 ) );
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00 + cvGetNormalizedCentralMoment( &mom, 2, 0 ) );
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00 + cvGetNormalizedCentralMoment( &mom, 0, 2 ) );
+//		printf( "%f + %f, %f + %f\n", mom.m10 / d00, mom.nu20, mom.m01 / d00, mom.nu02 );
+		ps[i].x = (int)(mom.m10 / d00 + mom.nu20 );
+		ps[i].y = (int)(mom.m01 / d00 + mom.nu02 );
 #endif
 		if ( areas ) areas[i] = d00;
 //		if ( d00 > max_area ) max_area = d00;
@@ -273,36 +275,36 @@ int CalcCentres(cv::Point **ps0, CvSeq *contours, cv::Size *size, double **areas
 	return num;
 }
 
-int CalcFloatCentres(cv::Point2f **pfs0, CvSeq *contours, cv::Size *size, double **areas0)
+int CalcFloatCentres(cv::Point2f **pfs0, const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
 // 重心を計算する（float版）
 // 06/01/12	面積の計算を追加
 {
 	int i, num;
-	CvSeq *con0;
-	CvMoments mom;
+	cv::Moments mom;
 	cv::Point2f *pfs;
 
 	// 点の数をカウント（暫定）
-	for ( i = 0, con0 = contours; con0 != 0; con0 = con0->h_next, i++ );
+	i = 0;
+	for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ゴミ等で連結成分が多すぎるとき（本来は大きさを調べたりすべき）
 	// 点を入れる配列を確保（numの値は正確ではないが，大きめということで）
 	pfs = (cv::Point2f *)calloc(num, sizeof(cv::Point2f));
 	*pfs0 = pfs;
 	// 連結成分を描画・重心を計算
-    for( i = 0, con0 = contours; con0 != 0 && i < num ; con0 = con0->h_next )
-    {
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] ){
 		double d00;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+		mom = cv::moments( contours[ci] );
+		d00 = mom.m00;
 		if ( d00 < kMaxNoiseArea ) continue;	// 小さすぎる連結成分は除外
 
 #ifdef	CENTROID
-		pfs[i].x = (float)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		pfs[i].y = (float)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
+		pfs[i].x = (float)(mom.m10 / d00);
+		pfs[i].y = (float)(mom.m01 / d00);
 #endif
 #ifdef	SECOND_ORDER_MOMENT
-		pfs[i].x = (float)(cvGetSpatialMoment( &mom, 1, 0 ) / d00 + cvGetNormalizedCentralMoment( &mom, 2, 0 ) );
-		pfs[i].y = (float)(cvGetSpatialMoment( &mom, 0, 1 ) / d00 + cvGetNormalizedCentralMoment( &mom, 0, 2 ) );
+		pfs[i].x = (float)(mom.m10 / d00 + mom.nu20 );
+		pfs[i].y = (float)(mom.m01 / d00 + mom.nu02 );
 #endif
 		i++;
     }
@@ -317,19 +319,18 @@ int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **a
 {
 	int num, ret;
     // CvMemStorage removed (not needed in OpenCV 4)
-	CvSeq *contours = 0;
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Vec4i> hierarchy;
 
-	size.cols = img.cols;
-	size.rows = img.rows;
+	size->width = img.cols;
+	size->height = img.rows;
 	
-    ret = cv::findContours( img, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0,0) );	// 連結成分を抽出する
+    cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// 連結成分を抽出する
 	if ( ret <= 0 ) {	// 連結成分が見つからなかった // cvReleaseMemStorage removed
 		return 0;
 	}
-	num = CalcCentres(ps, contours, size, areas);	// 各連結成分の重心を計算する
+	num = CalcCentres(ps, contours, hierarchy, size, areas);	// 各連結成分の重心を計算する
 
-	cvClearSeq( contours ); // cvReleaseMemStorage removed
 
 	return num;
 }
@@ -340,19 +341,18 @@ int MakeFloatCentresFromImage(cv::Point2f **pfs, cv::Mat img, cv::Size *size, do
 {
 	int num, ret;
     // CvMemStorage removed (not needed in OpenCV 4)
-	CvSeq *contours = 0;
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Vec4i> hierarchy;
 
-	size.cols = img.cols;
-	size.rows = img.rows;
+	size->width = img.cols;
+	size->height = img.rows;
 	
-    ret = cv::findContours( img, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0,0) );	// 連結成分を抽出する
+    cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// 連結成分を抽出する
 	if ( ret <= 0 ) {	// 連結成分が見つからなかった // cvReleaseMemStorage removed
 		return 0;
 	}
-	num = CalcFloatCentres(pfs, contours, size, areas);	// 各連結成分の重心を計算する
+	num = CalcFloatCentres(pfs, contours, hierarchy, size, areas);	// 各連結成分の重心を計算する
 
-	cvClearSeq( contours ); // cvReleaseMemStorage removed
 
 	return num;
 }
@@ -369,7 +369,7 @@ void DrawPoints2( cv::Point *ps, int num, cv::Size img_size )
 	cv::Mat img;
 
 	img = cv::Mat::zeros(cv::Size( kDrawPointsHMargin*2+img_size.width, kDrawPointsVMargin*2+img_size.height ), CV_8UC3);
-	cvSet( img, cWhite, NULL );	// 白で塗りつぶす
+	img.setTo( cWhite );	// 白で塗りつぶす
 	// 枠を描画
 	cv::rectangle( img, cv::Point( kDrawPointsHMargin, kDrawPointsVMargin ), \
 		cv::Point( kDrawPointsHMargin + img_size.width, kDrawPointsVMargin + img_size.height ), \
@@ -425,7 +425,7 @@ void DrawCor( cv::Point corps[][2], int corpsnum, cv::Mat img_cap, char *doc_nam
 {
 	int i;
 	char thumb_fname[kMaxPathLen];
-	cv::Mat query_small, *reg_small, *cor_img;
+	cv::Mat query_small, reg_small, cor_img;
 	cv::Size qs, rs, cor_size;
 	cv::Point p1, p2;
 	
@@ -516,10 +516,10 @@ int main( int argc, char *argv[] )
 	double *areas = NULL, *areas0 = NULL;
 	cv::Size img_size, query_size, reg_size, thumb_size, merge_size, small_img_size, small_thumb_size, res_size, resized_size;
 	strDirectShowCap dsc;
-	cv::Mat img_cap = NULL, *img_pt = NULL, *img_cap0 = NULL, *tmp = NULL, *thumb = NULL, *thumb_draw = NULL, *merge = NULL, *small_cap, *small_thumb, *clone = NULL, *cap_file, *cap_resized, *img_con = NULL, *img_con0 = NULL, *img_disp = NULL;
+	cv::Mat img_cap, img_pt, img_cap0, tmp, thumb, thumb_draw, merge, small_cap, small_thumb, clone, cap_file, cap_resized, img_con, img_con0, img_disp;
 	cv::Mat flag;
 	// 表示画像関係
-	cv::Mat disp_cap, *disp_con;
+	cv::Mat disp_cap, disp_con;
 	cv::Point *disp_ps;
 	int disp_num;
 	// フォーカス関係
@@ -584,7 +584,7 @@ int main( int argc, char *argv[] )
 	}
 	else if ( eEntireMode == INPUT_MOVIE_MODE ) {
 		cap_mov = cv::VideoCapture( eMovieFileName );	// ファイルからのキャプチャ
-		if ( cap_mov == NULL )	return 1;	// キャプチャ失敗
+		if ( !cap_mov.isOpened() )	return 1;	// キャプチャ失敗
 		img_size.width = (int)cap_mov.get(cv::CAP_PROP_FRAME_WIDTH);	// サイズ読み込み
 		img_size.height = (int)cap_mov.get(cv::CAP_PROP_FRAME_HEIGHT);
 	}
@@ -593,8 +593,8 @@ int main( int argc, char *argv[] )
 	// ビデオ用の縮小サイズ
 	small_img_size = cv::Size( (int)(img_size.width * kResizeScaleImg), (int)(img_size.height * kResizeScaleImg) );
 	small_thumb_size = cv::Size( (int)(thumb_size.width * kResizeScaleThumb), (int)(thumb_size.height *kResizeScaleThumb) );
-//	merge_size = cv::Size( img_size.width + thumb_size.width, max( img_size.height, thumb_size.height ) );
-	merge_size = cv::Size( small_img_size.width + small_thumb_size.width, max( small_img_size.height, small_thumb_size.height ) );
+//	merge_size = cv::Size( img_size.width + thumb_size.width, (std::max)( img_size.height, thumb_size.height ) );
+	merge_size = cv::Size( small_img_size.width + small_thumb_size.width, (std::max)( small_img_size.height, small_thumb_size.height ) );
 	// アスペクト比に合わせる
 	if ( merge_size.width > (int)((double)merge_size.height * kVideoAspectRatio) )
 		merge_size.height = (int)((double)merge_size.width / kVideoAspectRatio);
@@ -701,7 +701,7 @@ int main( int argc, char *argv[] )
 			start_cap = GetProcTimeMiliSec();
 			cap_file = [&]() -> cv::Mat { cv::Mat f; cap_mov.read(f); return f; }();
 			end_cap = GetProcTimeMiliSec();
-			if ( cap_file == NULL )	goto end_cap;
+			if ( cap_file.empty() )	goto end_cap;
 			CopyImageData( cap_file, img_cap );
 		}
 		// 結合画像を作成
@@ -724,12 +724,12 @@ int main( int argc, char *argv[] )
 		num = MakeCentresFromImage( &ps, img_con, &img_size, &areas );
 		end_fp = GetProcTimeMiliSec();
 //		printf("cap : %dms\nfp : %dms\n", end_cap - start_cap, end_fp - start_fp);
-//		if ( img_pt != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
+//		if ( !img_pt.empty() ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 		// 表示画像の作成
-		if ( draw_fp > 0 || draw_con > 0)	disp_cap = NULL;
+		if ( draw_fp > 0 || draw_con > 0)	disp_cap = cv::Mat();
 		else	disp_cap = img_cap0;
 		if ( draw_con > 0 || draw_con_overlap > 0 )	disp_con = img_con0;
-		else	disp_con = NULL;
+		else	disp_con = cv::Mat();
 		if ( draw_fp > 0 || draw_fp_overlap > 0 ) {
 			disp_ps = ps0;
 			disp_num = num0;
@@ -740,11 +740,9 @@ int main( int argc, char *argv[] )
 		MakeDispImage( img_disp, disp_cap, disp_con, disp_ps, disp_num );
 		// 特徴点を描画
 /*		if ( draw_fp > 0 ) {
-			if ( img_pt != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 			img_pt = DrawPoints( ps0, num0, &img_size );
 		}
 		else if ( draw_fp_overlap > 0 ) {
-			if ( img_pt != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 			img_pt = DrawPointsOverlap( ps0, num0, &img_size, img_cap0 );
 		}*/
 //		cv::imshow( "Points", img_pt );
@@ -791,7 +789,7 @@ int main( int argc, char *argv[] )
 		DrawThumb( doc_name, doc_name_prev, &thumb, &thumb_draw, param, zero_param, img_size, res_size );
 //		if ( doc_name[0] != '\0' && strcmp( doc_name, doc_name_prev ) ) {	// 検索結果が得られ、かつ前回の結果と異なる
 //			thumb = LoadThumb( doc_name );
-//			if ( thumb != NULL ) {
+//			if ( !thumb.empty() ) {
 //				cv::imshow( "Thumb", thumb );
 // // cvReleaseImage removed (cv::Mat auto-manages memory)
 //			}
@@ -811,7 +809,7 @@ int main( int argc, char *argv[] )
 #endif
 //		DrawParam( img_cap0, thumb, param, zero_param );
 		if ( ar > 0 ) {	// 拡張現実の描画
-//			if ( clone != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
+//			if ( !clone.empty() ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 //			clone = img_cap0.clone();	// 必要？　いらないなら消す
 			DrawAR( img_disp, doc_name, param );	// ARを描画
 //			if ( draw_fp > 0 || draw_fp_overlap > 0 ) 			DrawAR( img_pt, doc_name, param );	// ARを描画
@@ -821,8 +819,8 @@ int main( int argc, char *argv[] )
 #endif
 		strcpy( doc_name_prev, doc_name );
 #ifdef	VIDEO_OUTPUT
-		cv::resize( img_cap0, small_cap, cv::INTER_NEAREST );
-		cv::resize( thumb_draw, small_thumb, cv::INTER_NEAREST );
+		cv::resize( img_cap0, small_cap, small_cap.size(), 0, 0, cv::INTER_NEAREST );
+		cv::resize( thumb_draw, small_thumb, small_thumb.size(), 0, 0, cv::INTER_NEAREST );
 		// 縮小特徴点画像の作成
 		small_pt.setTo(cv::Scalar::all(0));
 		cv::bitwise_not( small_pt, small_pt );
@@ -842,18 +840,18 @@ int main( int argc, char *argv[] )
 			cv::imshow( "Capture", img_disp );
 		}
 		else {	// 幅指定あり
-			cv::resize( img_disp, cap_resized, cv::INTER_LINEAR );	// リサイズ
+			cv::resize( img_disp, cap_resized, cap_resized.size(), 0, 0, cv::INTER_LINEAR );	// リサイズ
 			cv::imshow( "Capture", cap_resized );
 		}
 /*		if ( eCaptureWidth == 0 ) {	// 幅指定なし
 			if ( draw_fp > 0 || draw_fp_overlap > 0 )	cv::imshow( "Capture", img_pt );
-			else if ( draw_con > 0 && img_con0 != NULL )	cv::imshow( "Capture", img_con0 );
+			else if ( draw_con > 0 && !img_con0.empty() )	cv::imshow( "Capture", img_con0 );
 			else				cv::imshow( "Capture", img_cap0 );
 		}
 		else {
-			if ( draw_fp > 0 || draw_fp_overlap > 0 )	cv::resize( img_pt, cap_resized, cv::INTER_LINEAR );
-			else if ( draw_con > 0 && img_con0 != NULL )	cv::resize( img_con0, cap_resized, cv::INTER_LINEAR );
-			else				cv::resize( img_cap0, cap_resized, cv::INTER_LINEAR );
+			if ( draw_fp > 0 || draw_fp_overlap > 0 )	cv::resize( img_pt, cap_resized, cap_resized.size(), 0, 0, cv::INTER_LINEAR );
+			else if ( draw_con > 0 && !img_con0.empty() )	cv::resize( img_con0, cap_resized, cap_resized.size(), 0, 0, cv::INTER_LINEAR );
+			else				cv::resize( img_cap0, cap_resized, cap_resized.size(), 0, 0, cv::INTER_LINEAR );
 			cv::imshow( "Capture", cap_resized );
 		}*/
 		end = GetProcTimeMiliSec();
@@ -1057,10 +1055,10 @@ paste_end:
 	cv::setMouseCallback( "Thumb", NULL, 0 );
 
 	if ( g_paste_complete == 1 ) {
-		p1->x = min( (int)((double)g_p1.x/eThumbScale), (int)((double)g_p2.x/eThumbScale) );
-		p1->y = min( (int)((double)g_p1.y/eThumbScale), (int)((double)g_p2.y/eThumbScale) );
-		p2->x = max( (int)((double)g_p1.x/eThumbScale), (int)((double)g_p2.x/eThumbScale) );
-		p2->y = max( (int)((double)g_p2.y/eThumbScale), (int)((double)g_p2.y/eThumbScale) );
+		p1->x = (std::min)( (int)((double)g_p1.x/eThumbScale), (int)((double)g_p2.x/eThumbScale) );
+		p1->y = (std::min)( (int)((double)g_p1.y/eThumbScale), (int)((double)g_p2.y/eThumbScale) );
+		p2->x = (std::max)( (int)((double)g_p1.x/eThumbScale), (int)((double)g_p2.x/eThumbScale) );
+		p2->y = (std::max)( (int)((double)g_p2.y/eThumbScale), (int)((double)g_p2.y/eThumbScale) );
 		return 1;
 	}
 	else {
@@ -1109,12 +1107,12 @@ void OnMouseThumb( int event, int x, int y, int flags, void *param )
 	}
 
 	switch( event ) {
-		case CV_EVENT_LBUTTONDOWN:
+		case cv::EVENT_LBUTTONDOWN:
 			g_p1 = cv::Point( x, y );
 			status = 1;	// マウスが押された
 			g_paste_complete = 0;
 			break;
-		case CV_EVENT_LBUTTONUP:
+		case cv::EVENT_LBUTTONUP:
 			if ( status == 1 ) { // cvReleaseImage removed (cv::Mat auto-manages memory)
 				g_thumb_draw = g_thumb.clone();
 				cv::rectangle( g_thumb_draw, g_p1, g_p2, CV_RGB( 255, 0, 0 ), 2, 8, 0 );
@@ -1123,7 +1121,7 @@ void OnMouseThumb( int event, int x, int y, int flags, void *param )
 			}
 			g_paste_complete = 1;
 			break;
-		case CV_EVENT_MOUSEMOVE:
+		case cv::EVENT_MOUSEMOVE:
 			if ( status == 1 ) { // cvReleaseImage removed (cv::Mat auto-manages memory)
 				g_thumb_draw = g_thumb.clone();
 				cv::rectangle( g_thumb_draw, g_p1, g_p2, CV_RGB( 0, 0, 0 ), 1, 8, 0 );
@@ -1143,7 +1141,7 @@ int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size )
 	
 	if ( (fp = fopen(fname, "r")) == NULL )	return 0;
 	fgets(line, kMaxLineLen, fp);
-	sscanf(line, "%d,%d", &(size.cols), &(size.rows));
+	sscanf(line, "%d,%d", &(size->width), &(size->height));
 	ps = (cv::Point *)calloc(kMaxPointNum, sizeof(cv::Point));
 	*ps0 = ps;
 	num = 0;
@@ -1160,7 +1158,7 @@ cv::Mat LoadThumb( char *fname )
 {
 	char thumb_fname[kMaxPathLen];
 
-	if ( *fname == '\0' )	return NULL;	// fnameが空文字列
+	if ( *fname == '\0' )	return cv::Mat();	// fnameが空文字列
 //	sprintf( thumb_fname, "%s%s.%s", kThumbDir, fname, kThumbSuffix );
 	sprintf( thumb_fname, "%s%s.%s", eThumbDir, fname, eThumbSuffix );
 	puts(thumb_fname);
@@ -1178,17 +1176,17 @@ void DrawParam( cv::Mat img_cap, cv::Mat thumb, strProjParam param, strProjParam
 // キャプチャ画像とサムネイルとパラメータを示す枠の対応を描画して出力
 {
 	int i, width_all, height_all;
-	cv::Mat img, *thumb_res;
+	cv::Mat img, thumb_res;
 	strPoint p1[5], p2[5];
 
 	// サムネイルの拡大版を作る
 	thumb_res = cv::Mat::zeros( cv::Size( (int)(thumb.cols / eThumbScale * kDrawParamScale), (int)(thumb.rows / eThumbScale * kDrawParamScale) ), CV_8UC3 );
-	cv::resize( thumb, thumb_res, cv::INTER_LINEAR );
+	cv::resize( thumb, thumb_res, thumb_res.size(), 0, 0, cv::INTER_LINEAR );
 	// 全体画像を作る
 	width_all = kDrawParamHMargin * 2 + kDrawParamSpace + img_cap.cols + thumb_res.cols;
-	height_all = kDrawParamVMargin * 2 + max( img_cap.rows, thumb_res.rows );
+	height_all = kDrawParamVMargin * 2 + (std::max)( img_cap.rows, thumb_res.rows );
 	img = cv::Mat::zeros(cv::Size( width_all, height_all ), CV_8UC3);
-	cvSet( img, cWhite, NULL );	// 白で塗りつぶす
+	img.setTo( cWhite );	// 白で塗りつぶす
 	// キャプチャ画像を配置する
 	PutImage( img_cap, img, cv::Point( kDrawParamHMargin, kDrawParamVMargin ) );
 	// 拡大サムネイルを配置する
@@ -1232,7 +1230,7 @@ void DrawThumb( char *doc_name, char *doc_name_prev, cv::Mat *thumb0, cv::Mat *t
 {
 	int i;
 	char thumb_fname[kMaxPathLen];
-	cv::Mat thumb, *thumb_orig, *thumb_draw;
+	cv::Mat thumb, thumb_orig, thumb_draw;
 	cv::Size thumb_size;
 	strPoint p1[5], p2[5];
 
@@ -1249,17 +1247,15 @@ void DrawThumb( char *doc_name, char *doc_name_prev, cv::Mat *thumb0, cv::Mat *t
 
 	thumb = *thumb0;
 	if ( strcmp( doc_name, doc_name_prev ) ) {	// 前回と検索結果が異なる
-		if ( *thumb0 != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)	// リリースした上で
 		thumb = cv::Mat::zeros(thumb_size, CV_8UC3);	// 縮小画像を作成
-		cvSet( thumb, CV_RGB(255,255,255), NULL );	// 白にクリア
+		thumb.setTo( CV_RGB(255,255,255) );	// 白にクリア
 		sprintf( thumb_fname, "%s%s.%s", eThumbDir, doc_name, eThumbSuffix );
 //		puts( thumb_fname );
-		if ( ( thumb_orig = cv::imread( thumb_fname, cv::IMREAD_COLOR) ) != NULL ) {	// サムネイル画像をロードし，
-			cv::resize( thumb_orig, thumb, cv::INTER_NEAREST );	// リサイズして表示 // cvReleaseImage removed (cv::Mat auto-manages memory)
+		if ( !( thumb_orig = cv::imread( thumb_fname, cv::IMREAD_COLOR) ).empty() ) {	// サムネイル画像をロードし，
+			cv::resize( thumb_orig, thumb, thumb.size(), 0, 0, cv::INTER_NEAREST );	// リサイズして表示 // cvReleaseImage removed (cv::Mat auto-manages memory)
 		}
 		*thumb0 = thumb;
 	}
-	if ( *thumb_draw0 != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 	thumb_draw = thumb.clone();	// クローンを作成
 	*thumb_draw0 = thumb_draw;
 	if ( !IsEqualParam( param, zero_param ) ) {	// パラメータ計算に成功
@@ -1289,13 +1285,11 @@ void DrawThumb( char *doc_name, char *doc_name_prev, cv::Mat *thumb0, cv::Mat *t
 		strcpy( doc_name, "0" );		// 0.bmpを表示
 	}
 	if ( strcmp( doc_name, doc_name_prev ) ) {	// 前回と検索結果が異なる
-		if ( *thumb0 != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)	// リリースした上で
 //		puts("start load thumb");
 		thumb = LoadThumb( doc_name );		// ロードする
 //		puts("finish load thumb");
 		*thumb0 = thumb;
 	}
-	if ( *thumb_draw0 != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 	thumb_draw = thumb.clone();	// クローンを作成
 	*thumb_draw0 = thumb_draw;
 
@@ -1327,7 +1321,7 @@ void DrawCor2( cv::Point corps[][2], int corpsnum, cv::Mat img_cap, char *doc_na
 {
 	int i;
 	char thumb_fname[kMaxPathLen];
-	cv::Mat cor_img, *thumb;
+	cv::Mat cor_img, thumb;
 	cv::Size qs, rs, cor_size;
 	cv::Point p1, p2;
 	
@@ -1338,7 +1332,7 @@ void DrawCor2( cv::Point corps[][2], int corpsnum, cv::Mat img_cap, char *doc_na
 	thumb = LoadThumb( doc_name );		// ロードする
 //	puts("finish load thumb");
 
-	cor_size = cv::Size( img_cap.cols + thumb.cols, max( img_cap.rows, thumb.rows ) );
+	cor_size = cv::Size( img_cap.cols + thumb.cols, (std::max)( img_cap.rows, thumb.rows ) );
 	cor_img = cv::Mat::zeros(cor_size, CV_8UC3);
 	MergeImage( img_cap, thumb, MERGE_HOR, cor_img );
 
@@ -1395,7 +1389,7 @@ int CaptureMovie( char *movfile )
 	long buff_size;
 	unsigned char *img_buff;
 	cv::Size img_size;
-	cv::Mat img_cap = NULL;
+	cv::Mat img_cap;
 	strDirectShowCap dsc;
 	struct cv::VideoWriter video_wr;	// ビデオ出力用
 	TIME_COUNT start, end, start_cap, end_cap, start_show, end_show, start_connect, end_connect, start_conv, end_conv, start_ret, end_ret, start_fp, end_fp, start_com, end_com;
@@ -1483,7 +1477,7 @@ int DecomposeMovie( char *mov_file )
 	img_size.width = (int)cap_mov.get(cv::CAP_PROP_FRAME_WIDTH);
 	img_size.height = (int)cap_mov.get(cv::CAP_PROP_FRAME_HEIGHT);
 	printf("%d,%d\n", img_size.width, img_size.height );
-	while ( ( img_cap = [&]() -> cv::Mat { cv::Mat f; cap_mov.read(f); return f; }() ) != NULL ) {
+	while ( !( img_cap = [&]() -> cv::Mat { cv::Mat f; cap_mov.read(f); return f; }() ).empty() ) {
 		OutPutImage( img_cap );
 	}
 	// cvReleaseCapture removed (VideoCapture auto-releases);
@@ -1499,7 +1493,8 @@ void ConvMovie( void )
 	cv::VideoWriter video_wr;
 	cv::Mat cap_file;
 
-	if ( ( cap_mov = cv::VideoCapture( eMovieFileName ) ) == NULL )	return;
+	cap_mov = cv::VideoCapture( eMovieFileName );
+	if ( !cap_mov.isOpened() )	return;
 	img_size.width = (int)cap_mov.get(cv::CAP_PROP_FRAME_WIDTH);	// サイズ読み込み
 	img_size.height = (int)cap_mov.get(cv::CAP_PROP_FRAME_HEIGHT);
 	mov_fps = cap_mov.get(cv::CAP_PROP_FPS);
@@ -1507,7 +1502,7 @@ void ConvMovie( void )
 	cv::namedWindow( "Movie", cv::WINDOW_AUTOSIZE );
 	for ( ; ; ) {
 		cap_file = [&]() -> cv::Mat { cv::Mat f; cap_mov.read(f); return f; }();
-		if ( cap_file == NULL )	break;
+		if ( cap_file.empty() )	break;
 		cv::imshow( "Movie", cap_file );
 		video_wr.write(cap_file);
 	}
@@ -1534,7 +1529,7 @@ cv::Mat LoadFlagImage( char *doc_name )
 			return img;
 		}
 	}
-	return NULL;
+	return cv::Mat();
 }
 
 void MakeDispImage( cv::Mat img_disp, cv::Mat disp_cap, cv::Mat disp_con, cv::Point *disp_ps, int disp_num )
@@ -1543,10 +1538,10 @@ void MakeDispImage( cv::Mat img_disp, cv::Mat disp_cap, cv::Mat disp_con, cv::Po
 	int i;
 
 	// キャプチャ画像
-	if ( disp_cap != NULL )	cvCopyImage( disp_cap, img_disp );
+	if ( !disp_cap.empty() )	disp_cap.copyTo( img_disp );
 	else	img_disp.setTo(cv::Scalar::all(0));
 	// 連結成分
-	if ( disp_con != NULL )	cvSet( img_disp, cGreen, disp_con );
+	if ( !disp_con.empty() )	img_disp.setTo( cGreen, disp_con );
 	// 特徴点
 	for ( i = 0; i < disp_num; i++ ) {
 		cv::circle( img_disp, disp_ps[i], 3, cRed, -1, cv::LINE_AA, 0 );
@@ -1561,10 +1556,10 @@ cv::Mat GetFlagImage( char *doc_name )
 	int i;
 	static int loaded = 0;	// 画像をロードしたかどうかのフラグ
 	static int num = 13;
-	static cv::Mat *flag_imgs = NULL;
+	static std::vector<cv::Mat> flag_imgs;
 
 	if ( loaded == 0 ) {	// まだ読み込んでいない
-		flag_imgs = (cv::Mat *)calloc( num, sizeof(cv::Mat ) );
+		flag_imgs.assign( num, cv::Mat() );
 		for ( i = 0; i < num; i++ ) {
 			sprintf( path, "%s%s.%s", kFlagDir, langs[i], kFlagSuffix );
 			flag_imgs[i] = cv::imread( path, cv::IMREAD_COLOR);
@@ -1593,10 +1588,10 @@ int RetrieveDualHash( void )
 	double *areas1 = NULL, *areas10 = NULL, *areas2 = NULL, *areas20 = NULL;
 	cv::Size img_size, query_size, reg_size, thumb_size, merge_size, small_img_size, small_thumb_size, res_size, resized_size;
 	strDirectShowCap dsc;
-	cv::Mat img_cap = NULL, *img_pt = NULL, *img_cap0 = NULL, *tmp = NULL, *thumb = NULL, *thumb_draw = NULL, *merge = NULL, *small_cap, *small_thumb, *clone = NULL, *cap_file, *cap_resized, *img_con1 = NULL, *img_con10 = NULL, *img_con2 = NULL, *img_con20 = NULL, *img_disp = NULL;
+	cv::Mat img_cap, img_pt, img_cap0, tmp, thumb, thumb_draw, merge, small_cap, small_thumb, clone, cap_file, cap_resized, img_con1, img_con10, img_con2, img_con20, img_disp;
 	cv::Mat flag;
 	// 表示画像関係
-	cv::Mat disp_cap, *disp_con;
+	cv::Mat disp_cap, disp_con;
 	cv::Point *disp_ps;
 	int disp_num;
 	// フォーカス関係
@@ -1607,7 +1602,7 @@ int RetrieveDualHash( void )
 	int gauss_tb;
 #ifdef VIDEO_OUTPUT
 	cv::Size small_pt_size;
-	cv::Mat small_pt1, *small_pt2;;
+	cv::Mat small_pt1, small_pt2;;
 #endif
 	strProjParam param, zero_param;;
 	struct cv::VideoWriter video_wr;	// ビデオ出力用
@@ -1623,7 +1618,7 @@ int RetrieveDualHash( void )
 	}
 	else if ( eEntireMode == INPUT_MOVIE_MODE ) {
 		cap_mov = cv::VideoCapture( eMovieFileName );	// ファイルからのキャプチャ
-		if ( cap_mov == NULL )	return 1;	// キャプチャ失敗
+		if ( !cap_mov.isOpened() )	return 1;	// キャプチャ失敗
 		img_size.width = (int)cap_mov.get(cv::CAP_PROP_FRAME_WIDTH);	// サイズ読み込み
 		img_size.height = (int)cap_mov.get(cv::CAP_PROP_FRAME_HEIGHT);
 	}
@@ -1632,7 +1627,7 @@ int RetrieveDualHash( void )
 	// ビデオ用の縮小サイズ
 	small_img_size = cv::Size( (int)(img_size.width * kResizeScaleImg), (int)(img_size.height * kResizeScaleImg) );
 	small_thumb_size = cv::Size( (int)(thumb_size.width * kResizeScaleThumb), (int)(thumb_size.height *kResizeScaleThumb) );
-	merge_size = cv::Size( small_img_size.width + small_thumb_size.width, max( small_img_size.height, small_thumb_size.height ) );
+	merge_size = cv::Size( small_img_size.width + small_thumb_size.width, (std::max)( small_img_size.height, small_thumb_size.height ) );
 	// アスペクト比に合わせる
 	if ( merge_size.width > (int)((double)merge_size.height * kVideoAspectRatio) )
 		merge_size.height = (int)((double)merge_size.width / kVideoAspectRatio);
@@ -1718,11 +1713,11 @@ int RetrieveDualHash( void )
 
 #ifdef	VIDEO_OUTPUT
 //	video_wr = cv::VideoWriter( kVideoFileName, -1, kVideoFps, merge_size, 1 );	// ビデオ出力
-	video_wr = cv::VideoWriter( kVideoFileName, CV_FOURCC( 'X', 'V', 'I', 'D' ), kVideoFps, merge_size, 1 );	// ビデオ出力
+	video_wr = cv::VideoWriter( kVideoFileName, cv::VideoWriter::fourcc( 'X', 'V', 'I', 'D' ), kVideoFps, merge_size, 1 );	// ビデオ出力
 #endif
 #ifdef	VIDEO_RECORD
 //	video_wr = cv::VideoWriter( "recorded.avi", -1, kVideoFps, img_size, 1 );	// ビデオ出力
-	video_wr = cv::VideoWriter( "recorded.avi", CV_FOURCC( 'X', 'V', 'I', 'D' ), kVideoFps, img_size, 1 );	// ビデオ出力
+	video_wr = cv::VideoWriter( "recorded.avi", cv::VideoWriter::fourcc( 'X', 'V', 'I', 'D' ), kVideoFps, img_size, 1 );	// ビデオ出力
 #endif
 
 	start = GetProcTimeMiliSec();
@@ -1743,7 +1738,7 @@ int RetrieveDualHash( void )
 			start_cap = GetProcTimeMiliSec();
 			cap_file = [&]() -> cv::Mat { cv::Mat f; cap_mov.read(f); return f; }();
 			end_cap = GetProcTimeMiliSec();
-			if ( cap_file == NULL )	goto end_cap;
+			if ( cap_file.empty() )	goto end_cap;
 			CopyImageData( cap_file, img_cap );
 		}
 #ifdef	VIDEO_RECORD
@@ -1777,12 +1772,12 @@ int RetrieveDualHash( void )
 		printf("%d, %d\n", num1, num2);
 		end_fp = GetProcTimeMiliSec();
 //		printf("cap : %dms\nfp : %dms\n", end_cap - start_cap, end_fp - start_fp);
-//		if ( img_pt != NULL ) // cvReleaseImage removed (cv::Mat auto-manages memory)
+//		if ( !img_pt.empty() ) // cvReleaseImage removed (cv::Mat auto-manages memory)
 		// 表示画像の作成
-		if ( draw_fp > 0 || draw_con > 0)	disp_cap = NULL;
+		if ( draw_fp > 0 || draw_con > 0)	disp_cap = cv::Mat();
 		else	disp_cap = img_cap0;
 		if ( draw_con > 0 || draw_con_overlap > 0 )	disp_con = img_con10;
-		else	disp_con = NULL;
+		else	disp_con = cv::Mat();
 		if ( draw_fp > 0 || draw_fp_overlap > 0 ) {
 			disp_ps = ps10;
 			disp_num = num10;
@@ -1849,8 +1844,8 @@ int RetrieveDualHash( void )
 #endif
 		strcpy( doc_name_prev, doc_name );
 #ifdef	VIDEO_OUTPUT
-		cv::resize( img_cap0, small_cap, cv::INTER_NEAREST );
-		cv::resize( thumb_draw, small_thumb, cv::INTER_NEAREST );
+		cv::resize( img_cap0, small_cap, small_cap.size(), 0, 0, cv::INTER_NEAREST );
+		cv::resize( thumb_draw, small_thumb, small_thumb.size(), 0, 0, cv::INTER_NEAREST );
 		// 縮小特徴点画像の作成
 		small_pt1.setTo(cv::Scalar::all(0));
 		cv::bitwise_not( small_pt1, small_pt1 );
@@ -1880,7 +1875,7 @@ int RetrieveDualHash( void )
 			cv::imshow( "Capture", img_disp );
 		}
 		else {	// 幅指定あり
-			cv::resize( img_disp, cap_resized, cv::INTER_LINEAR );	// リサイズ
+			cv::resize( img_disp, cap_resized, cap_resized.size(), 0, 0, cv::INTER_LINEAR );	// リサイズ
 			cv::imshow( "Capture", cap_resized );
 		}
 		end = GetProcTimeMiliSec();

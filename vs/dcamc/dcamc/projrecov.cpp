@@ -258,7 +258,7 @@ void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv:
 #if 0
 	img = cv::imread( img_fname, cv::IMREAD_GRAYSCALE);
 	src = cv::Mat::zeros(cv::Size(img.cols*9, img.rows*9), CV_8UC1);
-	cv::resize( img, src, CV_INTER_CUBIC ); // cvReleaseImage removed (cv::Mat auto-manages memory)
+	cv::resize( img, src, src.size(), 0, 0, cv::INTER_CUBIC ); // cvReleaseImage removed (cv::Mat auto-manages memory)
 #endif
 	srand(clock());
 
@@ -285,9 +285,9 @@ void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv:
 			pp1.y = j;
 			ProjTrans( &pp1, &pp2, &param );
 			if ( pp2.x >= src.cols || pp2.y >= src.rows || pp2.x < 0 || pp2.y < 0 )
-				img.data[j*img.colsStep+i] = 0;
+				img.data[j*img.step[0]+i] = 0;
 			else
-				img.data[j*img.colsStep+i] = src.data[pp2.y*src.colsStep+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
+				img.data[j*img.step[0]+i] = src.data[pp2.y*src.step[0]+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
 		}
 	}
 	OutPutImage(img);
@@ -350,7 +350,7 @@ void GetAppropriateParam( strProjParam *paramarr, strProjParam *param )
 void RPTMain( char *fname1, char *fname2 )
 // テストのメイン
 {
-	cv::Mat img1, *img2;
+	cv::Mat img1, img2;
 	cv::Point p1[4], p2[4];
 
 	if ( strcmp(fname1, "0104.bmp") || strcmp(fname2, "IMG_0214.bmp") ) {
@@ -422,7 +422,7 @@ void RecoverPTTest( cv::Mat img1, cv::Mat img2, cv::Point *p1, cv::Point *p2 )
 			pp1.x = i;
 			pp1.y = j;
 			ProjTrans( &pp1, &pp2, &param );
-			recov.data[j*img1.colsStep+i] = img2.data[pp2.y*img2.colsStep+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
+			recov.data[j*img1.step[0]+i] = img2.data[pp2.y*img2.step[0]+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
 		}
 	}
 	OutPutImage( recov );

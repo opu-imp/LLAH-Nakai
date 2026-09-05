@@ -27,7 +27,7 @@ void DrawAR( cv::Mat img_cap, char *doc_name, strProjParam param )
 	cv::Size reg_size;
 	cv::Point **edge_array, cvpt_rect[4];
 	strPoint pt_q, pt_r, pt_m, q_edge[4], r_edge[4], p1_r, p2_r, p1_q, p2_q, rect_r[4], rect_q[4];
-	cv::Mat *img_array;
+	std::vector<cv::Mat> img_array;
 	strAR fi[kMaxAR], ti[kMaxAR];
 	strProjParam param_r2q;
 
@@ -42,7 +42,7 @@ void DrawAR( cv::Mat img_cap, char *doc_name, strProjParam param )
 	// ÉÅÉÇÉäÇÃämï€
 //	ar_array = (char **)calloc( ar_num, sizeof(char *) );
 //	edge_array = (cv::Point **)calloc( ar_num, sizeof(cv::Point *) );
-//	img_array = (cv::Mat *)calloc( ar_num, sizeof(cv::Mat ) );
+//	img_array.assign( ar_num, cv::Mat() );
 	for ( fi_num = 0, ti_num = 0; fgets( line, kMaxLineLen, fp ) != NULL ; ) {
 		sscanf( line, "%c", &ar_type );	// éÌï ÇÃì«Ç›çûÇ›
 		switch ( ar_type ) {

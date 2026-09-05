@@ -3,9 +3,9 @@
 class cFpTuneCap
 {
 private:
-	cv::Mat gray, *inv;
+	cv::Mat gray, inv;
 public:
-	cv::Mat img, *bin1, *smt, *bin2, *pt, *overlap, *cor;
+	cv::Mat img, bin1, smt, bin2, pt, overlap, cor;
 	cv::Point2f *pfs;
 	int adp_block, adp_sub, gparam, thr;
 

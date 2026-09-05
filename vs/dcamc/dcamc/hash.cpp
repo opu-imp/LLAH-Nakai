@@ -4,7 +4,6 @@
 #include <string.h>
 #include "def_general.h"
 #include <opencv2/opencv.hpp>
-#include "highgui.h"
 #include "hash.h"
 //#include "dirs.h"
 #include "hist.h"

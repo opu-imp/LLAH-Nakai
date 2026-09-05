@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include <opencv2/opencv.hpp>
-#include "highgui.h"
 #include "cr.h"
 #include "dirs.h"
 #include "def_general.h"

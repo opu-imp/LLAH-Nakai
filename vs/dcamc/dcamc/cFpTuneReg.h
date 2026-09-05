@@ -5,7 +5,7 @@ class cFpTuneReg
 private:
 	cv::Mat inv;
 public:
-	cv::Mat img, *smt1, *bin1, *smt2, *bin2, *pt, *overlap, *cor;
+	cv::Mat img, smt1, bin1, smt2, bin2, pt, overlap, cor;
 	cv::Point2f *pfs;
 	int gparam1, adp_block, adp_sub, gparam2, thr;
 
