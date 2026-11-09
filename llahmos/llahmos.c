@@ -64,7 +64,7 @@ int main( int argc, char *argv[] )
 	dbcors[0] = (char *)calloc( kMaxPathLen, sizeof(char) );
 
 	// 画像1から特徴点を抽出
-	img1 = cv::imread(argv[argi], cv::IMREAD_COLOR);
+	img1 = cv::imread(argv[argi], cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	fprintf( stderr, "%s\n", argv[argi] );
 	strcpy( dbcors[0], argv[argi] );	// 元画像ファイル名を保存
 	start = GetProcTimeMiliSec();
@@ -88,7 +88,7 @@ int main( int argc, char *argv[] )
 
 	// 画像2から特徴点を抽出
 	argi++;
-	img2 = cv::imread(argv[argi], cv::IMREAD_COLOR);
+	img2 = cv::imread(argv[argi], cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	start = GetProcTimeMiliSec();
 	if ( eIsJp )	img = GetConnectedImageJp2( argv[argi], RETRIEVE_MODE );	// 結像画像を作成
 	else			img = GetConnectedImage2( argv[argi], RETRIEVE_MODE );	// 結像画像を作成

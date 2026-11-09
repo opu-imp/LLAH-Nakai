@@ -55,7 +55,7 @@ void DrawAR( cv::Mat img_cap, char *doc_name, strProjParam param )
 				fgets( line, kMaxLineLen, fp );
 				sscanf( line, "%s", img_fname );
 				sprintf( img_path, "%s%s", kARImageDir, img_fname );
-				fi[fi_num].img = cv::imread( img_path, cv::IMREAD_COLOR);
+				fi[fi_num].img = cv::imread( img_path, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 				fi_num++;
 				break;
 			case kARTypeRect:	// ‹éŒ`
@@ -92,7 +92,7 @@ void DrawAR( cv::Mat img_cap, char *doc_name, strProjParam param )
 			fprintf( stderr, "%s cannot open\n", img_fname );
 			i--;
 		}
-		img_array[i] = cv::imread( img_fname, cv::IMREAD_COLOR);
+		img_array[i] = cv::imread( img_fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 		fclose( fp_img );
 	}*/
 

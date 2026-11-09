@@ -19,7 +19,7 @@ cFpTuneReg::cFpTuneReg( char *fname, int def_gparam1, int def_adp_block, int def
 {
 	cv::Size size;
 
-	if ( ( img = cv::imread(fname, cv::IMREAD_GRAYSCALE) ).empty() ) {
+	if ( ( img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION) ).empty() ) {
 		fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 		return;
 	}
@@ -58,12 +58,12 @@ int cFpTuneReg::Extract( void )
 	cv::Size size;
 
 	// ガウシアン（一回目）
-	cv::GaussianBlur(img, smt1, cv::Size(gparam1*2+1, gparam1*2+1), 0);
+	cv::GaussianBlur(img, smt1, cv::Size(gparam1*2+1, gparam1*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化（一回目）
 //	cv::threshold( smt1, bin1, thr1, 255, cv::THRESH_BINARY );
 	cv::adaptiveThreshold( smt1, bin1, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, adp_block*2+1, adp_sub );
 	// ガウシアン（二回目）
-	cv::GaussianBlur(bin1, smt2, cv::Size(gparam2*2+1, gparam2*2+1), 0);
+	cv::GaussianBlur(bin1, smt2, cv::Size(gparam2*2+1, gparam2*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化（二回目）
 	cv::threshold( smt2, bin2, thr, 255, cv::THRESH_BINARY );
 	// 反転（特徴点抽出のため）

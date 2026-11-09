@@ -145,7 +145,7 @@ int DetectHarrisCam( char *fname, int mode )
 	img_show_size = cv::Size( (int)(img_size.width * kHarrisShowCamMag), (int)(img_size.height * kHarrisShowCamMag) );
 	img_show = cv::Mat::zeros(img_show_size, CV_8UC3);	// •\¦‚·‚ék¬‰æ‘œ‚ğì¬
 	// “o˜^‘¤‚Ìˆ—
-	img_reg = cv::imread( fname, cv::IMREAD_COLOR);
+	img_reg = cv::imread( fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	if ( img_reg.empty() )	return 0;
 	img_reg_size = cv::Size( (int)(img_reg.cols * kHarrisRegMag), (int)(img_reg.rows * kHarrisRegMag) );
 	img_reg_res = cv::Mat::zeros(img_reg_size, CV_8UC3);
@@ -335,7 +335,7 @@ int DetectHarrisCam( char *fname, int mode )
 			// “o˜^‰æ‘œ‚Ìˆ—
 			switch ( mode ) {
 				case DHC_HARRIS:
-					cv::GaussianBlur(img_reg_res, img_reg_smt, cv::Size(5, 5), 0);
+					cv::GaussianBlur(img_reg_res, img_reg_smt, cv::Size(5, 5), 0, 0, cv::BORDER_REPLICATE);
 					DetectGoodFeaturesReg( img_reg_smt, img_reg_fp, &regps, &regnum );
 					break;
 				case DHC_ENG:
@@ -434,14 +434,14 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 		return 0;
 	}
 	// “o˜^‘¤‚Ìˆ—
-	img_reg = cv::imread( fname, cv::IMREAD_COLOR);
+	img_reg = cv::imread( fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	if ( img_reg.empty() )	return 0;
 	img_reg_res = cv::Mat::zeros( cv::Size( (int)(img_reg.cols * kHarrisTestMag), (int)(img_reg.rows * kHarrisTestMag) ), CV_8UC3 );
 	cv::resize( img_reg, img_reg_res, img_reg_res.size(), 0, 0, cv::INTER_CUBIC );
 	img_reg_fp = cv::Mat::zeros(cv::Size( img_reg_res.cols, img_reg_res.rows ), CV_8UC3);
 	img_reg_smt = cv::Mat::zeros(cv::Size( img_reg_res.cols, img_reg_res.rows ), CV_8UC3);
 	// ‘‚«‚İ‘¤‚Ìˆ—
-	img_anno = cv::imread( fname_anno, cv::IMREAD_COLOR);
+	img_anno = cv::imread( fname_anno, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	if ( img_anno.empty() )	return 0;
 	img_anno_res = cv::Mat::zeros( cv::Size( (int)(img_anno.cols * kHarrisTestMag), (int)(img_anno.rows * kHarrisTestMag) ), CV_8UC3 );
 	cv::resize( img_anno, img_anno_res, img_anno_res.size(), 0, 0, cv::INTER_CUBIC );
@@ -589,6 +589,7 @@ int MakeCentresFromImageCH(cv::Point **ps, cv::Mat img, cv::Size *size, double *
 	size->width = img.cols;
 	size->height = img.rows;
 	
+    ClearImageBorder( img );
     cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 	if ( ret <= 0 ) {	// ˜AŒ‹¬•ª‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½ // cvReleaseMemStorage removed
 		return 0;

@@ -328,6 +328,7 @@ int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
 	cv::bitwise_not( bin, inv );
 	OutPutImage( inv );
 	// 連結成分の重心を計算
+	ClearImageBorder( inv );
 	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 	// まず数を数える
     i = 0;
@@ -562,8 +563,8 @@ void OutputCorCl( cv::Point **clpsa, cv::Point **clpso, int *numsa, int *numso, 
 		sprintf( climgofn, "%s%s03con%d.jpg", eOutPutDir, baseo, clcor[i] );
 		puts( climgafn );
 		puts( climgofn );
-		climga = cv::imread(climgafn, cv::IMREAD_COLOR);
-		climgo = cv::imread(climgofn, cv::IMREAD_COLOR);
+		climga = cv::imread(climgafn, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+		climgo = cv::imread(climgofn, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 		if (climga.empty() || climgo.empty())	{
 			fprintf( stderr, "%s or %s cannot open\n", climgafn, climgofn );
 			return;

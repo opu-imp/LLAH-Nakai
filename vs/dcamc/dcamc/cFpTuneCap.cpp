@@ -55,7 +55,7 @@ int cFpTuneCap::Extract( void )
 	// 適応二値化
 	cv::adaptiveThreshold( gray, bin1, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, adp_block*2+1, adp_sub );
 	// ガウシアン
-	cv::GaussianBlur(bin1, smt, cv::Size(gparam*2+1, gparam*2+1), 0);
+	cv::GaussianBlur(bin1, smt, cv::Size(gparam*2+1, gparam*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化
 	cv::threshold( smt, bin2, thr, 255, cv::THRESH_BINARY );
 	cv::bitwise_not( bin2, inv );

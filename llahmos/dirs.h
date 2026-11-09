@@ -126,6 +126,16 @@ inline int FirstTopLevelContour( const std::vector<cv::Vec4i> &hierarchy )
 	for ( size_t k = 0; k < hierarchy.size(); k++ )	if ( hierarchy[k][3] < 0 )	return (int)k;
 	return -1;
 }
+
+// cvFindContours (OpenCV 1.x/2.x) cleared the 1-pixel image border before
+// tracing, so components touching the border lost their edge pixels.
+// cv::findContours (OpenCV >= 3.2) pads the image instead. Call this right
+// before cv::findContours to get the same contours as the original code
+// (which also modified the image in place).
+inline void ClearImageBorder( cv::Mat img )
+{
+	cv::rectangle( img, cv::Rect( 0, 0, img.cols, img.rows ), cv::Scalar::all( 0 ), 1 );
+}
 #endif
 int CalcCentres(cv::Point **ps, std::vector<std::vector<cv::Point>> &contours, std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0);
 int OutPutImage(cv::Mat img);

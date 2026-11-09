@@ -408,11 +408,11 @@ int RetrieveAndRecover(cv::Point *ps, int num, int *nears[], cv::Size size, char
 //	start = timeGetTime();
 	switch ( mode ) {
 		case RETRIEVE_MODE:
-			img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
+			img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
             RecovPT(ps, num, max_doc, size, img);
 			break;
 		case RET_MP_MODE:
-			img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
+			img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 			exp = cv::Mat::zeros(size, CV_8UC1);
 			cv::resize(img, exp, exp.size(), 0, 0, cv::INTER_CUBIC);
 			OutPutImage( exp );
@@ -1286,7 +1286,7 @@ int ConstructHashSub( char *fname, int n, int mode, strDisc *disc, strHList **ha
 				img = GetConnectedImage( fname, CONST_HASH_MODE );
 				num = MakeCentresFromImage( &ps, img, &img_size, NULL );
 			} else if ( mode == ENCLOSED_MODE ) {	// àÕÇ‹ÇÍÇΩóÃàÊ
-				img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
+				img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 				num = MakeFeaturePointsFromImage( &ps, img, &img_size );
 			}
 		}
@@ -1563,9 +1563,9 @@ void DrawNeighbor( cv::Size size, cv::Point *ps, int num, int *nears[] )
 //	double cr;
 //	cv::Mat img = cv::Mat::zeros(size, CV_8UC3);
 #ifdef USE073
-	cv::Mat img = cv::imread("07s.bmp", cv::IMREAD_COLOR);
+	cv::Mat img = cv::imread("07s.bmp", cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 #else
-	cv::Mat img = cv::imread("04s.bmp", cv::IMREAD_COLOR);
+	cv::Mat img = cv::imread("04s.bmp", cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 #endif
 	cv::Scalar color;
 	// CvFont removed in OpenCV 4.x
@@ -2331,7 +2331,7 @@ int CreatePointFile4( cv::Point ***p_reg_pss, double ***p_reg_areass, cv::Size *
 		reg_nums[i] = MakeCentresFromImage( &(reg_pss[i]), img, &(reg_sizes[i]), &(reg_areass[i]) );	// ì¡í•ì_Çíäèo
 #ifdef	DRAW_FP
 		// ì¡í•ì_âÊëúÇÃçÏê¨
-		orig_img = cv::imread(files[i], cv::IMREAD_GRAYSCALE);
+		orig_img = cv::imread(files[i], cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 //		OutPutImage( con_img );
 		fp_img = MakeFeaturePointImage( orig_img, con_img, reg_pss[i], reg_nums[i] );
 		OutPutImage( fp_img );

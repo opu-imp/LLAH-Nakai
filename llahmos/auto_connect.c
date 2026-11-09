@@ -28,7 +28,7 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	strHist hist;
 	cv::Mat pt;
 
-	img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
+	img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 	if (img.empty()) {
 		fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 		return cv::Mat();
@@ -57,15 +57,16 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 //		OutPutImage( bin );
 		cv::bitwise_not(bin, inv);	// CBDAR以後に追加したノイズ除去処理
 //		OutPutImage( inv );
+		ClearImageBorder( inv );
 		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// 連結成分を描画
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
 			if ( d00 < 10 ) continue;	// 小さすぎる連結成分は除外
 #ifdef	WIN
-			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
+			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
 #else
-			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
+			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
 #endif
 	    }
 //		OutPutImage( smt );
@@ -77,6 +78,7 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
 //		OutPutImage( bin );
 		cv::bitwise_not( bin, inv );
+		ClearImageBorder( inv );
 		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 		InitHist( &hist, 100, 0, 1000 );
 	    for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] )
@@ -90,13 +92,14 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 		ReleaseHist( &hist );
 		chsize = (int)(chsize*0.1);
 		chsize += (chsize + 1) % 2;
-		cv::GaussianBlur(img, smt, cv::Size(chsize, chsize), 0);
+		cv::GaussianBlur(img, smt, cv::Size(chsize, chsize), 0, 0, cv::BORDER_REPLICATE);
 		cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 201, 10 );
 //		OutPutImage( bin );
 //
 	}
 	cv::bitwise_not( bin, inv );
 	// 文字の大きさを調べる
+	ClearImageBorder( inv );
 	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 	// 連結成分を描画・重心を計算
 	InitHist( &hist, 100, 0, 1000 );
@@ -120,13 +123,14 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	}
 //	chsize /= 2;
 	chsize += (chsize + 1) % 2;
-	cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0);	// OpenCV 1.0
+	cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0, 0, cv::BORDER_REPLICATE);	// OpenCV 1.0
 //	OutPutImage( smt );
 	cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 201, 5 );
 //	OutPutImage( bin );
 	cv::bitwise_not( bin, smt );
 
 #if 0
+	ClearImageBorder( smt );
 	cv::findContours(smt, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 
 	// 連結成分を描画・重心を計算
@@ -147,7 +151,6 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 #endif
 
 
-	if (!pt.empty())
 	OutPutImage( smt );
 	return smt;
 }
@@ -167,7 +170,7 @@ cv::Mat GetConnectedImage2( const char *fname, int mode )
 	strHist hist;
 	cv::Mat pt;
 
-	img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
+	img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 	if (img.empty()) {
 		fprintf( stderr, "error: %s cannot be opened\n", fname );
 		return cv::Mat();
@@ -189,21 +192,23 @@ cv::Mat GetConnectedImage2( const char *fname, int mode )
 //		OutPutImage( bin );
 		cv::bitwise_not(bin, inv);	// CBDAR以後に追加したノイズ除去処理
 //		OutPutImage( inv );
+		ClearImageBorder( inv );
 		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// 連結成分を描画
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
 			if ( d00 < 70 ) continue;	// 小さすぎる連結成分は除外
 #ifdef	WIN
-			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
+			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
 #else
-			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
+			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
 #endif
 	    }
 //		OutPutImage( smt );
 		cv::bitwise_not(smt, bin);
 		cv::bitwise_not( bin, inv );
 		// 文字の大きさを調べる
+		ClearImageBorder( inv );
 		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 		// 連結成分を描画・重心を計算
 		InitHist( &hist, 1000, 0, 1000 );
@@ -222,13 +227,13 @@ cv::Mat GetConnectedImage2( const char *fname, int mode )
 //		chsize = chsize * 2 + 1;	// 12/21変更　高解像度カメラを用いた拡大撮影での結果を精査して
 		chsize = chsize * 2 + 1;	// 08/05/16変更　モザイキングの場合
 //		printf( "chsize : %d\n", chsize );
-		cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0);	// OpenCV 1.0
+		cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0, 0, cv::BORDER_REPLICATE);	// OpenCV 1.0
 //		OutPutImage( smt );
 		cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 4 );
 //		OutPutImage( bin );
 		cv::bitwise_not( bin, inv );
 	} else {	// ハッシュ構築モード（電子文書）：閾値固定モード
-		cv::GaussianBlur(img, smt, cv::Size(eHashGaussMaskSize, eHashGaussMaskSize), 0);	// OpenCV 1.0
+		cv::GaussianBlur(img, smt, cv::Size(eHashGaussMaskSize, eHashGaussMaskSize), 0, 0, cv::BORDER_REPLICATE);	// OpenCV 1.0
 //		OutPutImage( smt );
 		cv::threshold( smt, bin, kConnectHashImageThr, kImgMaxVal, cv::THRESH_BINARY );
 //		OutPutImage( bin );
@@ -254,11 +259,11 @@ int GetConnectedImageJp( cv::Mat src, cv::Mat dst )
 	bin = cv::Mat::zeros(size, CV_8UC1);
 
 	// ガウシアン（一回目）
-	cv::GaussianBlur(src, smt, cv::Size(eJpGParam1*2+1, eJpGParam1*2+1), 0);
+	cv::GaussianBlur(src, smt, cv::Size(eJpGParam1*2+1, eJpGParam1*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化（一回目）
 	cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::ADAPTIVE_THRESH_MEAN_C, eJpAdpBlock*2+1, eJpAdpSub );
 	// ガウシアン（二回目）
-	cv::GaussianBlur(bin, smt, cv::Size(eJpGParam2*2+1, eJpGParam2*2+1), 0);
+	cv::GaussianBlur(bin, smt, cv::Size(eJpGParam2*2+1, eJpGParam2*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化（二回目）
 	cv::threshold( smt, bin, eJpThr, 255, cv::THRESH_BINARY );
 	// 反転（特徴点抽出のため）
@@ -272,7 +277,7 @@ cv::Mat GetConnectedImageJp2( const char *fname, int mode )
 	cv::Mat img, smt, bin, inv;
 	cv::Size img_size;
 
-	img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
+	img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 	if (img.empty()) {
 		fprintf( stderr, "error: %s cannot be opened\n", fname );
 		return cv::Mat();
@@ -286,7 +291,7 @@ cv::Mat GetConnectedImageJp2( const char *fname, int mode )
 	if ( mode == RETRIEVE_MODE ) {	// 検索モード
 		// 適応二値化
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 12 );
-		cv::GaussianBlur(bin, smt, cv::Size(3/* 1 */, 3/* 1 */), 0);	// 1は解像度が低い場合
+		cv::GaussianBlur(bin, smt, cv::Size(3/* 1 */, 3/* 1 */), 0, 0, cv::BORDER_REPLICATE);	// 1は解像度が低い場合
 		cv::threshold( smt, bin, 200, 255, cv::THRESH_BINARY );
 		cv::bitwise_not( bin, inv );
 	}
@@ -294,7 +299,7 @@ cv::Mat GetConnectedImageJp2( const char *fname, int mode )
 		// ガウシアン
 //		cv::GaussianBlur(img, smt, cv::Size(7, 7), 0);	// OpenCV 1.0
 		// 07/07/24
-		cv::GaussianBlur(img, smt, cv::Size(3, 3), 0);	// OpenCV 1.0
+		cv::GaussianBlur(img, smt, cv::Size(3, 3), 0, 0, cv::BORDER_REPLICATE);	// OpenCV 1.0
 		// 2値化
 		cv::threshold( smt, bin, 228, 255, cv::THRESH_BINARY );
 		// 反転
@@ -322,7 +327,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	strHist hist;
 //	cv::Scalar color;
 
-	img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
+	img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 	if (img.empty()) {
 		fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 		return 0;
@@ -345,6 +350,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 #ifdef DIC_MODE
 	cv::bitwise_not( img, inv );
 //	OutPutImage( inv );
+	ClearImageBorder( inv );
 	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 	InitHist( &hist, 100, 0, 1000 );
     i = 0;
@@ -361,7 +367,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	ReleaseHist( &hist );
 	chsize = (int)chsize*0.1;
 	chsize += (chsize + 1) % 2;
-	cv::GaussianBlur(img, smt, cv::Size(chsize, chsize), 0);
+	cv::GaussianBlur(img, smt, cv::Size(chsize, chsize), 0, 0, cv::BORDER_REPLICATE);
 //	OutPutImage( smt );
 	cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 201, 10 );
 #endif
@@ -375,6 +381,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	cv::bitwise_not( bin, inv );
 //	OutPutImage( inv );
 
+	ClearImageBorder( inv );
 	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 
 	// 点の数をカウント（暫定）
@@ -410,13 +417,14 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	chsize *= 3;
 #endif
 	chsize += (chsize + 1) % 2;
-	cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0);
+	cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0, 0, cv::BORDER_REPLICATE);
 //	OutPutImage( smt );
 //	cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 201, 5 );
 	cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 201, 5 );
 //	OutPutImage( bin );
 	cv::bitwise_not( bin, inv );
 #ifdef DRAW_POINT
+	ClearImageBorder( inv );
 	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 
 	// 連結成分を描画・重心を計算
@@ -466,7 +474,7 @@ cv::Mat GetConnectedImageCam( cv::Mat src )
 	// 適応二値化
 	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 10 );
 	// 07/06/07
-	cv::GaussianBlur(bin, gray, cv::Size(3, 3), 0);
+	cv::GaussianBlur(bin, gray, cv::Size(3, 3), 0, 0, cv::BORDER_REPLICATE);
 	// 07/06/07
 	cv::threshold( gray, bin, 240, 255, cv::THRESH_BINARY );
 	cv::bitwise_not( bin, inv );
@@ -495,7 +503,7 @@ cv::Mat GetConnectedImageCamJp2( cv::Mat src )
 //	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 12 );
 	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 141, 12 );	// MIRU07 裏写り対策
 //	cv::bitwise_not( bin, inv );
-	cv::GaussianBlur(bin, gray, cv::Size(3, 3), 0);
+	cv::GaussianBlur(bin, gray, cv::Size(3, 3), 0, 0, cv::BORDER_REPLICATE);
 //	cv::imwrite( "smooth.bmp", gray );
 	cv::threshold( gray, bin, 200, 255, cv::THRESH_BINARY );
 	cv::bitwise_not( bin, inv );

@@ -71,7 +71,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 		}
 	}
 	// クラスタリングを行う
-	cv::kmeans( points_small, cluster_count, clusters_small, cv::TermCriteria( cv::TermCriteria::EPS+cv::TermCriteria::MAX_ITER, eKMeansMaxIter, eKMeansEpsilon ), 10, cv::KMEANS_RANDOM_CENTERS );
+	cv::kmeans( points_small, cluster_count, clusters_small, cv::TermCriteria( cv::TermCriteria::EPS+cv::TermCriteria::MAX_ITER, eKMeansMaxIter, eKMeansEpsilon ), 1, cv::KMEANS_RANDOM_CENTERS );
 	printf("Clustering: %d msec\n", GetProcTimeMiliSec() - start );
 #ifdef	CL_OUTPUT_IMAGE	// クラスタリング結果の表示
 //	fprintf( stderr, "Drawing result of clustering...\n" );
@@ -186,6 +186,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	for ( i = 0; i < cluster_count; i++ ) {
 		// まずは数を数える
 		nums[i] = 0;
+	    ClearImageBorder( climgs[i] );
 	    cv::findContours(climgs[i], contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE );	// 連結成分を抽出する
 		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {
 			mom = cv::moments(contours[_ci]);
@@ -203,7 +204,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 			clps[i][j].y = (int)(mom.m01 / d00 / eClScale );
 			j++;
 #ifdef	CL_OUTPUT_IMAGE
-			cv::drawContours( climgs2[i], contours, ci, cGreen, cv::FILLED, kDrawContourLineType );	// replace cv::FILLED with 1 to see the outlines
+			cv::drawContours( climgs2[i], contours, ci, cWhite, cv::FILLED, kDrawContourLineType, hierarchy, 1 );	// replace cv::FILLED with 1 to see the outlines
 #endif
 		}
 #ifdef	CL_OUTPUT_IMAGE

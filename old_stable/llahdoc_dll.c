@@ -363,7 +363,7 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 	// Œ‹‡‰æ‘œ‚ğì¬
 #ifdef	WIN32	// OpenCV‚Ìƒo[ƒWƒ‡ƒ“‚ªˆÙ‚È‚é‚½‚ß
 //	img = GetConnectedImage2( img_fname, eEntireMode );
-	img_cap = cv::imread(img_fname, cv::IMREAD_COLOR);
+	img_cap = cv::imread(img_fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	if (img_cap.empty())	return 0;
 	img = GetConnectedImageCam( img_cap );
 #else

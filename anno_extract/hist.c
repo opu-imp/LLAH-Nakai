@@ -80,7 +80,7 @@ void DisplayHistNum(strHist *hist)
 
 void HistTest( void )
 {
-    cv::Mat src = cv::imread("img_0001.jpg", cv::IMREAD_COLOR);
+    cv::Mat src = cv::imread("img_0001.jpg", cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
     if( !src.empty() )
     {
         cv::Mat hsv;

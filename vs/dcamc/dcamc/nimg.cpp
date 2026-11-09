@@ -10,7 +10,7 @@ int SetPix( cv::Mat img, int x, int y, char *val )
 
 	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// 画像の範囲を超える
 	ws = img.step[0];
-	bpp = (int)((img.depth() & 0x0ff) / 8) * img.channels();	// ピクセルあたりのバイト数
+	bpp = (int)img.elemSize();	// ピクセルあたりのバイト数
 	for ( i = 0; i < bpp; i++ )
 		img.data[ws*y + x*bpp + i] = val[i];
 	return 1;
@@ -23,7 +23,7 @@ int GetPix( cv::Mat img, int x, int y, char *val )
 
 	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// 画像の範囲を超える
 	ws = img.step[0];
-	bpp = (int)((img.depth() & 0x0ff) / 8) * img.channels();	// ピクセルあたりのバイト数
+	bpp = (int)img.elemSize();	// ピクセルあたりのバイト数
 	for ( i = 0; i < bpp; i++ )
 		val[i] = img.data[ws*y + x*bpp + i];
 	return 1;

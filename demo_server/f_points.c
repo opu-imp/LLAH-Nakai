@@ -25,6 +25,7 @@ int MakeFeaturePointsFromImage(cv::Point **ps, cv::Mat img, cv::Size *size)
 	OutPutImage( bin );
 	cv::floodFill(bin, cv::Point(300,300), cBlack, nullptr, cv::Scalar::all(0), cv::Scalar::all(0), 4);
 	OutPutImage( bin );
+    ClearImageBorder( bin );
     cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 
 	num = CalcCentres(ps, contours, hierarchy, size, NULL);	// 各連結成分の重心を計算する

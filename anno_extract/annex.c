@@ -287,11 +287,11 @@ int main( int argc, char *argv[] )
 	}
 	// 画像のロード
 	start = GetProcTimeMiliSec();
-	orig = cv::imread(eOrigFileName, cv::IMREAD_COLOR); if ( orig.empty() ) {
+	orig = cv::imread(eOrigFileName, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION); if ( orig.empty() ) {
 		fprintf( stderr, "Image file load error: %s\n", eOrigFileName );
 		return 1;
 	}
-	anno = cv::imread(eAnnoFileName, cv::IMREAD_COLOR); if ( anno.empty() ) {
+	anno = cv::imread(eAnnoFileName, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION); if ( anno.empty() ) {
 		fprintf( stderr, "Image file load error: %s\n", eAnnoFileName );
 		return 1;
 	}
@@ -356,12 +356,12 @@ int main( int argc, char *argv[] )
 	}
 	else {	// 元画像がスキャンされたものの場合でも、ガウシアンフィルタでドットパターンをぼかす
 //		cv::erode(orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), 10);
-		cv::GaussianBlur(orig_small, orig_erode, cv::Size(eOrigGaussParamMain, eOrigGaussParamMain), 0);
+		cv::GaussianBlur(orig_small, orig_erode, cv::Size(eOrigGaussParamMain, eOrigGaussParamMain), 0, 0, cv::BORDER_REPLICATE);
 	}
 //		orig_small.copyTo(orig_erode);
 //	cv::imwrite( "orig_erode.jpg", orig_erode );
 	anno_smth = o331;
-	cv::GaussianBlur(anno_trans, anno_smth, cv::Size(eAnnoGaussPramMain, eAnnoGaussPramMain), 0);
+	cv::GaussianBlur(anno_trans, anno_smth, cv::Size(eAnnoGaussPramMain, eAnnoGaussPramMain), 0, 0, cv::BORDER_REPLICATE);
 //	anno_trans.copyTo(anno_smth);
 //	cv::imwrite( "anno_smth.jpg", anno_smth );
 	printf("Eroding image: %d msec\n", GetProcTimeMiliSec() - start);
@@ -407,12 +407,13 @@ int main( int argc, char *argv[] )
 	start = GetProcTimeMiliSec();
 	clean = o311;
 	clean.setTo(0);
+	ClearImageBorder( bin );
 	cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 	for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// 連結成分を描画
 		mom = cv::moments(contours[_ci]);
 		d00 = mom.m00;	// 面積を求める
 		if ( d00 < eMinAreaMain ) continue;	// 小さすぎる連結成分は除外
-		cv::drawContours(clean, contours, _ci, cWhite, cv::FILLED, kDrawContourLineType);
+		cv::drawContours(clean, contours, _ci, cWhite, cv::FILLED, kDrawContourLineType, hierarchy, 1);
 	}
 	printf("Cleaning image: %d msec\n", GetProcTimeMiliSec() - start);
 #ifdef	ANNEX_OUTPUT_IMAGE

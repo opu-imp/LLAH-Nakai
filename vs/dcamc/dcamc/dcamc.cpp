@@ -325,6 +325,7 @@ int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **a
 	size->width = img.cols;
 	size->height = img.rows;
 	
+    ClearImageBorder( img );
     cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// 連結成分を抽出する
 	if ( ret <= 0 ) {	// 連結成分が見つからなかった // cvReleaseMemStorage removed
 		return 0;
@@ -347,6 +348,7 @@ int MakeFloatCentresFromImage(cv::Point2f **pfs, cv::Mat img, cv::Size *size, do
 	size->width = img.cols;
 	size->height = img.rows;
 	
+    ClearImageBorder( img );
     cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// 連結成分を抽出する
 	if ( ret <= 0 ) {	// 連結成分が見つからなかった // cvReleaseMemStorage removed
 		return 0;
@@ -432,7 +434,7 @@ void DrawCor( cv::Point corps[][2], int corpsnum, cv::Mat img_cap, char *doc_nam
 	sprintf( thumb_fname, "\\\\leo\\nakai\\didb\\thumb\\%s.bmp", doc_name );
 	printf("%s\n", thumb_fname );
 	if ( doc_name[0] == '\0')	return;
-	reg_small = cv::imread( thumb_fname, cv::IMREAD_COLOR);
+	reg_small = cv::imread( thumb_fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	
 	qs.width = (int)(img_cap.cols / 2);
 	qs.height = (int)(img_cap.rows / 2);
@@ -1162,7 +1164,7 @@ cv::Mat LoadThumb( char *fname )
 //	sprintf( thumb_fname, "%s%s.%s", kThumbDir, fname, kThumbSuffix );
 	sprintf( thumb_fname, "%s%s.%s", eThumbDir, fname, eThumbSuffix );
 	puts(thumb_fname);
-	return cv::imread( thumb_fname, cv::IMREAD_COLOR);
+	return cv::imread( thumb_fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 }
 
 #define	kDrawParamScale	(0.5)
@@ -1251,7 +1253,7 @@ void DrawThumb( char *doc_name, char *doc_name_prev, cv::Mat *thumb0, cv::Mat *t
 		thumb.setTo( CV_RGB(255,255,255) );	// 白にクリア
 		sprintf( thumb_fname, "%s%s.%s", eThumbDir, doc_name, eThumbSuffix );
 //		puts( thumb_fname );
-		if ( !( thumb_orig = cv::imread( thumb_fname, cv::IMREAD_COLOR) ).empty() ) {	// サムネイル画像をロードし，
+		if ( !( thumb_orig = cv::imread( thumb_fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION) ).empty() ) {	// サムネイル画像をロードし，
 			cv::resize( thumb_orig, thumb, thumb.size(), 0, 0, cv::INTER_NEAREST );	// リサイズして表示 // cvReleaseImage removed (cv::Mat auto-manages memory)
 		}
 		*thumb0 = thumb;
@@ -1525,7 +1527,7 @@ cv::Mat LoadFlagImage( char *doc_name )
 		if ( strncmp( doc_name, langs[i], strlen( langs[i] ) ) == 0 ) {
 			sprintf( path, "%s%s.%s", kFlagDir, langs[i], kFlagSuffix );
 			printf("%s\n", path);
-			img = cv::imread( path, cv::IMREAD_COLOR);
+			img = cv::imread( path, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 			return img;
 		}
 	}
@@ -1562,7 +1564,7 @@ cv::Mat GetFlagImage( char *doc_name )
 		flag_imgs.assign( num, cv::Mat() );
 		for ( i = 0; i < num; i++ ) {
 			sprintf( path, "%s%s.%s", kFlagDir, langs[i], kFlagSuffix );
-			flag_imgs[i] = cv::imread( path, cv::IMREAD_COLOR);
+			flag_imgs[i] = cv::imread( path, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 		}
 		loaded = 1;
 	}

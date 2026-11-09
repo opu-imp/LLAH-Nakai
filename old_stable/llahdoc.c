@@ -491,7 +491,7 @@ retrieve:
 			// 結合画像の作成（用意されているか囲み領域ならロード，そうでなければ計算）
 			start_con = GetProcTimeMiliSec();
 			if ( pmode == PREPARED_MODE || fmode == ENCLOSED_MODE ) {	// 結合画像が用意されているか，囲まれた領域を特徴点にするなら
-				img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
+				img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 	if (img.empty()) {
 					fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 					return 1;
@@ -542,7 +542,6 @@ retrieve:
 			if (ps != NULL && num > 0 )
 				ReleaseCentres( ps );	// psの解放
 			ReleaseNears( nears, num );	// nearsの解放
-			if ( fmode != USEPF_MODE && !IsDat( fname ) && !IsTxt( fname ))
 			printf("%d\n", score[0]);
 			// 計算時間の表示
 			OutPutResult( score, end-start, 5, fname );
@@ -1243,6 +1242,7 @@ int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **a
 	size->width = img.cols;
 	size->height = img.rows;
 
+    ClearImageBorder( img );
     cv::findContours(img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 
 	num = CalcCentres(ps, contours, hierarchy, size, areas);	// 各連結成分の重心を計算する
@@ -1302,8 +1302,8 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 
 #ifdef DRAW_PIC
 		color = cRandom;
-        cv::drawContours(dst, contours, ci, color, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
-        cv::drawContours(out_img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
+        cv::drawContours(dst, contours, ci, color, cv::FILLED, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
+        cv::drawContours(out_img, contours, ci, cWhite, 1, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
 //        cv::drawContours(centre_img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
 		cv::circle( centre_img, ps[i], 0/*5*/, cWhite, -1, 1, 0 );
 #endif

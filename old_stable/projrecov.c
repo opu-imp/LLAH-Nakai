@@ -254,7 +254,7 @@ void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv:
 
 //	src = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
 #if 0
-	img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
+	img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 	src = cv::Mat::zeros(cv::Size(img.cols*9, img.rows*9), CV_8UC1);
 	cv::resize(img, src, src.size(), 0, 0, cv::INTER_CUBIC);
 #endif
@@ -354,8 +354,8 @@ void RPTMain( char *fname1, char *fname2 )
 	if ( strcmp(fname1, "0104.bmp") || strcmp(fname2, "IMG_0214.bmp") ) {
 		return;
 	}
-	img1 = cv::imread(fname1, cv::IMREAD_GRAYSCALE);
-	img2 = cv::imread(fname2, cv::IMREAD_GRAYSCALE);
+	img1 = cv::imread(fname1, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
+	img2 = cv::imread(fname2, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 
 /*	p1[0].x = 748;
 	p1[0].y = 1540;
