@@ -1,5 +1,5 @@
-#define	kCloseToLine	(2.0)	/* IsCloseToLineï¿½ÅŽgï¿½ï¿½ */
-#define	kLinePoints	(50)	/*CalcHLListï¿½ÅŽgï¿½ï¿½ */
+#define	kCloseToLine	(2.0)	/* IsCloseToLine‚ÅŽg‚¤ */
+#define	kLinePoints	(50)	/*CalcHLList‚ÅŽg‚¤ */
 
 #define	kUseCR	(1)
 #define	kUseJI	(2)

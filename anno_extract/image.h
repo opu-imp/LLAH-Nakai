@@ -5,10 +5,10 @@
 #define	cBlue	cv::Scalar(255,0,0)
 #define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
-#define	kBinMaxVal	(256)	/* ï¿½ï¿½lï¿½ï¿½ï¿½ÌÛ‚Ì‰ï¿½fï¿½lï¿½ÌÅ‘ï¿½l */
-#define	kDrawContourMaxLevel	(-1)	/* ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½æï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ */
-#define	kDrawContourLineType	(8)	/* ï¿½ï¿½ï¿½ï¿½ */
-#define	kMaxColorDist	(256*256*256) /* 8ï¿½rï¿½bï¿½g3ï¿½`ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½ÌÅ‘å‹—ï¿½ï¿½ */
+#define	kBinMaxVal	(256)	/* “ñ’l‰»‚ÌÛ‚Ì‰æ‘f’l‚ÌÅ‘å’l */
+#define	kDrawContourMaxLevel	(-1)	/* ˜AŒ‹¬•ª•`‰æ‚Ìƒpƒ‰ƒ[ƒ^ */
+#define	kDrawContourLineType	(8)	/* “¯ã */
+#define	kMaxColorDist	(256*256*256) /* 8ƒrƒbƒg3ƒ`ƒƒƒlƒ‹ƒJƒ‰[‚ÌÅ‘å‹——£ */
 
 #ifndef FIRST_TOP_LEVEL_CONTOUR_DEFINED
 #define FIRST_TOP_LEVEL_CONTOUR_DEFINED

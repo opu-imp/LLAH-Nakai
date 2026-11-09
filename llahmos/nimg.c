@@ -3,63 +3,63 @@
 #include "nimg.h"
 
 int SetPix( cv::Mat img, int x, int y, char *val )
-// imgï¿½ï¿½(x,y)ï¿½ï¿½valï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
+// img‚Ì(x,y)‚Éval‚ğƒZƒbƒg‚·‚é
 {
 	int i, ws, bpp;
 
-	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ï¿½æ‘œï¿½Ì”ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½
+	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ‰æ‘œ‚Ì”ÍˆÍ‚ğ’´‚¦‚é
 	ws = (int)img.step[0];
-	bpp = (int)img.elemSize();	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½
+	bpp = (int)img.elemSize();	// ƒsƒNƒZƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
 	for ( i = 0; i < bpp; i++ )
 		img.data[ws*y + x*bpp + i] = val[i];
 	return 1;
 }
 
 int GetPix( cv::Mat img, int x, int y, char *val )
-// imgï¿½ï¿½(x,y)ï¿½ï¿½valï¿½ÉƒZï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
+// img‚Ì(x,y)‚ğval‚ÉƒZƒbƒg‚·‚é
 {
 	int i, ws, bpp;
 
-	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ï¿½æ‘œï¿½Ì”ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½
+	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ‰æ‘œ‚Ì”ÍˆÍ‚ğ’´‚¦‚é
 	ws = (int)img.step[0];
-	bpp = (int)img.elemSize();	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½
+	bpp = (int)img.elemSize();	// ƒsƒNƒZƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
 	for ( i = 0; i < bpp; i++ )
 		val[i] = img.data[ws*y + x*bpp + i];
 	return 1;
 }
 
 int SetPixU( cv::Mat img, int x, int y, unsigned char *val )
-// imgï¿½ï¿½(x,y)ï¿½ï¿½valï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½(unsigned)
+// img‚Ì(x,y)‚Éval‚ğƒZƒbƒg‚·‚é(unsigned)
 {
 	int i, ws, bpp;
 
-	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ï¿½æ‘œï¿½Ì”ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½
+	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ‰æ‘œ‚Ì”ÍˆÍ‚ğ’´‚¦‚é
 	ws = (int)img.step[0];
-	bpp = (int)img.elemSize();	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½
+	bpp = (int)img.elemSize();	// ƒsƒNƒZƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
 	for ( i = 0; i < bpp; i++ )
 		img.data[ws*y + x*bpp + i] = val[i];
 	return 1;
 }
 
 int GetPixU( cv::Mat img, int x, int y, unsigned char *val )
-// imgï¿½ï¿½(x,y)ï¿½ï¿½valï¿½ÉƒZï¿½bï¿½gï¿½ï¿½ï¿½ï¿½(unsigned)
+// img‚Ì(x,y)‚ğval‚ÉƒZƒbƒg‚·‚é(unsigned)
 {
 	int i, ws, bpp;
 
-	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ï¿½æ‘œï¿½Ì”ÍˆÍ‚ğ’´‚ï¿½ï¿½ï¿½
+	if ( x < 0 || x >= img.cols || y < 0 || y >= img.rows )	return 0;	// ‰æ‘œ‚Ì”ÍˆÍ‚ğ’´‚¦‚é
 	ws = (int)img.step[0];
-	bpp = (int)img.elemSize();	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½
+	bpp = (int)img.elemSize();	// ƒsƒNƒZƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
 	for ( i = 0; i < bpp; i++ )
 		val[i] = img.data[ws*y + x*bpp + i];
 	return 1;
 }
 
 void PutImage( cv::Mat src, cv::Mat dst, cv::Point origin )
-// dstï¿½ï¿½originï¿½ï¿½ï¿½Nï¿½_ï¿½ï¿½srcï¿½ï¿½zï¿½uï¿½ï¿½ï¿½ï¿½
+// dst‚Ìorigin‚ğ‹N“_‚Ésrc‚ğ”z’u‚·‚é
 {
 	int i, j;
 	char val[3];
-//	if ( origin.x + src.cols > dst.cols || origin.y + src.rows > dst.rows )	return 0;	// ï¿½Í‚İoï¿½ï¿½
+//	if ( origin.x + src.cols > dst.cols || origin.y + src.rows > dst.rows )	return 0;	// ‚Í‚İo‚·
 	
 	for ( j = 0; j < src.rows && origin.y + j < dst.rows; j++ ) {
 		for ( i = 0; i < src.cols && origin.x + i < dst.cols; i++ ) {
@@ -71,7 +71,7 @@ void PutImage( cv::Mat src, cv::Mat dst, cv::Point origin )
 }
 
 void CopyImageData( cv::Mat src, cv::Mat dst )
-// srcï¿½Ì‰æ‘œï¿½fï¿½[ï¿½^ï¿½ï¿½dstï¿½ÉƒRï¿½sï¿½[ï¿½ï¿½ï¿½ï¿½
+// src‚Ì‰æ‘œƒf[ƒ^‚ğdst‚ÉƒRƒs[‚·‚é
 {
 	int i, j;
 	char val[3];
@@ -81,28 +81,28 @@ void CopyImageData( cv::Mat src, cv::Mat dst )
 			memset( val, 0, 3 );
 			GetPix( src, i, j, val );
 			if ( 0/*src.origin removed,cv::Mat is always top-left*/ == 0/*dst.origin removed,cv::Mat is always top-left*/ )	SetPix( dst, i, j, val );
-			else	SetPix( dst, i, dst.rows - j - 1, val );	// originï¿½ï¿½ï¿½Ù‚È‚ï¿½ê‡
+			else	SetPix( dst, i, dst.rows - j - 1, val );	// origin‚ªˆÙ‚È‚éê‡
 		}
 	}
 }
 
 int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
-// img1ï¿½ï¿½img2ï¿½ï¿½mode(MERGE_HOR:ï¿½ï¿½ï¿½Eï¿½CMERGE_VER:ï¿½ã‰º)ï¿½Å•ï¿½ï¿½×‚ï¿½ï¿½æ‘œï¿½ï¿½mergeï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
+// img1‚Æimg2‚ğmode(MERGE_HOR:¶‰ECMERGE_VER:ã‰º)‚Å•À‚×‚½‰æ‘œ‚ğmerge‚ÉŠi”[‚·‚é
 {
 	int i, j, mw, mh, orig_x = 0, orig_y = 0;
 	char val[3];
 
 	mw = merge.cols;
 	mh = merge.rows;
-	if ( mode == MERGE_HOR ) {	// ï¿½ï¿½ï¿½Eï¿½É•ï¿½ï¿½×‚éƒ‚ï¿½[ï¿½hï¿½ÅC
-		if ( mw > (img1.cols + img2.cols) )	// ï¿½ï¿½ï¿½Eï¿½É•ï¿½ï¿½×‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è•ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
-			orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// ï¿½]ï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½ï¿½ï¿½orig_xï¿½É‚ï¿½ï¿½ï¿½
-		if ( mh > std::max(img1.rows, img2.rows) )	// ï¿½å‚«ï¿½ï¿½ï¿½Ù‚ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½è‚ï¿½ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+	if ( mode == MERGE_HOR ) {	// ¶‰E‚É•À‚×‚éƒ‚[ƒh‚ÅC
+		if ( mw > (img1.cols + img2.cols) )	// ¶‰E‚É•À‚×‚½’·‚³‚æ‚è•‚ª‘å‚«‚¢‚Æ‚«
+			orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// —]”’‚Ì”¼•ª‚ğorig_x‚É‚·‚é
+		if ( mh > std::max(img1.rows, img2.rows) )	// ‘å‚«‚¢‚Ù‚¤‚Ì‚‚³‚æ‚è‚‚³‚ª‘å‚«‚¢‚Æ‚«
 			orig_y = (int)((double)(mh - std::max(img1.rows, img2.rows)) / 2.0L);
-	} else if ( mode == MERGE_VER ) {	// ï¿½ã‰ºï¿½É•ï¿½ï¿½×‚éƒ‚ï¿½[ï¿½hï¿½ÅC
-		if ( mw > std::max(img1.cols, img2.cols) )	// ï¿½å‚«ï¿½ï¿½ï¿½Ù‚ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ì‚Ì•ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+	} else if ( mode == MERGE_VER ) {	// ã‰º‚É•À‚×‚éƒ‚[ƒh‚ÅC
+		if ( mw > std::max(img1.cols, img2.cols) )	// ‘å‚«‚¢‚Ù‚¤‚Ì•‚æ‚è‚à‘S‘Ì‚Ì•‚ª‘å‚«‚¢‚Æ‚«
 			orig_x = (int)((double)(mw - std::max(img1.cols, img2.cols)) / 2.0L);
-		if ( mh > (img1.rows + img2.rows) )	// ï¿½ã‰ºï¿½É•ï¿½ï¿½×‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ì‚Ì’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+		if ( mh > (img1.rows + img2.rows) )	// ã‰º‚É•À‚×‚½’·‚³‚æ‚è‘S‘Ì‚Ì’·‚³‚ª‘å‚«‚¢‚Æ‚«
 			orig_y = (int)((double)(mh - (img1.rows+img2.rows)) / 2.0L);
 	}
 
@@ -110,9 +110,9 @@ int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
 		for ( i = 0; i < mw; i++ ) {
 //			printf("%d, %d\n", i, j);
 			memset( val, 0, 3 );
-			if ( mode == MERGE_HOR && i >= img1.cols )	// ï¿½ï¿½ï¿½Eï¿½zï¿½uï¿½Å‰æ‘œ1ï¿½Ì•ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½
+			if ( mode == MERGE_HOR && i >= img1.cols )	// ¶‰E”z’u‚Å‰æ‘œ1‚Ì•‚ğ‰z‚¦‚é
 				GetPix( img2, i - img1.cols, j, val );
-			else if ( mode == MERGE_VER && j >= img1.rows )	// ï¿½ã‰ºï¿½zï¿½uï¿½Å‰æ‘œ1ï¿½Ìï¿½ï¿½ï¿½ï¿½ğ’´‚ï¿½ï¿½ï¿½
+			else if ( mode == MERGE_VER && j >= img1.rows )	// ã‰º”z’u‚Å‰æ‘œ1‚Ì‚‚³‚ğ’´‚¦‚é
 				GetPix( img2, i, j - img1.rows, val );
 			else
 				GetPix( img1, i, j, val );
@@ -124,24 +124,24 @@ int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
 }
 
 int MergeImage3( cv::Mat img1, cv::Mat img2, cv::Mat img3, cv::Mat merge )
-// img1ï¿½ï¿½img2ï¿½ï¿½img3ï¿½ï¿½ï¿½ï¿½×‚ï¿½ï¿½æ‘œï¿½ï¿½mergeï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
-// CVPRï¿½Ìƒrï¿½fï¿½Iï¿½p
+// img1‚Æimg2‚Æimg3‚ğ•À‚×‚½‰æ‘œ‚ğmerge‚ÉŠi”[‚·‚é
+// CVPR‚ÌƒrƒfƒI—p
 {
 	int i, j, mw, mh, orig_x = 0, orig_y = 0;
 	char val[3];
 
 	mw = merge.cols;
 	mh = merge.rows;
-	if ( mw > (img1.cols + img2.cols) )	// ï¿½ï¿½ï¿½Eï¿½É•ï¿½ï¿½×‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è•ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
-		orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// ï¿½]ï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½ï¿½ï¿½orig_xï¿½É‚ï¿½ï¿½ï¿½
-	if ( mh > std::max(img1.rows, img2.rows) )	// ï¿½å‚«ï¿½ï¿½ï¿½Ù‚ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½è‚ï¿½ï¿½ï¿½ï¿½ï¿½å‚«ï¿½ï¿½ï¿½Æ‚ï¿½
+	if ( mw > (img1.cols + img2.cols) )	// ¶‰E‚É•À‚×‚½’·‚³‚æ‚è•‚ª‘å‚«‚¢‚Æ‚«
+		orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// —]”’‚Ì”¼•ª‚ğorig_x‚É‚·‚é
+	if ( mh > std::max(img1.rows, img2.rows) )	// ‘å‚«‚¢‚Ù‚¤‚Ì‚‚³‚æ‚è‚‚³‚ª‘å‚«‚¢‚Æ‚«
 		orig_y = (int)((double)(mh - std::max(img1.rows, img2.rows)) / 2.0L);
 
 	for ( j = 0; j < mh; j++ ) {
 		for ( i = 0; i < mw; i++ ) {
 			memset( val, 0, 3 );
-			if ( i >= img1.cols ) { // ï¿½æ‘œ1ï¿½Ì•ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½
-				if ( j >= img2.rows )	// ï¿½æ‘œ2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½
+			if ( i >= img1.cols ) { // ‰æ‘œ1‚Ì•‚ğ‰z‚¦‚é
+				if ( j >= img2.rows )	// ‰æ‘œ2‚Ì‚‚³‚ğ‰z‚¦‚é
 					GetPix( img3, i - img1.cols, j - img2.rows, val );
 				else
 					GetPix( img2, i - img1.cols, j, val );
@@ -157,7 +157,7 @@ int MergeImage3( cv::Mat img1, cv::Mat img2, cv::Mat img3, cv::Mat merge )
 }
 
 void DrawPolygon( cv::Mat img, cv::Point *ps, int pnum, cv::Scalar color, int thickness, int line_type, int shift )
-// ï¿½ï¿½ï¿½pï¿½`ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½
+// ‘½ŠpŒ`‚ğ•`‰æ‚·‚é
 {
 	int i;
 
@@ -167,14 +167,14 @@ void DrawPolygon( cv::Mat img, cv::Point *ps, int pnum, cv::Scalar color, int th
 }
 
 int CropImage( cv::Mat src, cv::Mat dst, cv::Point pos )
-// posï¿½ï¿½ï¿½Nï¿½_ï¿½Æ‚ï¿½ï¿½ï¿½srcï¿½ï¿½ï¿½ï¿½dstï¿½ÖØ‚ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Dï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½Å–ï¿½ï¿½ß‚ï¿½
+// pos‚ğ‹N“_‚Æ‚µ‚Äsrc‚©‚çdst‚ÖØ‚èo‚µ‚ğs‚¤D’[‚©‚çŒü‚±‚¤‚Í•‚Å–„‚ß‚é
 {
 	int i, j;
 	char val[3];
 
 	for ( j = 0; j < dst.rows; j++ ) {
 		for ( i = 0; i < dst.cols; i++ ) {
-			memset( val, 0, 3 );	// ï¿½Nï¿½ï¿½ï¿½A
+			memset( val, 0, 3 );	// ƒNƒŠƒA
 			GetPix( src, pos.x + i, pos.y + j, val );
 			SetPix( dst, i, j, val );
 		}

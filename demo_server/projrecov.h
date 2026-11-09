@@ -1,19 +1,19 @@
 #include "proj4p.h"
 
 #define	kNearParamThr	(1000.0L)
-#define	kErrorThrMeanParam	(0.00001)	/* MeanParamпїЅЙ‚пїЅпїЅпїЅпїЅпїЅvпїЅZпїЅЕ‚пїЅпїЅШ‚пїЅМ‚пїЅпїЅЯ‚МѓGпїЅпїЅпїЅ[пїЅпїЅи‡’l */
-#define	kNumVectorMeanParam	(30)	/* MeanParamпїЅЙ‚пїЅпїЅпїЅпїЅйЋџпїЅпїЅМЊvпїЅZпїЅЙ—pпїЅпїЅпїЅпїЅxпїЅNпїЅgпїЅпїЅпїЅМђпїЅ */
+#define	kErrorThrMeanParam	(0.00001)	/* MeanParam‚Й‚Ё‚Ї‚йЊvЋZ‘Е‚їђШ‚и‚М‚Ѕ‚Я‚МѓGѓ‰Ѓ[‚Ми‡’l */
+#define	kNumVectorMeanParam	(30)	/* MeanParam‚Й‚Ё‚Ї‚йЋџ‰с‚МЊvЋZ‚Й—p‚ў‚йѓxѓNѓgѓ‹‚Мђ” */
 
-// RANSACпїЅЕ‚МѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
-#define	kRANSACTry	(100)	/* пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅМЊvпїЅZпїЅпїЅ */
-#define	kRANSACThr	(10.0)	/* пїЅпїЅпїЅпїЅпїЅiпїЅМ‚QпїЅпїЅjпїЅпїЅи‡’l */
-#define	kRANSACMinScore	(4)	/* пїЅЕЏпїЅпїЅXпїЅRпїЅA */
-#define	kRANSACRefineNum	(100)	/* пїЅпїЅиђёпїЅxпїЅМЌпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅпїЅпїЅпїЅЯ‚пїЅЫ‚МђпїЅ */
+// RANSAC‚Е‚Мѓpѓ‰ѓЃЃ[ѓ^
+#define	kRANSACTry	(100)	/* ѓpѓ‰ѓЃЃ[ѓ^‚МЊvЋZ‰сђ” */
+#define	kRANSACThr	(10.0)	/* ‹——ЈЃi‚М‚QЏжЃj‚Ми‡’l */
+#define	kRANSACMinScore	(4)	/* ЌЕЏ¬ѓXѓRѓA */
+#define	kRANSACRefineNum	(100)	/* ‚ж‚иђё“x‚МЌ‚‚ўѓpѓ‰ѓЃЃ[ѓ^‚р‹Ѓ‚Я‚йЌЫ‚Мђ” */
 
-// CalcProjParamTopпїЅЕ‚МѓпїЅпїЅ[пїЅh
+// CalcProjParamTop‚Е‚Мѓ‚Ѓ[ѓh
 #define	PROJ_NORMAL	(1)
 #define	PROJ_REVERSE	(2)
-// CalcProjParamTopпїЅЕ‚МђпїЅпїЅпїЅ@
+// CalcProjParamTop‚Е‚Мђ„’и–@
 #define	PARAM_IWAMURA	(1)
 #define	PARAM_RANSAC	(2)
 

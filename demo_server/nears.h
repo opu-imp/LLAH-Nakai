@@ -1,12 +1,12 @@
-typedef struct _strDiv {	// ï¿½ï¿½ï¿½ï¿½ï¿½Ìˆï¿½
-	int xindex;	// xï¿½ï¿½ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
-	int yindex;	// yï¿½ï¿½ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
-	double dist;	// ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‚ÌÅï¿½ï¿½ï¿½ï¿½ï¿½
+typedef struct _strDiv {	// •ªŠ„—Ìˆæ
+	int xindex;	// x²‚ÌƒCƒ“ƒfƒbƒNƒX
+	int yindex;	// y²‚ÌƒCƒ“ƒfƒbƒNƒX
+	double dist;	// ’–Ú‚µ‚Ä‚¢‚é“Á’¥“_‚Æ‚ÌÅ¬‹——£
 } strDiv;
 
-typedef struct _strPointDist {	// ï¿½\ï¿½[ï¿½gï¿½Ì‚ï¿½ï¿½ß‚Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‹ï¿½ï¿½ï¿½ï¿½Ì\ï¿½ï¿½ï¿½ï¿½
-	int pindex;	// ï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
-	double	dist;	// ï¿½_ï¿½Ü‚Å‚Ì‹ï¿½ï¿½ï¿½
+typedef struct _strPointDist {	// ƒ\[ƒg‚Ì‚½‚ß‚Ì“Á’¥“_‚Æ‹——£‚Ì\‘¢‘Ì
+	int pindex;	// “_‚ÌƒCƒ“ƒfƒbƒNƒX
+	double	dist;	// “_‚Ü‚Å‚Ì‹——£
 } strPointDist;
 
 void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 );

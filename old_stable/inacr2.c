@@ -21,7 +21,7 @@ analysing cross-ratios or affine invariants of document image.
 
 //int main( int argc, char *argv[] )
 int MakeDiscFile( int doc_num, cv::Point **pss, int *nums, strDisc *disc )
-// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½Dacr2ï¿½Ì‘gï¿½İï¿½ï¿½İ”ï¿½
+// —£U‰»ƒtƒ@ƒCƒ‹‚ğì¬‚·‚éDacr2‚Ì‘g‚İ‚İ”Å
 {
 //	int disc_num, num, **nears = 0, dnmin, dnmax, step, argi;
 //	char fname[1024];
@@ -57,9 +57,9 @@ int MakeDiscFile( int doc_num, cv::Point **pss, int *nums, strDisc *disc )
 			return 0;
 	}
 //	fprintf( stderr, "Init Hist\n" );
-	InitHist( &hist, kDiscRes, eDiscMin, eDiscMax );	// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	InitHist( &hist, kDiscRes, eDiscMin, eDiscMax );	// ƒqƒXƒgƒOƒ‰ƒ€‚Ì‰Šú‰»
 //	fprintf( stderr, "Generate Combination\n" );
-	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
+	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );	// ‘g‚İ‡‚í‚¹‚Ìì¬
 
 	for ( i = 0; i < doc_num; i++ ) {
 		fprintf( stderr, "(%d/%d)\n", i+1, doc_num );
@@ -80,7 +80,7 @@ int MakeDiscFile( int doc_num, cv::Point **pss, int *nums, strDisc *disc )
 }
 
 int SaveDisc( char *fname, strDisc *disc )
-// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½Û‘ï¿½
+// —£U‰»ƒtƒ@ƒCƒ‹‚ğ•Û‘¶
 {
 	int i;
 	FILE *fp;
@@ -100,7 +100,7 @@ int SaveDisc( char *fname, strDisc *disc )
 }
 
 void Hist2Disc( strHist *hist, strDisc *disc, int disc_num )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç—£ï¿½Uï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ì¬
+// ƒqƒXƒgƒOƒ‰ƒ€‚©‚ç—£U‰»ƒf[ƒ^‚ğì¬
 {
 	int i, j, total, sum;
 	

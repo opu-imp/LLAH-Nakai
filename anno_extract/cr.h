@@ -1,4 +1,4 @@
-#define	kMinValCr	(0.0001)	/* 0ï¿½É‚ï¿½éœï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ßAï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½É—pï¿½ï¿½ï¿½ï¿½l */
+#define	kMinValCr	(0.0001)	/* 0‚É‚æ‚éœZ‚ğ”ğ‚¯‚é‚½‚ßA\•ª¬‚³‚¢‚Æ‚«‚É—p‚¢‚é’l */
 
 double CalcCR5ByArea( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 );
 double CalcArea( cv::Point p1, cv::Point p2, cv::Point p3 );

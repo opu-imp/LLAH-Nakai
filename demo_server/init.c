@@ -28,7 +28,7 @@
 
 #ifdef WIN32
 double log2( double x )
-// пїЅпїЅпїЅRпїЅОђпїЅпїЅпїЅпїЅпїЅ2пїЅМ‘ОђпїЅпїЅпїЅпїЅпїЅпїЅЯ‚пїЅ
+// Ћ©‘R‘Ођ”‚©‚з2‚М‘Ођ”‚р‹Ѓ‚Я‚й
 {
 	return log( x ) / log( 2.0L );
 }
@@ -46,12 +46,12 @@ int IsExist( char *fname )
 }
 
 int AnalyzeArgAndSetExtern2( int argc, char *argv[] )
-// пїЅпїЅпїЅпїЅпїЅпїЅН‚МЉЦђпїЅ2
+// €шђ”‰рђН‚МЉЦђ”2
 {
 	int argi;
 
-	// пїЅпїЅпїЅпїЅпїЅпїЅ
-	eEntireMode = RETRIEVE_MODE;	// пїЅГЋ~пїЅжЊџпїЅпїЅпїЅпїЅпїЅ[пїЅhпїЅпїЅпїЅfпїЅtпїЅHпїЅпїЅпїЅgпїЅЙ‚пїЅпїЅпїЅ
+	// Џ‰Љъ‰»
+	eEntireMode = RETRIEVE_MODE;	// ђГЋ~‰жЊџЌхѓ‚Ѓ[ѓh‚рѓfѓtѓHѓ‹ѓg‚Й‚·‚й
 //	strcpy( eDirsDir, kDfltDirsDir );
 	strcpy( eHashSrcDir, kDfltHashSrcDir );
 	strcpy( eHashSrcSuffix, kDfltHashSrcSuffix );
@@ -84,94 +84,94 @@ int AnalyzeArgAndSetExtern2( int argc, char *argv[] )
 	eVariousAutoMaskSizeDual = 0;
 
 	for ( argi = 1; argi < argc && *(argv[argi]) == '-'; argi++ ) {
-		switch ( *(argv[argi]+1) ) {	// '-'пїЅМЋпїЅпїЅМ•пїЅпїЅпїЅпїЅЕ•пїЅпїЅпїЅ
-			case 'r':	// пїЅпїЅпїЅпїЅпїЅпїЅgпїЅp
+		switch ( *(argv[argi]+1) ) {	// '-'‚МЋџ‚М•¶Ћљ‚Е•ЄЉт
+			case 'r':	// •Ў”д‚рЋg—p
 				eInvType = CR_AREA;
 				break;
-			case 'a':	// пїЅAпїЅtпїЅBпїЅпїЅпїЅsпїЅП—К‚пїЅпїЅgпїЅp
+			case 'a':	// ѓAѓtѓBѓ“•s•П—К‚рЋg—p
 				eInvType = AFFINE;
 				break;
-			case 's':	// пїЅпїЅпїЅпїЅпїЅsпїЅП—К‚пїЅпїЅgпїЅp
+			case 's':	// ‘ЉЋ—•s•П—К‚рЋg—p
 				eInvType = SIMILAR;
 				break;
-			case 'n':	// nпїЅпїЅпїЅwпїЅпїЅ
+			case 'n':	// n‚рЋw’и
 				if ( ++argi < argc )	eGroup1Num = atoi( argv[argi] );
 				break;
-			case 'm':	// mпїЅпїЅпїЅwпїЅпїЅ
+			case 'm':	// m‚рЋw’и
 				if ( ++argi < argc )	eGroup2Num = atoi( argv[argi] );
 				break;
-			case 'd':	// пїЅпїЅпїЅUпїЅпїЅпїЅпїЅпїЅxпїЅпїЅпїЅпїЅпїЅпїЅпїЅwпїЅпїЅ
+			case 'd':	// —ЈЋU‰»ѓЊѓxѓ‹ђ”‚рЋw’и
 				if ( ++argi < argc )	eDiscNum = atoi( argv[argi] );
 				break;
-			case 'c':	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМЌ\пїЅz
+			case 'c':	// ѓnѓbѓVѓ…‚МЌ\’z
 				eEntireMode = CONST_HASH_MODE;
-				if ( ++argi < argc )	strcpy( eHashSrcDir, argv[argi] );	// argiпїЅпїЅiпїЅЯ‚Д•пїЅпїЅпїЅпїЅпїЅпїЅпїЅRпїЅsпїЅ[пїЅDargc-1пїЅр’ґ‚пїЅпїЅпїЅпїЅкЌ‡пїЅН‰пїЅпїЅпїЅпїЅпїЅпїЅИ‚пїЅ
-				if ( ++argi < argc )	strcpy( eHashSrcSuffix, argv[argi] );	// пїЅgпїЅпїЅпїЅqпїЅпїЅпїЅпїЅпїЅпїЅпїЅЙЋwпїЅпїЅ
+				if ( ++argi < argc )	strcpy( eHashSrcDir, argv[argi] );	// argi‚рђi‚Я‚Д•¶Ћљ—с‚рѓRѓsЃ[ЃDargc-1‚р’ґ‚¦‚ЅЏкЌ‡‚Н‰Ѕ‚а‚µ‚И‚ў
+				if ( ++argi < argc )	strcpy( eHashSrcSuffix, argv[argi] );	// Љg’ЈЋq‚а“ЇЋћ‚ЙЋw’и
 				break;
-			case 'W':	// пїЅfпїЅпїЅпїЅAпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅh
+			case 'W':	// ѓfѓ…ѓAѓ‹ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓh
 				eEntireMode = CONST_DUAL_HASH_MODE;
-				if ( ++argi < argc )	strcpy( eHashSrcDir, argv[argi] );	// argiпїЅпїЅiпїЅЯ‚Д•пїЅпїЅпїЅпїЅпїЅпїЅпїЅRпїЅsпїЅ[пїЅDargc-1пїЅр’ґ‚пїЅпїЅпїЅпїЅкЌ‡пїЅН‰пїЅпїЅпїЅпїЅпїЅпїЅИ‚пїЅ
-				if ( ++argi < argc )	strcpy( eHashSrcSuffix, argv[argi] );	// пїЅgпїЅпїЅпїЅqпїЅпїЅпїЅпїЅпїЅпїЅпїЅЙЋwпїЅпїЅ
+				if ( ++argi < argc )	strcpy( eHashSrcDir, argv[argi] );	// argi‚рђi‚Я‚Д•¶Ћљ—с‚рѓRѓsЃ[ЃDargc-1‚р’ґ‚¦‚ЅЏкЌ‡‚Н‰Ѕ‚а‚µ‚И‚ў
+				if ( ++argi < argc )	strcpy( eHashSrcSuffix, argv[argi] );	// Љg’ЈЋq‚а“ЇЋћ‚ЙЋw’и
 				break;
-			case 'C':	// пїЅпїЅпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅМЌ\пїЅz
-				/********************** пїЅпїЅпїЅпїЅпїЅпїЅ *********************/
-				if ( ++argi >= argc ) {	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅИ‚пїЅ
+			case 'C':	// •Ўђ”ѓnѓbѓVѓ…‚МЌ\’z
+				/********************** –ўЋА‘• *********************/
+				if ( ++argi >= argc ) {	// €шђ”‚Є‘«‚и‚И‚ў
 					fprintf( stderr, "error: arguments insufficient\n" );
 					break;
 				}
-				eHashNum = atoi( argv[argi] );	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅМђпїЅпїЅпїЅпїЅж“ѕ
-				if ( eHashNum <= 1 || eHashNum > kMaxHashNum ) {	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМђпїЅпїЅпїЅпїЅsпїЅпїЅ
+				eHashNum = atoi( argv[argi] );	// €шђ”‚©‚зѓnѓbѓVѓ…‚Мђ”‚рЋж“ѕ
+				if ( eHashNum <= 1 || eHashNum > kMaxHashNum ) {	// ѓnѓbѓVѓ…‚Мђ”‚Є•sђі
 					fprintf( stderr, "error: number of hash is wrong\n" );
 					eHashNum = 0;
 					break;
 				}
-				eEntireMode = CONST_MULTI_HASH_MODE;	// пїЅпїЅпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅh
+				eEntireMode = CONST_MULTI_HASH_MODE;	// •Ўђ”ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓh
 				break;
-				/********************** пїЅпїЅпїЅпїЅпїЅпїЅ *********************/
-			case 'h':	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅwпїЅпїЅ
+				/********************** –ўЋА‘• *********************/
+			case 'h':	// ѓnѓbѓVѓ…“™‚МѓfѓBѓЊѓNѓgѓЉ‚рЋw’и
 				if ( ++argi < argc )	strcpy( eDirsDir, argv[argi] );
 				break;
-//			case 'f':	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМ‰ж‘њпїЅtпїЅ@пїЅCпїЅпїЅпїЅМЉgпїЅпїЅпїЅqпїЅпїЅпїЅwпїЅпїЅ
+//			case 'f':	// ѓnѓbѓVѓ…‚М‰ж‘њѓtѓ@ѓCѓ‹‚МЉg’ЈЋq‚рЋw’и
 //				if ( ++argi < argc )	strcpy( eHashSrcSuffix, argv[argi] );
 //				break;
-			case 'S':	// USBпїЅJпїЅпїЅпїЅпїЅпїЅTпїЅ[пїЅoпїЅпїЅпїЅ[пїЅh
+			case 'S':	// USBѓJѓЃѓ‰ѓTЃ[ѓoѓ‚Ѓ[ѓh
 				eEntireMode = USBCAM_SERVER_MODE;
 				break;
-			case 'T':	// пїЅfпїЅпїЅпїЅAпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅUSBпїЅJпїЅпїЅпїЅпїЅпїЅTпїЅ[пїЅoпїЅпїЅпїЅ[пїЅh
+			case 'T':	// ѓfѓ…ѓAѓ‹ѓnѓbѓVѓ…‚ЕUSBѓJѓЃѓ‰ѓTЃ[ѓoѓ‚Ѓ[ѓh
 				eEntireMode = USBCAM_SERVER_DUAL_HASH_MODE;
 				break;
-			case 'x':	// point.datпїЅпїЅпїЅgпїЅпїЅпїЅДѓnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅйѓ‚пїЅ[пїЅh
+			case 'x':	// point.dat‚рЋg‚Б‚ДѓnѓbѓVѓ…‚рЌ\’z‚·‚йѓ‚Ѓ[ѓh
 				eEntireMode = CONST_HASH_PF_MODE;
 				break;
-			case 'e':	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ[пїЅh
+			case 'e':	// ЋАЊ±ѓ‚Ѓ[ѓh
 				eExperimentMode = 1;
 				break;
-			case 'z':	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅkпїЅпїЅпїЅ[пїЅh
+			case 'z':	// ѓnѓbѓVѓ…€іЏkѓ‚Ѓ[ѓh
 				eCompressHash = 1;
 				break;
-			case 'y':	// пїЅпїЅ]пїЅМ‘пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅsпїЅпїЅИ‚пїЅ
+			case 'y':	// ‰с“]‚М‘Ќ“–‚Ѕ‚и‚рЌs‚н‚И‚ў
 				eRotateOnce = 1;
 				break;
-			case 'w':	// пїЅХ“Л‚М‘пїЅпїЅпїЅпїЅпїЅпїЅЪ‚пїЅпїЅпїЅпїЅпїЅ
+			case 'w':	// ЏХ“Л‚М‘Ѕ‚ўЌЂ–Ъ‚рЏњ‹Ћ
 				eRemoveCollision = 1;
 				if ( ++argi < argc )	eMaxHashCollision = atoi( argv[argi] );
 				break;
-			case 'v':	// пїЅпїЅпїЅпїЅпїЅК‚М”пїЅrпїЅИ‚пїЅ -w 1 пїЅрђ„ЏпїЅ
+			case 'v':	// “Б’Ґ—К‚М”дЉr‚И‚µ -w 1 ‚рђ„Џ§
 				eNoCompareInv = 1;
 				break;
-			case 'u':	// пїЅпїЅпїЅпїЅпїЅКЊvпїЅZпїЅЙ–КђП‚р——p
+			case 'u':	// “Б’Ґ—КЊvЋZ‚Й–КђП‚р——p
 				eUseArea = 1;
 				break;
-			case 'J':	// пїЅпїЅпїЅ{пїЅкѓ‚пїЅ[пїЅh
+			case 'J':	// “ъ–{Њкѓ‚Ѓ[ѓh
 				eIsJp = 1;
 				break;
-			case 't':	// пїЅпїЅпїЅXпїЅgпїЅИ‚пїЅ
+			case 't':	// ѓЉѓXѓg‚И‚µ
 				eNoHashList = 1;
 				break;
-			case 'l':	// пїЅИ€ХЊ^пїЅпїЅпїЅпїЅпїЅкѓ‚пїЅ[пїЅhпїЅiпїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅoпїЅМѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅПЌXпїЅj
+			case 'l':	// ЉИ€ХЊ^‘ЅЊѕЊкѓ‚Ѓ[ѓhЃi“Б’Ґ“_’ЉЏo‚Мѓpѓ‰ѓЃЃ[ѓ^‚р•ПЌXЃj
 				if ( ++argi >= argc )	break;
 				if ( !strcmp( argv[argi], "arabic" ) )	eHashGaussMaskSize = 11;
-				else if ( !strcmp( argv[argi], "chinese" ) )	eHashGaussMaskSize = /*11пїЅPпїЅпїЅ*/3;
+				else if ( !strcmp( argv[argi], "chinese" ) )	eHashGaussMaskSize = /*11’PЊк*/3;
 				else if ( !strcmp( argv[argi], "french" ) )	eHashGaussMaskSize = 5;
 				else if ( !strcmp( argv[argi], "hindi" ) )	eHashGaussMaskSize = 5;
 				else if ( !strcmp( argv[argi], "japanese" ) )	eHashGaussMaskSize = 3;
@@ -182,36 +182,36 @@ int AnalyzeArgAndSetExtern2( int argc, char *argv[] )
 				else if ( !strcmp( argv[argi], "tamil" ) )	eHashGaussMaskSize = 5;
 				else if ( !strcmp( argv[argi], "thai" ) )	eHashGaussMaskSize = /*11*/3;
 				break;
-			case 'V':	// пїЅпїЅпїЅпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅhпїЅiпїЅvпїЅпїЅпїЅtпїЅBпїЅbпїЅNпїЅXпїЅЕѓ}пїЅXпїЅNпїЅTпїЅCпїЅYпїЅпїЅпїЅпїЅпїЅпїЅпїЅIпїЅЙЊпїЅпїЅпїЅj
+			case 'V':	// ‘ЅЊѕЊкѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓhЃiѓvѓЊѓtѓBѓbѓNѓX‚Еѓ}ѓXѓNѓTѓCѓY‚рЋ©“®“I‚ЙЊ€’иЃj
 				eVariousAutoMaskSize = 1;
 				break;
-			case 'U':	// пїЅfпїЅпїЅпїЅAпїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅЕ‚М‘пїЅпїЅпїЅпїЅкЋ©пїЅпїЅпїЅnпїЅbпїЅVпїЅпїЅпїЅTпїЅCпїЅY
+			case 'U':	// ѓfѓ…ѓAѓ‹ѓnѓbѓVѓ…‚Е‚М‘ЅЊѕЊкЋ©“®ѓnѓbѓVѓ…ѓTѓCѓY
 				eVariousAutoMaskSizeDual = 1;
 				break;
-			case 'g':	// пїЅKпїЅEпїЅVпїЅAпїЅпїЅпїЅtпїЅBпїЅпїЅпїЅ^пїЅМѓTпїЅCпїЅYпїЅпїЅпїЅwпїЅпїЅ
+			case 'g':	// ѓKѓEѓVѓAѓ“ѓtѓBѓ‹ѓ^‚МѓTѓCѓY‚рЋw’и
 				if ( ++argi >= argc )	break;
 				eHashGaussMaskSize = atoi( argv[argi] );
 				break;
-			case 'b':	// 2пїЅlпїЅпїЅпїЅпїЅи‡’lпїЅпїЅпїЅwпїЅпїЅ
+			case 'b':	// 2’l‰»‚Ми‡’l‚рЋw’и
 				if ( ++argi >= argc )	break;
 				eConnectHashImageThr = atoi( argv[argi] );
 				break;
-			default:	// пїЅпїЅпїЅmпїЅМ€пїЅпїЅпїЅ
+			default:	// –ў’m‚М€шђ”
 				fprintf( stderr, "warning: %c is an unknown argument\n",  *(argv[argi]+1) );
 				break;
 		}
 	}
-	// пїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅМ–пїЅпїЅпїЅпїЅЙЃiпїЅИ‚пїЅпїЅпїЅОЃjпїЅXпїЅпїЅпїЅbпїЅVпїЅпїЅпїЅпїЅЗ‰пїЅ
+	// ѓfѓBѓЊѓNѓgѓЉ‚М––”ц‚ЙЃi‚И‚Ї‚к‚ОЃjѓXѓ‰ѓbѓVѓ…‚р’З‰Б
 	AddSlash( eHashSrcDir, kMaxPathLen );
 	AddSlash( eDirsDir, kMaxPathLen );
-	// пїЅпїЅпїЅSпїЅИѓpпїЅXпїЅпїЅпїЅмђ¬
+	// Љ®‘S‚ИѓpѓX‚рЌмђ¬
 	sprintf( eHashFileName, "%s%s", eDirsDir, eHashDatFileName );
-	// fпїЅпїЅпїЅwпїЅпїЅ
+	// f‚рЋw’и
 	switch ( eInvType ) {
 		case CR_AREA:
 			eGroup3Num = 5;
 			break;
-		case CR_INTER:	// пїЅgпїЅпїЅпїЅД‚пїЅпїЅИ‚пїЅпїЅН‚пїЅпїЅпїЅпїЅпїЅпїЅCпїЅк‰ћ
+		case CR_INTER:	// Ћg‚н‚к‚Д‚ў‚И‚ў‚Н‚ё‚ѕ‚ЄЃC€к‰ћ
 			eGroup3Num = 5;
 			break;
 		case AFFINE:
@@ -227,21 +227,21 @@ int AnalyzeArgAndSetExtern2( int argc, char *argv[] )
 		fprintf( stderr, "error: illegal n or m\n" );
 		return 0;
 	}
-	// пїЅgпїЅЭЌпїЅпїЅн‚№пїЅпїЅпїЅпїЅпїЅvпїЅZ
+	// ‘g‚ЭЌ‡‚н‚№ђ”‚рЊvЋZ
 	eNumCom1 = CalcnCr( eGroup1Num, eGroup2Num );
 	eNumCom2 = CalcnCr( eGroup2Num, eGroup3Num );
-	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅkпїЅпїЅпїЅ[пїЅhпїЅЕ‚М•KпїЅvпїЅoпїЅCпїЅgпїЅпїЅпїЅИ‚З‚пїЅпїЅvпїЅZ
-	eDocBit = (int)ceil( log2(kMaxDocNum) );	// docпїЅМѓrпїЅbпїЅgпїЅпїЅ
-	ePointBit = (int)ceil( log2(kMaxPointNum) );	// pointпїЅМѓrпїЅbпїЅgпїЅпїЅ
-	eRBit = (int)ceil( log2(eDiscNum) );	// пїЅsпїЅП—пїЅ1пїЅВ‚МѓrпїЅbпїЅgпїЅпїЅ
-	eOBit = (int)ceil( log2(eGroup2Num) );	// пїЅКђП“пїЅпїЅпїЅпїЅКЃiпїЅпїЅпїЅпїЅпїЅj1пїЅВ‚МѓrпїЅbпїЅgпїЅпїЅ
+	// ѓnѓbѓVѓ…€іЏkѓ‚Ѓ[ѓh‚Е‚М•K—vѓoѓCѓgђ”‚И‚З‚рЊvЋZ
+	eDocBit = (int)ceil( log2(kMaxDocNum) );	// doc‚Мѓrѓbѓgђ”
+	ePointBit = (int)ceil( log2(kMaxPointNum) );	// point‚Мѓrѓbѓgђ”
+	eRBit = (int)ceil( log2(eDiscNum) );	// •s•П—К1‚В‚Мѓrѓbѓgђ”
+	eOBit = (int)ceil( log2(eGroup2Num) );	// –КђП“Б’Ґ—КЃiЏ‡ЏЃj1‚В‚Мѓrѓbѓgђ”
 	if ( eNoCompareInv ) {
-		eHList2DatByte = (int)ceil( ((double)( eDocBit + ePointBit )) / 8.0L );	// пїЅпїЅпїЅXпїЅgпїЅМѓfпїЅ[пїЅ^пїЅпїЅпїЅМѓoпїЅCпїЅgпїЅпїЅ
+		eHList2DatByte = (int)ceil( ((double)( eDocBit + ePointBit )) / 8.0L );	// ѓЉѓXѓg‚МѓfЃ[ѓ^•”‚МѓoѓCѓgђ”
 	} else {
-		if ( eUseArea )	eHList2DatByte = (int)ceil( ((double)( eDocBit + ePointBit + eRBit*eNumCom2 + eOBit*eGroup2Num )) / 8.0L );	// пїЅпїЅпїЅXпїЅgпїЅМѓfпїЅ[пїЅ^пїЅпїЅпїЅМѓoпїЅCпїЅgпїЅпїЅ
-		else			eHList2DatByte = (int)ceil( ((double)( eDocBit + ePointBit + eRBit*eNumCom2 )) / 8.0L );	// пїЅпїЅпїЅXпїЅgпїЅМѓfпїЅ[пїЅ^пїЅпїЅпїЅМѓoпїЅCпїЅgпїЅпїЅ
+		if ( eUseArea )	eHList2DatByte = (int)ceil( ((double)( eDocBit + ePointBit + eRBit*eNumCom2 + eOBit*eGroup2Num )) / 8.0L );	// ѓЉѓXѓg‚МѓfЃ[ѓ^•”‚МѓoѓCѓgђ”
+		else			eHList2DatByte = (int)ceil( ((double)( eDocBit + ePointBit + eRBit*eNumCom2 )) / 8.0L );	// ѓЉѓXѓg‚МѓfЃ[ѓ^•”‚МѓoѓCѓgђ”
 	}
-	// пїЅпїЅпїЅXпїЅgпїЅИ‚пїЅпїЅпїЅпїЅ[пїЅhпїЅЕЉпїЅпїЅпїЅoпїЅCпїЅgпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅИ‚пїЅпїЅпїЅпїЅ`пїЅFпїЅbпїЅN
+	// ѓЉѓXѓg‚И‚µѓ‚Ѓ[ѓh‚ЕЉщ’иѓoѓCѓgђ”‚рЏг‰с‚з‚И‚ў‚©ѓ`ѓFѓbѓN
 	if ( eNoHashList && (int)ceil( ((double)( eDocBit + ePointBit )) / 8.0L ) > sizeof( HENTRY ) ) {
 		fprintf( stderr, "error: kMaxDocNum and/or kMaxPointNum is too large to store in HENTRY(%d bytes).\n", sizeof( HENTRY ) );
 		return 0;
@@ -251,11 +251,11 @@ int AnalyzeArgAndSetExtern2( int argc, char *argv[] )
 }
 
 int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, int *p_fmode, int *p_pmode )
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅН‚пїЅпїЅAпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅiexternпїЅПђпїЅпїЅjпїЅпїЅЭ’и‚·пїЅпїЅ
-// p_emode: пїЅSпїЅМ‚МѓпїЅпїЅ[пїЅhпїЅiпїЅoпїЅ^пїЅAпїЅпїЅпїЅпїЅпїЅИ‚ЗЃj
-// p_rmode: пїЅЛ‰eпїЅПЉпїЅпїЅМ•вђіпїЅпїЅпїЅпїЅпїЅй‚©пїЅЫ‚пїЅ
-// p_fmode: пїЅпїЅпїЅпїЅпїЅ_пїЅН‰пїЅпїЅпїЅпїЅgпїЅпїЅпїЅпїЅпїЅiпїЅPпїЅпїЅМЏdпїЅSпїЅAпїЅН‚Ь‚к‚ЅпїЅМ€пїЅМЏdпїЅSпїЅAпїЅ|пїЅCпїЅпїЅпїЅgпїЅtпїЅ@пїЅCпїЅпїЅпїЅj
-// p_pmode: пїЅпїЅпїЅпїЅпїЅж‘њпїЅпїЅпїЅpпїЅУ‚пїЅпїЅпїЅД‚пїЅпїЅй‚©пїЅЗ‚пїЅпїЅпїЅпїЅiпїЅпїЅпїЅпїЅ06/01/12пїЅЕ‚НЊ`пїЅ[пїЅпїЅпїЅj
+// €шђ”‚р‰рђН‚µЃAѓpѓ‰ѓЃЃ[ѓ^Ѓiextern•Пђ”Ѓj‚рђЭ’и‚·‚й
+// p_emode: ‘S‘М‚Мѓ‚Ѓ[ѓhЃi“o^ЃAЊџЌх‚И‚ЗЃj
+// p_rmode: ЋЛ‰e•ПЉ·‚М•вђі‚р‚·‚й‚©”Ы‚©
+// p_fmode: “Б’Ґ“_‚Н‰Ѕ‚рЋg‚¤‚©Ѓi’PЊк‚МЏdђSЃA€Н‚Ь‚к‚Ѕ—М€ж‚МЏdђSЃAѓ|ѓCѓ“ѓgѓtѓ@ѓCѓ‹Ѓj
+// p_pmode: Њ‹Ќ‡‰ж‘њ‚Є—p€У‚і‚к‚Д‚ў‚й‚©‚З‚¤‚©ЃiЊ»ЌЭ06/01/12‚Е‚НЊ`Љ[‰»Ѓj
 {
 	int argi, pi, n, m, inv_type, disc_num, inc_centre, vec_chk, use_area, dbdocs, start_num;
 	char hash_path[1024], dbcor_fn[1024], pn_fn[1024], hash_fn[1024], dm_path[1024], dirs_dir[1024], point_dir[1024], prop_path[1024];
@@ -278,51 +278,51 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 	strcpy(dirs_dir, "/home/nakai/dirs/sharp/");
 	strcpy( hash_path, "/home/nakai/didb/test1000/*.bmp" );
 	eIsJp = 0;
-	// пїЅпїЅпїЅ{пїЅкѓ‚пїЅ[пїЅhпїЅЦЊW
+	// “ъ–{Њкѓ‚Ѓ[ѓhЉЦЊW
 	eJpGParam1 = 1;
 	eJpAdpBlock = 50;
 	eJpAdpSub = 10;
 	eJpGParam2 = 1;
 	eJpThr = 200;
-	// пїЅЕ‚пїЅпїЅШ‚пїЅЦЊW
+	// ‘Е‚їђШ‚иЉЦЊW
 	eTerminate = TERM_NON;
 	eTermVNum = kDefaultTermVNum;
 
-	srand( (unsigned int)time(NULL) );	// пїЅпїЅпїЅпїЅпїЅМЏпїЅпїЅпїЅпїЅпїЅ
-/****** пїЅпїЅпїЅпїЅпїЅк—— ******
--n [пїЅпїЅпїЅl]:	nпїЅМ’l
--m [пїЅпїЅпїЅl]:	mпїЅМ’l
--d [пїЅпїЅпїЅl]:	пїЅпїЅпїЅUпїЅпїЅпїЅпїЅпїЅxпїЅпїЅпїЅпїЅ
--[r/i/a/s]:	пїЅКђП‚Й‚пїЅй•ЎпїЅпїЅ/пїЅпїЅ_пїЅЙ‚пїЅй•ЎпїЅпїЅ/пїЅAпїЅtпїЅBпїЅпїЅпїЅsпїЅП—пїЅ/пїЅпїЅпїЅпїЅпїЅsпїЅП—пїЅ
--j:	пїЅпїЅпїЅSпїЅ_пїЅпїЅпїЅЬ‚пїЅ
--E:	пїЅКђП‚пїЅpпїЅпїЅпїЅпїЅ
--M:	пїЅgпїЅС“dпїЅbпїЅпїЅпїЅ[пїЅh
--c:	пїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅh
--C [пїЅnпїЅbпїЅVпїЅпїЅпїЅМѓpпїЅX]:	пїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅhпїЅiпїЅpпїЅXпїЅwпїЅпїЅj
--P [пїЅпїЅпїЅиђ”пїЅvпїЅZпїЅpпїЅМѓpпїЅX]:	пїЅпїЅпїЅиђ”пїЅvпїЅZпїЅpпїЅXпїЅwпїЅпїЅ
--t:	пїЅeпїЅXпїЅgпїЅпїЅпїЅ[пїЅh
--R:	пїЅЛ‰eпїЅПЉпїЅпїЅМ•вђіпїЅпїЅпїЅsпїЅпїЅ
--e:	пїЅН‚Ь‚к‚ЅпїЅМ€пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅЙ—pпїЅпїЅпїЅпїЅ
--p:	пїЅPпїЅпїЅМAпїЅпїЅпїЅпїЅпїЅк‚ЅпїЅж‘њпїЅр——pпїЅпїЅпїЅпїЅ
--l:	пїЅPпїЅпїЅМAпїЅпїЅпїЅпїЅпїЅк‚ЅпїЅж‘њпїЅпїЅпїЅcпїЅпїЅ
--A:	пїЅnпїЅbпїЅVпїЅпїЅпїЅЗ‰пїЅпїЅпїЅпїЅ[пїЅh
--f [пїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅ] [пїЅО‰пїЅпїЅЦЊWпїЅtпїЅ@пїЅCпїЅпїЅ] [пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅ]:	пїЅnпїЅbпїЅVпїЅпїЅпїЅМЌ\пїЅzпїЅЙ“_пїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅ
--q:	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅМ“пїЅпїЅпїЅпїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅмђ¬пїЅпїЅпїЅ[пїЅh
--g:	пїЅoпїЅ^пїЅж‘њпїЅМ“пїЅпїЅпїЅпїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅмђ¬пїЅпїЅпїЅ[пїЅh
--G [пїЅoпїЅ^пїЅж‘њпїЅМЊпїЅпїЅпїЅпїЅpпїЅX] [пїЅпїЅпїЅпїЅпїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅ] [пїЅО‰пїЅпїЅЦЊWпїЅtпїЅ@пїЅCпїЅпїЅ] [пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅ] [пїЅJпїЅnпїЅФЌпїЅ]:	пїЅoпїЅ^пїЅж‘њпїЅМ“пїЅпїЅпїЅпїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅмђ¬пїЅпїЅпїЅ[пїЅh2
--D [пїЅпїЅпїЅUпїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅмђ¬пїЅЙ—pпїЅпїЅпїЅпїЅpпїЅX]:	пїЅпїЅпїЅUпїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅМЌмђ¬пїЅЙ—pпїЅпїЅпїЅпїЅpпїЅXпїЅпїЅпїЅwпїЅпїЅ
--I [DIRSпїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅ]:	пїЅeпїЅпїЅЭ’пїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅwпїЅпїЅ
--N:	пїЅпїЅпїЅпїЅпїЅ_пїЅxпїЅNпїЅgпїЅпїЅпїЅМѓ`пїЅFпїЅbпїЅNпїЅИ‚пїЅ
--h:	пїЅnпїЅbпїЅVпїЅпїЅпїЅМѓ`пїЅFпїЅbпїЅNпїЅпїЅпїЅ[пїЅh
--S:	USBпїЅJпїЅпїЅпїЅпїЅпїЅTпїЅ[пїЅoпїЅпїЅпїЅ[пїЅh
--T [TCPпїЅ|пїЅ[пїЅgпїЅФЌпїЅ]:	TCPпїЅ|пїЅ[пїЅgпїЅМЋwпїЅпїЅ
--J:	пїЅпїЅпїЅ{пїЅкѓ‚пїЅ[пїЅh
--v [пїЅпїЅпїЅl]:	пїЅЕ‚пїЅпїЅШ‚иѓ‚пїЅ[пїЅhпїЅЖѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
-****** пїЅпїЅпїЅпїЅпїЅк—— ******/
+	srand( (unsigned int)time(NULL) );	// —ђђ”‚МЏ‰Љъ‰»
+/****** €шђ”€к—— ******
+-n [ђ”’l]:	n‚М’l
+-m [ђ”’l]:	m‚М’l
+-d [ђ”’l]:	—ЈЋU‰»ѓЊѓxѓ‹ђ”
+-[r/i/a/s]:	–КђП‚Й‚ж‚й•Ў”д/Њр“_‚Й‚ж‚й•Ў”д/ѓAѓtѓBѓ“•s•П—К/‘ЉЋ—•s•П—К
+-j:	’†ђS“_‚рЉЬ‚Ю
+-E:	–КђП‚р—p‚ў‚й
+-M:	Њg‘С“dbѓ‚Ѓ[ѓh
+-c:	ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓh
+-C [ѓnѓbѓVѓ…‚МѓpѓX]:	ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓhЃiѓpѓXЋw’иЃj
+-P [”д—б’иђ”ЊvЋZ—p‚МѓpѓX]:	”д—б’иђ”ЊvЋZѓpѓXЋw’и
+-t:	ѓeѓXѓgѓ‚Ѓ[ѓh
+-R:	ЋЛ‰e•ПЉ·‚М•вђі‚аЌs‚¤
+-e:	€Н‚Ь‚к‚Ѕ—М€ж‚р“Б’Ґ“_‚Й—p‚ў‚й
+-p:	’PЊк‚МAЊ‹‚і‚к‚Ѕ‰ж‘њ‚р——p‚·‚й
+-l:	’PЊк‚МAЊ‹‚і‚к‚Ѕ‰ж‘њ‚рЋc‚·
+-A:	ѓnѓbѓVѓ…’З‰Бѓ‚Ѓ[ѓh
+-f [“_ѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ] [‘О‰ћЉЦЊWѓtѓ@ѓCѓ‹] [“Б’Ґ“_ђ”ѓtѓ@ѓCѓ‹]:	ѓnѓbѓVѓ…‚МЌ\’z‚Й“_ѓtѓ@ѓCѓ‹‚р—p‚ў‚й
+-q:	ЊџЌхЋї–в‚М“Б’Ґ“_ѓtѓ@ѓCѓ‹Ќмђ¬ѓ‚Ѓ[ѓh
+-g:	“o^‰ж‘њ‚М“Б’Ґ“_ѓtѓ@ѓCѓ‹Ќмђ¬ѓ‚Ѓ[ѓh
+-G [“o^‰ж‘њ‚МЊџЌхѓpѓX] [“Б’Ґ“_ѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ] [‘О‰ћЉЦЊWѓtѓ@ѓCѓ‹] [“Б’Ґ“_ђ”ѓtѓ@ѓCѓ‹] [ЉJЋn”ФЌ†]:	“o^‰ж‘њ‚М“Б’Ґ“_ѓtѓ@ѓCѓ‹Ќмђ¬ѓ‚Ѓ[ѓh2
+-D [—ЈЋU‰»ѓtѓ@ѓCѓ‹Ќмђ¬‚Й—p‚ў‚йѓpѓX]:	—ЈЋU‰»ѓtѓ@ѓCѓ‹‚МЌмђ¬‚Й—p‚ў‚йѓpѓX‚рЋw’и
+-I [DIRSѓfѓBѓЊѓNѓgѓЉ]:	ЉeЋнђЭ’иѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ‚рЋw’и
+-N:	“Б’Ґ“_ѓxѓNѓgѓ‹‚Мѓ`ѓFѓbѓN‚И‚µ
+-h:	ѓnѓbѓVѓ…‚Мѓ`ѓFѓbѓNѓ‚Ѓ[ѓh
+-S:	USBѓJѓЃѓ‰ѓTЃ[ѓoѓ‚Ѓ[ѓh
+-T [TCPѓ|Ѓ[ѓg”ФЌ†]:	TCPѓ|Ѓ[ѓg‚МЋw’и
+-J:	“ъ–{Њкѓ‚Ѓ[ѓh
+-v [ђ”’l]:	‘Е‚їђШ‚иѓ‚Ѓ[ѓh‚Жѓpѓ‰ѓЃЃ[ѓ^
+****** €шђ”€к—— ******/
 	for ( argi = 1; argi < argc && *(argv[argi]) == '-'; argi++ ) {
 		for ( pi = 1; *(argv[argi]+pi) != '\0'; pi++ ) {
 			switch ( *(argv[argi]+pi) ) {
-				case 'n' :	// nпїЅМђЭ’пїЅ
+				case 'n' :	// n‚МђЭ’и
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
 						argi++;
@@ -332,7 +332,7 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 					if ( n == 0 )	return -1;
 					goto next_arg;
 					break;
-				case 'm' :	// mпїЅМђЭ’пїЅ
+				case 'm' :	// m‚МђЭ’и
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
 						argi++;
@@ -342,7 +342,7 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 					if ( m == 0 )	return -1;
 					goto next_arg;
 					break;
-				case 'd' :	// пїЅпїЅпїЅUпїЅпїЅпїЅпїЅпїЅxпїЅпїЅпїЅМђЭ’пїЅ
+				case 'd' :	// —ЈЋU‰»ѓЊѓxѓ‹‚МђЭ’и
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
 						argi++;
@@ -364,19 +364,19 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 				case 's' :	// SIMILAR
 					inv_type = SIMILAR;
 					break;
-				case 'j' :	// пїЅпїЅпїЅSпїЅ_пїЅпїЅпїЅЬ‚Ю‚пїЅ
+				case 'j' :	// ’†ђS“_‚рЉЬ‚Ю‚©
 					inc_centre = 1;
 					break;
-				case 'E' :	// пїЅКђП‚пїЅpпїЅпїЅпїЅй‚©
+				case 'E' :	// –КђП‚р—p‚ў‚й‚©
 					use_area = 1;
 					break;
-				case 'M' :	// пїЅgпїЅС“dпїЅbпїЅпїЅпїЅ[пїЅh
+				case 'M' :	// Њg‘С“dbѓ‚Ѓ[ѓh
 					*p_emode = RET_MP_MODE;
 					break;
-				case 'c' :	// пїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅh
+				case 'c' :	// ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓh
 					*p_emode = CONST_HASH_MODE;
 					break;
-				case 'C' :	// пїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅhпїЅiпїЅpпїЅXпїЅwпїЅпїЅj
+				case 'C' :	// ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓhЃiѓpѓXЋw’иЃj
 					*p_emode = CONST_HASH_MODE;
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
@@ -386,7 +386,7 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 					strcpy( hash_path, argv[argi] );
 					goto next_arg;
 					break;
-				case 'P' :	// пїЅпїЅпїЅиђ”пїЅvпїЅZпїЅpпїЅXпїЅwпїЅпїЅ
+				case 'P' :	// ”д—б’иђ”ЊvЋZѓpѓXЋw’и
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
 						argi++;
@@ -395,25 +395,25 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 					strcpy( prop_path, argv[argi] );
 					goto next_arg;
 					break;
-				case 't' :	// пїЅeпїЅXпїЅgпїЅпїЅпїЅ[пїЅh
+				case 't' :	// ѓeѓXѓgѓ‚Ѓ[ѓh
 					*p_emode = TEST_MODE;
 					break;
-				case 'R' :	// пїЅЛ‰eпїЅПЉпїЅпїЅМ•вђіпїЅпїЅпїЅsпїЅпїЅ
+				case 'R' :	// ЋЛ‰e•ПЉ·‚М•вђі‚аЌs‚¤
 					*p_rmode = RECOVER_MODE;
 					break;
-				case 'e' :	// пїЅН‚Ь‚к‚ЅпїЅМ€пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅЙ—pпїЅпїЅпїЅпїЅ
+				case 'e' :	// €Н‚Ь‚к‚Ѕ—М€ж‚р“Б’Ґ“_‚Й—p‚ў‚й
 					*p_fmode = ENCLOSED_MODE;
 					break;
-				case 'p' :	// пїЅPпїЅпїЅМAпїЅпїЅпїЅпїЅпїЅк‚ЅпїЅж‘њпїЅр——pпїЅпїЅпїЅпїЅ
+				case 'p' :	// ’PЊк‚МAЊ‹‚і‚к‚Ѕ‰ж‘њ‚р——p‚·‚й
 					*p_pmode = PREPARED_MODE;
 					break;
-				case 'l' :	// пїЅPпїЅпїЅМAпїЅпїЅпїЅпїЅпїЅк‚ЅпїЅж‘њпїЅпїЅпїЅcпїЅпїЅ
+				case 'l' :	// ’PЊк‚МAЊ‹‚і‚к‚Ѕ‰ж‘њ‚рЋc‚·
 					*p_pmode = LEAVE_MODE;
 					break;
-				case 'A' :	// пїЅnпїЅbпїЅVпїЅпїЅпїЅЗ‰пїЅпїЅпїЅпїЅ[пїЅh
+				case 'A' :	// ѓnѓbѓVѓ…’З‰Бѓ‚Ѓ[ѓh
 					*p_emode = ADD_HASH_MODE;
 					break;
-				case 'f' :	// пїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅiпїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅЖ‘О‰пїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅпїЅпїЅwпїЅпїЅj
+				case 'f' :	// “_ѓtѓ@ѓCѓ‹‚р—p‚ў‚йЃi“_ѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ‚Ж‘О‰ћѓtѓ@ѓCѓ‹–ј‚рЋw’иЃj
 					*p_fmode = USEPF_MODE;
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
@@ -431,7 +431,7 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 				case 'g' :	// Create point file of registered image
 					*p_emode = CREATE_RPF_MODE;
 					break;
-				case 'G' :	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅoпїЅпїЅпїЅ[пїЅhпїЅQ
+				case 'G' :	// “Б’Ґ“_’ЉЏoѓ‚Ѓ[ѓh‚Q
 					*p_emode = CREATE_RPF_MODE2;
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
@@ -482,36 +482,36 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 					eTCPPort = atoi(argv[argi]+pi);
 					goto next_arg;
 					break;
-				case 'J' :	// пїЅпїЅпїЅ{пїЅкѓ‚пїЅ[пїЅh
+				case 'J' :	// “ъ–{Њкѓ‚Ѓ[ѓh
 					eIsJp = 1;
 					break;
-				case 'v' :	// пїЅЕ‚пїЅпїЅШ‚иѓ‚пїЅ[пїЅh
-					eTerminate = TERM_VNUM;	// пїЅЖ‚и‚ пїЅпїЅпїЅпїЅпїЅпїЅпїЅМѓпїЅпїЅ[пїЅhпїЅЕЊЕ’пїЅ
+				case 'v' :	// ‘Е‚їђШ‚иѓ‚Ѓ[ѓh
+					eTerminate = TERM_VNUM;	// ‚Ж‚и‚ ‚¦‚ё‚±‚Мѓ‚Ѓ[ѓh‚ЕЊЕ’и
 					pi++;
 					if ( *(argv[argi]+pi) == '\0' ) {
 						argi++;
 						pi = 0;
 					}
-					eTermVNum = atoi(argv[argi]+pi);	// пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅпїЅwпїЅпїЅ
+					eTermVNum = atoi(argv[argi]+pi);	// ѓpѓ‰ѓЃЃ[ѓ^‚рЋw’и
 					goto next_arg;
 					break;
 				default :
-					fprintf(stderr, "%c : пїЅпїЅпїЅпїЅпїЅИѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅЕ‚пїЅ\n", *(argv[argi]+pi));
+					fprintf(stderr, "%c : –іЊш‚Иѓpѓ‰ѓЃЃ[ѓ^‚Е‚·\n", *(argv[argi]+pi));
 					break;
 			}
 		}
 		next_arg:
 			;
 	}
-	AddSlash( dirs_dir, 1024 );	// пїЅXпїЅпїЅпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅИ‚пїЅпїЅпїЅО’З‰пїЅ
-	if ( *point_dir == '\0' ) {	// пїЅ_пїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅwпїЅи‚іпїЅпїЅД‚пїЅпїЅИ‚пїЅпїЅпїЅпїЅ
-		sprintf( point_dir, "%spoint/", dirs_dir );	// dirs_dirпїЅпїЅпїЅпїЅpointпїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅмђ¬
+	AddSlash( dirs_dir, 1024 );	// ѓXѓ‰ѓbѓVѓ…‚Є‚И‚Ї‚к‚О’З‰Б
+	if ( *point_dir == '\0' ) {	// “_ѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ‚ЄЋw’и‚і‚к‚Д‚ў‚И‚Ї‚к‚О
+		sprintf( point_dir, "%spoint/", dirs_dir );	// dirs_dir‰є‚ЙpointѓfѓBѓЊѓNѓgѓЉ‚рЌмђ¬
 	} else {
-		AddSlash( point_dir, 1024 );	// пїЅXпїЅпїЅпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅИ‚пїЅпїЅпїЅО’З‰пїЅ
+		AddSlash( point_dir, 1024 );	// ѓXѓ‰ѓbѓVѓ…‚Є‚И‚Ї‚к‚О’З‰Б
 	}
-	if ( *p_emode == CONST_HASH_MODE ) {	// пїЅnпїЅbпїЅVпїЅпїЅпїЅ\пїЅzпїЅпїЅпїЅ[пїЅhпїЅМ‚Ж‚пїЅ
-#ifndef	WIN32	// DOSпїЅпїЅmkdirпїЅНѓpпїЅXпїЅМѓfпїЅпїЅпїЅ~пїЅ^пїЅпїЅ'\\'пїЅЕ‚И‚пїЅпїЅЖѓGпїЅпїЅпїЅ[пїЅЙ‚И‚пїЅМ‚ЕЃCWindowsпїЅЕ‚Н–пїЅпїЅпїЅпїЅЙ‚пїЅпїЅпїЅ
-		sprintf(cmd, "mkdir %s %s", kMkdirNoMesOpt, dirs_dir);	// пїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅИ‚пїЅпїЅпїЅОЌмђ¬
+	if ( *p_emode == CONST_HASH_MODE ) {	// ѓnѓbѓVѓ…Ќ\’zѓ‚Ѓ[ѓh‚М‚Ж‚«
+#ifndef	WIN32	// DOS‚Мmkdir‚НѓpѓX‚МѓfѓЉѓ~ѓ^‚Є'\\'‚Е‚И‚ў‚ЖѓGѓ‰Ѓ[‚Й‚И‚й‚М‚ЕЃCWindows‚Е‚Н–іЊш‚Й‚µ‚Ѕ
+		sprintf(cmd, "mkdir %s %s", kMkdirNoMesOpt, dirs_dir);	// ѓfѓBѓЊѓNѓgѓЉ‚Є‚И‚Ї‚к‚ОЌмђ¬
 		system(cmd);
 		sprintf(cmd, "mkdir %s %s", kMkdirNoMesOpt, point_dir);
 		system(cmd);
@@ -520,16 +520,16 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 	if ( *p_emode == RETRIEVE_MODE || *p_emode == USBCAM_SERVER_MODE )	LoadSetting( &inv_type, &n, &m, &disc_num, point_dir, dbcor_fn, pn_fn, &prop, &dbdocs );
 	else	SaveSetting( inv_type, n, m, disc_num, point_dir, dbcor_fn, pn_fn );
 	
-	if ( *dbcor_fn == '\0' ) {	// пїЅО‰пїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅwпїЅи‚іпїЅпїЅД‚пїЅпїЅИ‚пїЅпїЅпїЅпїЅ
+	if ( *dbcor_fn == '\0' ) {	// ‘О‰ћѓtѓ@ѓCѓ‹‚ЄЋw’и‚і‚к‚Д‚ў‚И‚Ї‚к‚О
 		sprintf( dbcor_fn, "%sdbcor.dat", dirs_dir );
 	}
-	if ( *pn_fn == '\0' ) {	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅwпїЅи‚іпїЅпїЅД‚пїЅпїЅИ‚пїЅпїЅпїЅпїЅ
+	if ( *pn_fn == '\0' ) {	// “Б’Ґ“_ђ”ѓtѓ@ѓCѓ‹‚ЄЋw’и‚і‚к‚Д‚ў‚И‚Ї‚к‚О
 		sprintf( pn_fn, "%spnum.txt", dirs_dir );
 	}
 	sprintf( hash_fn, "%shash.dat", dirs_dir );
 	if ( *p_emode == CREATE_QPF_MODE || *p_emode == CREATE_RPF_MODE ) {
 		eUseArea = use_area;
-		return argi;	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅпїЅй‚ѕпїЅпїЅпїЅИ‚пїЅSetExternпїЅН•sпїЅv
+		return argi;	// “Б’Ґ“_‚рЌм‚й‚ѕ‚Ї‚И‚зSetExtern‚Н•s—v
 	}
 	if ( SetExtern( *p_emode, n, m, inv_type, disc_num, prop, inc_centre, use_area, vec_chk, hash_path, dirs_dir, point_dir, ".dat", \
 		dbcor_fn, "disc/", dm_path, prop_path, pn_fn, hash_fn, dbdocs, start_num ) )	return argi;
@@ -540,23 +540,23 @@ int AnalyzeArgAndSetExtern( int argc, char *argv[], int *p_emode, int *p_rmode, 
 int SetExtern( int emode, int n, int m, int inv_type, int disc_num, double prop, int inc_centre, int use_area, int vec_chk, \
  char *hs_path, char *dirs_dir, char *pf_pref, char *pf_suf, char *cor_fn, \
  char *disc_dir, char *dm_path, char *prop_path, char *pn_fn, char *hash_fn, int dbdocs, int start_num )
-// пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅЭ’и‚·пїЅпїЅ
+// ѓpѓ‰ѓЃЃ[ѓ^‚рђЭ’и‚·‚й
 {
 	int i, num, den;
 	char it, disc_fn[1024], cmd[1024];
 
-	// пїЅsпїЅП—Кѓ^пїЅCпїЅvпїЅМђЭ’пїЅ
+	// •s•П—Кѓ^ѓCѓv‚МђЭ’и
 	eInvType = inv_type;
-	// пїЅпїЅпїЅSпїЅ_пїЅпїЅпїЅЬ‚Я‚й‚©пїЅЗ‚пїЅпїЅпїЅ
+	// ’†ђS“_‚рЉЬ‚Я‚й‚©‚З‚¤‚©
 	eIncludeCentre = inc_centre;
-	// пїЅКђП‚пїЅpпїЅпїЅпїЅй‚©пїЅЗ‚пїЅпїЅпїЅ
+	// –КђП‚р—p‚ў‚й‚©‚З‚¤‚©
 	eUseArea = use_area;
-	// пїЅпїЅпїЅпїЅпїЅК‚М€пїЅvпїЅпїЅпїЅпїЅпїЅпїЅsпїЅпїЅпїЅпїЅ
+	// “Б’Ґ—К‚М€к’v”»’и‚рЌs‚¤‚©
 	eVectorCheck = vec_chk;
-	// nпїЅпїЅпїЅпїЅпїЅmпїЅМђЭ’пїЅ
+	// n‚Ё‚ж‚Сm‚МђЭ’и
 	eGroup1Num = n;
 	eGroup2Num = m;
-	// пїЅsпїЅП—Кѓ^пїЅCпїЅvпїЅЙ‰пїЅпїЅпїЅпїЅпїЅeGroup3NumпїЅМђЭ’пїЅ
+	// •s•П—Кѓ^ѓCѓv‚Й‰ћ‚¶‚ЅeGroup3Num‚МђЭ’и
 	switch (inv_type) {
 		case CR_AREA:
 			eGroup3Num = 5;
@@ -577,11 +577,11 @@ int SetExtern( int emode, int n, int m, int inv_type, int disc_num, double prop,
 		default:
 			return 0;
 	}
-//	if ( eIncludeCentre || inv_type == SIMILAR )	// пїЅпїЅпїЅSпїЅ_пїЅпїЅпїЅЬ‚пїЅ
-	if ( eIncludeCentre )	// пїЅпїЅпїЅSпїЅ_пїЅпїЅпїЅЬ‚пїЅ
+//	if ( eIncludeCentre || inv_type == SIMILAR )	// ’†ђS“_‚рЉЬ‚Ю
+	if ( eIncludeCentre )	// ’†ђS“_‚рЉЬ‚Ю
 		eGroup3Num--;
 
-	// nCmпїЅМђЭ’пїЅ
+	// nCm‚МђЭ’и
 	for ( i = 0, num = 1, den = 1; i < eGroup2Num; i++ ) {
 		num *= eGroup1Num - i;
 		den *= i + 1;
@@ -590,20 +590,20 @@ int SetExtern( int emode, int n, int m, int inv_type, int disc_num, double prop,
 //	if ( inv_type == SIMILAR ) {
 //		eNumCom2 = eGroup2Num - 1;
 //	} else {
-	// mCfпїЅМђЭ’пїЅ
+	// mCf‚МђЭ’и
 		for ( i = 0, num = 1, den = 1; i < eGroup3Num; i++ ) {
 			num *= eGroup2Num - i;
 			den *= i + 1;
 		}
 		eNumCom2 = (int)(num / den);
 //	}
-	// пїЅКЋqпїЅпїЅпїЅпїЅпїЅxпїЅпїЅ
+	// —КЋq‰»ѓЊѓxѓ‹
 	eDiscNum = disc_num;
 	eProp = prop;
 
-	// пїЅпїЅпїЅUпїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅМђЭ’пїЅ
+	// —ЈЋU‰»ѓtѓ@ѓCѓ‹‚МђЭ’и
 	sprintf( disc_fn, "%sdisc.txt", dirs_dir );
-	if ( *dm_path != '\0' ) {	// dm_pathпїЅпїЅпїЅЭ’и‚іпїЅпїЅД‚пїЅпїЅпїЅИ‚пїЅCacr2пїЅпїЅпїЅNпїЅпїЅпїЅпїЅпїЅпїЅdisc.txtпїЅрђ¶ђпїЅпїЅпїЅпїЅпїЅ
+	if ( *dm_path != '\0' ) {	// dm_path‚ЄђЭ’и‚і‚к‚Д‚ў‚й‚И‚зЃCacr2‚р‹N“®‚µ‚Дdisc.txt‚рђ¶ђ¬‚·‚й
 		sprintf( cmd, "%s %c %d %d %d %s %s", kAcrPath, it, n, m, disc_num, disc_fn, dm_path );
 		puts(cmd);
 		system(cmd);
@@ -623,24 +623,24 @@ int SetExtern( int emode, int n, int m, int inv_type, int disc_num, double prop,
 			}
 		}
 	}
-	// пїЅпїЅпїЅиђ”пїЅМђЭ’пїЅ
+	// ”д—б’иђ”‚МђЭ’и
 	strcpy( ePropMakePath, prop_path );
 //	if ( inv_type != SIMILAR && !IsExist( eDiscFileName ) ) {
 	if ( !IsExist( eDiscFileName ) && emode != CREATE_RPF_MODE2 ) {
-		fprintf(stderr, "пїЅпїЅпїЅUпїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅ%sпїЅН‘пїЅпїЅЭ‚пїЅпїЅЬ‚пїЅпїЅпїЅ\n", eDiscFileName );
+		fprintf(stderr, "—ЈЋU‰»ѓtѓ@ѓCѓ‹%s‚Н‘¶ЌЭ‚µ‚Ь‚№‚с\n", eDiscFileName );
 		return 0;
 	}
 
 	strcpy( eDirsDir, dirs_dir );
-	strcpy( eHashSrcPath, hs_path );	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМЊпїЅпїЅж‘њпїЅtпїЅ@пїЅCпїЅпїЅпїЅМ’TпїЅпїЅпїЅpпїЅX
-//	strcpy( eHashSrcDir, hs_dir );	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМЊпїЅпїЅж‘њпїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅ
-	strcpy( ePFPrefix, pf_pref );	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМ“_пїЅtпїЅ@пїЅCпїЅпїЅпїЅМѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅ
-	strcpy( ePFSuffix, pf_suf );	// пїЅnпїЅbпїЅVпїЅпїЅпїЅМ“_пїЅtпїЅ@пїЅCпїЅпїЅпїЅМЉgпїЅпїЅпїЅq
-	strcpy( eDBCorFileName, cor_fn );	// пїЅО‰пїЅпїЅtпїЅ@пїЅCпїЅпїЅ
-	strcpy( ePNFileName, pn_fn );	// пїЅ_пїЅМђпїЅпїЅМѓtпїЅ@пїЅCпїЅпїЅ
-	strcpy( eHashFileName, hash_fn ); // пїЅnпїЅbпїЅVпїЅпїЅпїЅМѓtпїЅ@пїЅCпїЅпїЅпїЅпїЅ
-	eDbDocs = dbdocs;	// пїЅfпїЅ[пїЅ^пїЅxпїЅ[пїЅXпїЅМѓTпїЅCпїЅY
-	eCPF2StartNum = start_num;	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅoпїЅпїЅпїЅ[пїЅhпїЅQпїЅЕ‚МЉJпїЅnпїЅФЌпїЅ
+	strcpy( eHashSrcPath, hs_path );	// ѓnѓbѓVѓ…‚МЊі‰ж‘њѓtѓ@ѓCѓ‹‚М’TЌхѓpѓX
+//	strcpy( eHashSrcDir, hs_dir );	// ѓnѓbѓVѓ…‚МЊі‰ж‘њѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ
+	strcpy( ePFPrefix, pf_pref );	// ѓnѓbѓVѓ…‚М“_ѓtѓ@ѓCѓ‹‚МѓfѓBѓЊѓNѓgѓЉ
+	strcpy( ePFSuffix, pf_suf );	// ѓnѓbѓVѓ…‚М“_ѓtѓ@ѓCѓ‹‚МЉg’ЈЋq
+	strcpy( eDBCorFileName, cor_fn );	// ‘О‰ћѓtѓ@ѓCѓ‹
+	strcpy( ePNFileName, pn_fn );	// “_‚Мђ”‚Мѓtѓ@ѓCѓ‹
+	strcpy( eHashFileName, hash_fn ); // ѓnѓbѓVѓ…‚Мѓtѓ@ѓCѓ‹–ј
+	eDbDocs = dbdocs;	// ѓfЃ[ѓ^ѓxЃ[ѓX‚МѓTѓCѓY
+	eCPF2StartNum = start_num;	// “Б’Ґ“_’ЉЏoѓ‚Ѓ[ѓh‚Q‚Е‚МЉJЋn”ФЌ†
 
 	return 1;
 }
@@ -676,7 +676,7 @@ int SaveSetting( int inv_type, int n, int m, int d, char *point_dir, char *dbcor
 }
 
 void RemoveLastCR( char *str, int len )
-// пїЅпїЅпїЅпїЅпїЅпїЅЕЊпїЅМ‰пїЅпїЅsпїЅпїЅпїЅнЏњ
+// •¶Ћљ—сЌЕЊг‚М‰ьЌs‚рЌнЏњ
 {
 	int i;
 	
@@ -724,12 +724,12 @@ int LoadSetting( int *inv_type, int *n, int *m, int *d, char *point_dir, char *d
 }
 
 int ReadIniFile( void )
-// iniпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅЗ‚пїЅ
+// iniѓtѓ@ѓCѓ‹‚р“З‚Ю
 {
 	char line[kMaxLineLen], *tok;
 	FILE *fp;
 
-	// пїЅfпїЅtпїЅHпїЅпїЅпїЅgпїЅlпїЅМђЭ’пїЅ
+	// ѓfѓtѓHѓ‹ѓg’l‚МђЭ’и
 	eTCPPort = kDefaultTCPPort;
 	eProtocol = kDefaultProtocol;
 	ePointPort = kDefaultPointPort;
@@ -738,22 +738,22 @@ int ReadIniFile( void )
 	strcpy( eServerName, kDefaultServerName );
 	strcpy( eDirsDir, kDfltDirsDir );
 
-	if ( ( fp = fopen( kIniFileName, "r" ) ) == NULL ) {	// iniпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅИ‚пїЅ
+	if ( ( fp = fopen( kIniFileName, "r" ) ) == NULL ) {	// iniѓtѓ@ѓCѓ‹‚Є‚И‚ў
 		fprintf( stderr, "warning: %s cannot be opened\n", kIniFileName );
 		return 0;
 	}
-	for ( ; fgets( line, kMaxLineLen, fp ) != NULL;  ) {	// iniпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅsпїЅпїЅпїЅЖ‚ЙЏпїЅпїЅпїЅ
+	for ( ; fgets( line, kMaxLineLen, fp ) != NULL;  ) {	// iniѓtѓ@ѓCѓ‹‚рЌs‚І‚Ж‚ЙЏ€—ќ
 //		puts( line );
-		tok = strtok( line, " =\t\n" );	// strtokпїЅЕЌsпїЅр•Є‰пїЅ
-		if (tok == NULL)	continue;	// пїЅgпїЅ[пїЅNпїЅпїЅпїЅИ‚пїЅ
-		if ( *tok == '#' )	continue;	// пїЅsпїЅпїЅпїЅпїЅ#пїЅИ‚пїЅRпїЅпїЅпїЅпїЅпїЅgпїЅЖ‚Э‚И‚пїЅ
+		tok = strtok( line, " =\t\n" );	// strtok‚ЕЌs‚р•Є‰р
+		if (tok == NULL)	continue;	// ѓgЃ[ѓNѓ“‚И‚µ
+		if ( *tok == '#' )	continue;	// Ќs“Є‚Є#‚И‚зѓRѓЃѓ“ѓg‚Ж‚Э‚И‚·
 		if ( strcmp( tok, "TCPPort" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
 			if ( tok != NULL)	eTCPPort = atoi(tok);
 		}
 		else if ( strcmp( tok, "Protocol" ) == 0 ) {	// Protocol
 			tok = strtok( NULL, " =\t\n" );
-			if (tok == NULL)	continue;	// пїЅgпїЅ[пїЅNпїЅпїЅпїЅИ‚пїЅ
+			if (tok == NULL)	continue;	// ѓgЃ[ѓNѓ“‚И‚µ
 			if ( strcmp( tok, "TCP" ) == 0 )	eProtocol = 1;
 			else if ( strcmp( tok, "UDP" ) == 0 )	eProtocol = 2;
 		}
@@ -784,20 +784,20 @@ int ReadIniFile( void )
 }
 
 int SaveConfig( int inv_type, int group1_num, int group2_num, int disc_num, double prop, int compress_hash, int doc_bit, int point_bit, int r_bit, int o_bit, int hlist2_dat_byte, int rotate_once, int use_area, int is_jp, int no_hash_list,  const char *config_file_name )
-// пїЅЭ’пїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅЫ‘пїЅ
+// ђЭ’иѓtѓ@ѓCѓ‹‚р•Ы‘¶
 {
 	char fname[kMaxPathLen], ch;
 	FILE *fp;
 
-	// config.datпїЅМѓpпїЅXпїЅпїЅпїЅмђ¬
+	// config.dat‚МѓpѓX‚рЌмђ¬
 	sprintf( fname, "%s%s", eDirsDir, config_file_name );
 	if ( ( fp = fopen( fname, "w" ) ) == NULL ) {
 		fprintf( stderr, "error: %s cannot be opened\n", fname );
 		return 0;
 	}
-	// config.datпїЅМѓoпїЅ[пїЅWпїЅпїЅпїЅпїЅ
+	// config.dat‚МѓoЃ[ѓWѓ‡ѓ“
 	fprintf( fp, "%s\n", kConfigVerStr );
-	// пїЅsпїЅП—Кѓ^пїЅCпїЅv
+	// •s•П—Кѓ^ѓCѓv
 	switch ( inv_type ) {
 		case CR_AREA:
 			ch = kInvCharCRArea;
@@ -823,25 +823,25 @@ int SaveConfig( int inv_type, int group1_num, int group2_num, int disc_num, doub
 	fprintf( fp, "%c %d\n", 'd', disc_num );
 	// prop
 	fprintf( fp, "%c %lf\n", 'p', prop );
-	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅkпїЅпїЅпїЅ[пїЅhпїЅИ‚пїЅrпїЅbпїЅgпїЅпїЅпїЅИ‚пїЅ
+	// ѓnѓbѓVѓ…€іЏkѓ‚Ѓ[ѓh‚И‚зѓrѓbѓgђ”‚И‚З
 	if ( compress_hash )	fprintf( fp, "%c %d %d %d %d %d\n", 'z', doc_bit, point_bit, r_bit, o_bit, hlist2_dat_byte );
-	// пїЅпїЅ]пїЅпїЅК‚иѓ‚пїЅ[пїЅh
+	// ‰с“]€к’К‚иѓ‚Ѓ[ѓh
 	if ( rotate_once )	fprintf( fp, "%c\n", 'y' );
-	// пїЅКђП‚пїЅпїЅgпїЅpпїЅпїЅпїЅй‚©пїЅЗ‚пїЅпїЅпїЅ
+	// –КђП‚рЋg—p‚·‚й‚©‚З‚¤‚©
 	if ( use_area )	fprintf( fp, "%c\n", 'u' );
-	// пїЅпїЅпїЅ{пїЅкѓ‚пїЅ[пїЅh
+	// “ъ–{Њкѓ‚Ѓ[ѓh
 	if ( is_jp )	fprintf( fp, "%c\n", 'J' );
-	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅXпїЅgпїЅИ‚пїЅпїЅпїЅпїЅ[пїЅh
+	// ѓnѓbѓVѓ…ѓЉѓXѓg‚И‚µѓ‚Ѓ[ѓh
 	if ( no_hash_list )	fprintf( fp, "%c\n", 't' );
 
 	fclose( fp );
 	return 1;
-/* пїЅпїЅпїЅoпїЅ[пїЅWпїЅпїЅпїЅпїЅ
+/* ‹ЊѓoЃ[ѓWѓ‡ѓ“
 	fprintf( fp, "%c %d %d %d\n", ch, eGroup1Num, eGroup2Num, eDiscNum );
 	fprintf( fp, "%lf\n%d\n", eProp, eDbDocs );
-	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅkпїЅпїЅпїЅ[пїЅhпїЅпїЅпїЅЗ‚пїЅпїЅпїЅ
+	// ѓnѓbѓVѓ…€іЏkѓ‚Ѓ[ѓh‚©‚З‚¤‚©
 	fprintf( fp, "%s\n", (eCompressHash) ? kCompressHashDiscroptor : kNormalHashDiscroptor );
-	// пїЅrпїЅbпїЅgпїЅпїЅ
+	// ѓrѓbѓgђ”
 	fprintf( fp, "%d %d %d %d\n", eDocBit, ePointBit, eRBit, eHList2DatByte );
 
 	fclose( fp );
@@ -850,25 +850,25 @@ int SaveConfig( int inv_type, int group1_num, int group2_num, int disc_num, doub
 }
 
 int LoadConfig( const char *config_file_name, int *p_inv_type, int *p_group1_num, int *p_group2_num, int *p_group3_num, int *p_num_com1, int *p_num_com2, int *p_disc_num, double *p_prop, int *p_compress_hash, int *p_doc_bit, int *p_point_bit, int *p_r_bit, int *p_o_bit, int *p_hlist2_dat_byte, int *p_rotate_once, int *p_use_area, int *p_is_jp, int *p_no_hash_list )
-// пїЅЭ’пїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅЗ‚ЭЌпїЅпїЅпїЅ
+// ђЭ’иѓtѓ@ѓCѓ‹‚р“З‚ЭЌћ‚Э
 {
 	char fname[kMaxPathLen], line[kMaxLineLen], ch, *fgets_ret;
 	FILE *fp;
 
-	// config.datпїЅМѓpпїЅXпїЅпїЅпїЅмђ¬пїЅпїЅпїЅДЉJпїЅпїЅ
+	// config.dat‚МѓpѓX‚рЌмђ¬‚µ‚ДЉJ‚­
 	sprintf( fname, "%s%s", eDirsDir, config_file_name );
 	if ( ( fp = fopen( fname, "r" ) ) == NULL ) {
 		fprintf( stderr, "error: %s cannot be opened\n", fname );
 		return 0;
 	}
-	fgets_ret = fgets( line, kMaxLineLen, fp );	// пїЅпїЅsпїЅЗ‚ЭЌпїЅпїЅпїЅ
-	// пїЅЗ‚ЭЌпїЅпїЅЭЋпїЅпїЅsпїЅпїЅпїЅпїЅпїЅпїЅпїЅНѓoпїЅ[пїЅWпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЖ€пїЅvпїЅпїЅпїЅпїЅ
+	fgets_ret = fgets( line, kMaxLineLen, fp );	// €кЌs“З‚ЭЌћ‚Э
+	// “З‚ЭЌћ‚ЭЋё”s‚а‚µ‚­‚НѓoЃ[ѓWѓ‡ѓ“•¶Ћљ—с‚Ж€к’v‚№‚ё
 	if (fgets_ret == NULL || !strcmp( line, kConfigVerStr ) ) {
 		fprintf( stderr, "error: %s version error\n", config_file_name );
 		return 0;
 	}
-	// пїЅeпїЅsпїЅпїЅпїЅпїЅН‚пїЅпїЅДђЭ’пїЅ
-	// пїЅпїЅ:	a
+	// ЉeЌs‚р‰рђН‚µ‚ДђЭ’и
+	// —б:	a
 	//		n 7
 	//		m 6
 	//		d 15
@@ -876,7 +876,7 @@ int LoadConfig( const char *config_file_name, int *p_inv_type, int *p_group1_num
 	//		y
 	while ( fgets( line, kMaxLineLen, fp ) != NULL ) {
 		switch ( line[0] ) {
-			// пїЅsпїЅП—Кѓ^пїЅCпїЅv
+			// •s•П—Кѓ^ѓCѓv
 			case kInvCharCRArea:	// r
 				*p_inv_type = CR_AREA;
 				*p_group3_num = 5;
@@ -926,14 +926,14 @@ int LoadConfig( const char *config_file_name, int *p_inv_type, int *p_group1_num
 		}
 	}
 	fclose( fp );
-	// пїЅgпїЅЭЌпїЅпїЅн‚№пїЅпїЅпїЅпїЅпїЅvпїЅZ
+	// ‘g‚ЭЌ‡‚н‚№ђ”‚рЊvЋZ
 	*p_num_com1 = CalcnCr( *p_group1_num, *p_group2_num );
 	*p_num_com2 = CalcnCr( *p_group2_num, *p_group3_num );
 	return 1;
 
-	/* пїЅпїЅпїЅoпїЅ[пїЅWпїЅпїЅпїЅпїЅ
+	/* ‹ЊѓoЃ[ѓWѓ‡ѓ“
 	sscanf( line, "%c %d %d %d", &ch, &eGroup1Num, &eGroup2Num, &eDiscNum );
-	switch ( ch ) {	// пїЅпїЅпїЅпїЅпїЅЙ‚пїЅпїЅпїЅД•пїЅпїЅпїЅ
+	switch ( ch ) {	// •¶Ћљ‚Й‚ж‚Б‚Д•ЄЉт
 		case kInvCharCRArea:
 			eInvType = CR_AREA;
 			eGroup3Num = 5;
@@ -953,25 +953,25 @@ int LoadConfig( const char *config_file_name, int *p_inv_type, int *p_group1_num
 		default:
 			return 0;
 	}
-	fgets( line, kMaxLineLen, fp );	// пїЅпїЅsпїЅЗ‚ЭЌпїЅпїЅпїЅ
+	fgets( line, kMaxLineLen, fp );	// €кЌs“З‚ЭЌћ‚Э
 	sscanf( line, "%lf", &eProp );
-	fgets( line, kMaxLineLen, fp );	// пїЅпїЅsпїЅЗ‚ЭЌпїЅпїЅпїЅ
+	fgets( line, kMaxLineLen, fp );	// €кЌs“З‚ЭЌћ‚Э
 	sscanf( line, "%d", &eDbDocs );
-	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅkпїЅпїЅпїЅ[пїЅhпїЅЗ‰пїЅ
-	fgets_ret = fgets( line, kMaxLineLen, fp );	// пїЅпїЅsпїЅЗ‚ЭЌпїЅпїЅпїЅ
+	// ѓnѓbѓVѓ…€іЏkѓ‚Ѓ[ѓh’З‰Б
+	fgets_ret = fgets( line, kMaxLineLen, fp );	// €кЌs“З‚ЭЌћ‚Э
 	if ( !strncmp( line, kCompressHashDiscroptor, strlen(kCompressHashDiscroptor) ) ) {
 		puts("Compress Hash Mode");
-		eCompressHash = 1;	// пїЅnпїЅbпїЅVпїЅпїЅпїЅпїЅпїЅkпїЅпїЅпїЅ[пїЅh
+		eCompressHash = 1;	// ѓnѓbѓVѓ…€іЏkѓ‚Ѓ[ѓh
 	}
 	else {
 		eCompressHash = 0;
 	}
-	// пїЅrпїЅbпїЅgпїЅпїЅ
-	fgets( line, kMaxLineLen, fp );	// пїЅпїЅsпїЅЗ‚ЭЌпїЅпїЅпїЅ
+	// ѓrѓbѓgђ”
+	fgets( line, kMaxLineLen, fp );	// €кЌs“З‚ЭЌћ‚Э
 	sscanf( line, "%d %d %d %d", &eDocBit, &ePointBit, &eRBit, &eHList2DatByte );
 
 	fclose( fp );
-	// пїЅgпїЅЭЌпїЅпїЅн‚№пїЅпїЅпїЅпїЅпїЅvпїЅZ
+	// ‘g‚ЭЌ‡‚н‚№ђ”‚рЊvЋZ
 	eNumCom1 = CalcnCr( eGroup1Num, eGroup2Num );
 	eNumCom2 = CalcnCr( eGroup2Num, eGroup3Num );
 

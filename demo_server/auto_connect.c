@@ -16,7 +16,7 @@
 #define	DRAW_POINT
 
 cv::Mat GetConnectedImage( char *fname, int mode )
-// fnameï¿½ï¿½ï¿½çŒ‹ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½
+// fname‚©‚çŒ‹‡‰æ‘œ‚ğì¬‚·‚é
 {
 	int i/*, num*/, chsize;
 	double d00;
@@ -31,10 +31,10 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 
 	img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
 	if (img.empty()) {
-		fprintf(stderr, "ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½%sï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n", fname);
+		fprintf(stderr, "‰æ‘œƒtƒ@ƒCƒ‹%s‚ªŠJ‚¯‚Ü‚¹‚ñ\n", fname);
 		return cv::Mat();
 	}
-	if ( eIsJp ) {	// ï¿½ï¿½ï¿½{ï¿½êƒ‚ï¿½[ï¿½hï¿½Í•Êï¿½ï¿½ï¿½
+	if ( eIsJp ) {	// “ú–{Œêƒ‚[ƒh‚Í•Êˆ—
 		smt = cv::Mat::zeros(cv::Size(img.cols, img.rows), CV_8UC1);
 		GetConnectedImageJp( img, smt );
 		OutPutImage( smt );
@@ -53,16 +53,16 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 		smt = cv::Mat::zeros(cv::Size(img.cols, img.rows), CV_8UC1);
 		pt = cv::Mat::zeros(cv::Size(img.cols, img.rows), CV_8UC1);
 	}
-	if ( mode == RETRIEVE_MODE ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Fï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½2ï¿½lï¿½ï¿½
+	if ( mode == RETRIEVE_MODE ) {	// ŒŸõƒ‚[ƒhF‚Æ‚è‚ ‚¦‚¸2’l‰»
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
 //		OutPutImage( bin );
-		cv::bitwise_not(bin, inv);	// CBDARï¿½ÈŒï¿½É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		cv::bitwise_not(bin, inv);	// CBDARˆÈŒã‚É’Ç‰Á‚µ‚½ƒmƒCƒYœ‹ˆ—
 //		OutPutImage( inv );
-		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
-		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
+		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// ˜AŒ‹¬•ª‚ğ•`‰æ
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
-			if ( d00 < 10 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+			if ( d00 < 10 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 #ifdef	WIN32
 			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
 #else
@@ -71,20 +71,20 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	    }
 //		OutPutImage( smt );
 		cv::bitwise_not(smt, bin);
-	} else if ( mode == RET_MP_MODE ) {	// ï¿½gï¿½Ñ“dï¿½bï¿½tï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Fï¿½ï¿½ï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½2ï¿½lï¿½ï¿½
+	} else if ( mode == RET_MP_MODE ) {	// Œg‘Ñ“d˜b•t‘®ƒJƒƒ‰ƒ‚[ƒhFƒŠƒTƒCƒY‚µ‚Ä‚©‚ç2’l‰»
 		cv::resize(img, smt, smt.size(), 0, 0, cv::INTER_CUBIC);
 		cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
-	} else {	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½dï¿½qï¿½ï¿½ï¿½ï¿½ï¿½jï¿½Fï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Ä•ï¿½ï¿½ï¿½ï¿½Tï¿½Cï¿½Yï¿½ğ’²‚×‚Ä‚ï¿½ï¿½ç•¶ï¿½ï¿½ï¿½ğ‘¾‚ç‚¹ï¿½ï¿½
+	} else {	// ƒnƒbƒVƒ…\’zƒ‚[ƒhi“dq•¶‘jF˜AŒ‹¬•ª‚ğæ‚èo‚µ‚Ä•¶šƒTƒCƒY‚ğ’²‚×‚Ä‚©‚ç•¶š‚ğ‘¾‚ç‚¹‚é
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
 //		OutPutImage( bin );
 		cv::bitwise_not( bin, inv );
-		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 		InitHist( &hist, 100, 0, 1000 );
 	    for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] )
 	    {
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
-			if ( d00 <= 0.5 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+			if ( d00 <= 0.5 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 			AddDataHist( &hist, sqrt(d00) );
 	    }
 		chsize = (int)GetMaxBin(&hist);
@@ -97,26 +97,26 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 //
 	}
 	cv::bitwise_not( bin, inv );
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‘å‚«ï¿½ï¿½ï¿½ğ’²‚×‚ï¿½
-	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
-	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½Eï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Z
+	// •¶š‚Ì‘å‚«‚³‚ğ’²‚×‚é
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
+	// ˜AŒ‹¬•ª‚ğ•`‰æEdS‚ğŒvZ
 	InitHist( &hist, 100, 0, 1000 );
     i = 0;
     for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
-		if ( d00 <= 0.5 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		if ( d00 <= 0.5 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 		AddDataHist( &hist, sqrt(d00) );
     }
 
 	chsize = (int)GetMaxBin(&hist);
 	ReleaseHist( &hist );
-	if ( mode == CONST_HASH_MODE || mode == ADD_HASH_MODE ) {	// PDFï¿½ï¿½ï¿½ç“¾ï¿½ï¿½ï¿½æ‘œ
-		if ( eIsJp )	chsize = (int)((double)chsize * 0.5);	// ï¿½ï¿½ï¿½{ï¿½êƒ‚ï¿½[ï¿½h
+	if ( mode == CONST_HASH_MODE || mode == ADD_HASH_MODE ) {	// PDF‚©‚ç“¾‚½‰æ‘œ
+		if ( eIsJp )	chsize = (int)((double)chsize * 0.5);	// “ú–{Œêƒ‚[ƒh
 		else			chsize *= 2;
 	}
-	else if ( mode == RET_MP_MODE )	{	// ï¿½Bï¿½eï¿½æ‘œ
+	else if ( mode == RET_MP_MODE )	{	// B‰e‰æ‘œ
 		chsize *= 3;
 	}
 //	chsize /= 2;
@@ -128,9 +128,9 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 	cv::bitwise_not( bin, smt );
 
 #if 0
-	cv::findContours(smt, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+	cv::findContours(smt, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 
-	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½Eï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Z
+	// ˜AŒ‹¬•ª‚ğ•`‰æEdS‚ğŒvZ
     i = 0;
     for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
@@ -138,7 +138,7 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 		cv::Point p;
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
-		if ( d00 < 0.00001 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		if ( d00 < 0.00001 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 		p.x = (int)(mom.m10 / d00);
 		p.y = (int)(mom.m01 / d00);
 		cv::circle( pt, p, 4, cWhite, -1, cv::LINE_AA, 0 );
@@ -154,7 +154,7 @@ cv::Mat GetConnectedImage( char *fname, int mode )
 }
 
 cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter )
-// fnameï¿½ï¿½ï¿½çŒ‹ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½2
+// fname‚©‚çŒ‹‡‰æ‘œ‚ğì¬‚·‚é2
 {
 	int i/*, num*/, chsize, mask_size;
 	double d00;
@@ -185,18 +185,18 @@ cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter 
 	inv = cv::Mat::zeros(img_size, CV_8UC1);
 	smt = cv::Mat::zeros(img_size, CV_8UC1);
 
-	if ( mode == RETRIEVE_MODE ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½h
+	if ( mode == RETRIEVE_MODE ) {	// ŒŸõƒ‚[ƒh
 //		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 4 );
-		// 09/03/04 ï¿½Sï¿½~ï¿½ï¿½ï¿½â‚½ï¿½ï¿½oï¿½ï¿½Ì‚ÅCï¿½ï¿½ï¿½i3degï¿½ï¿½60ï¿½j
+		// 09/03/04 ƒSƒ~‚ª‚â‚½‚ço‚é‚Ì‚ÅC³i3deg‚Ì60j
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 10 );
 		OutPutImage( bin );
-		cv::bitwise_not(bin, inv);	// CBDARï¿½ÈŒï¿½É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		cv::bitwise_not(bin, inv);	// CBDARˆÈŒã‚É’Ç‰Á‚µ‚½ƒmƒCƒYœ‹ˆ—
 //		OutPutImage( inv );
-		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
-		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
+		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// ˜AŒ‹¬•ª‚ğ•`‰æ
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
-			if ( d00 < 10 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+			if ( d00 < 10 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 #ifdef	WIN32
 			cv::drawContours(smt, contours, _ci, cWhite, cv::FILLED, 8);	// replace cv::FILLED with 1 to see the outlines 
 #else
@@ -206,37 +206,37 @@ cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter 
 //		OutPutImage( smt );
 		cv::bitwise_not(smt, bin);
 		cv::bitwise_not( bin, inv );
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‘å‚«ï¿½ï¿½ï¿½ğ’²‚×‚ï¿½
-		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
-		// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½Eï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Z
+		// •¶š‚Ì‘å‚«‚³‚ğ’²‚×‚é
+		cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
+		// ˜AŒ‹¬•ª‚ğ•`‰æEdS‚ğŒvZ
 		InitHist( &hist, 1000, 0, 1000 );
 	    i = 0;
 	    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
 	    {
 			mom = cv::moments(contours[ci]);
 			d00 = mom.m00;
-			if ( d00 <= 0.5 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+			if ( d00 <= 0.5 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 			AddDataHist( &hist, sqrt(d00) );
 	    }
 
 		chsize = (int)GetMaxBin(&hist);
 		ReleaseHist( &hist );
 //		chsize += (chsize + 1) % 2;
-//		chsize = chsize * 2 + 1;	// 12/21ï¿½ÏXï¿½@ï¿½ï¿½ï¿½ğ‘œ“xï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½Bï¿½eï¿½Å‚ÌŒï¿½ï¿½Ê‚ğ¸ï¿½ï¿½ï¿½ï¿½ï¿½
-		chsize += (chsize + 1) % 2;	// 08/05/30ï¿½ÏXï¿½@MIRU08ï¿½Äï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ß–ß‚ï¿½ï¿½Dï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½
+//		chsize = chsize * 2 + 1;	// 12/21•ÏX@‚‰ğ‘œ“xƒJƒƒ‰‚ğ—p‚¢‚½Šg‘åB‰e‚Å‚ÌŒ‹‰Ê‚ğ¸¸‚µ‚Ä
+		chsize += (chsize + 1) % 2;	// 08/05/30•ÏX@MIRU08ÄÀŒ±‚Ì‚½‚ß–ß‚·D¸“xŒüã
 //		printf( "chsize : %d\n", chsize );
 		cv::GaussianBlur(bin, smt, cv::Size(chsize, chsize), 0);	// OpenCV 1.0
 //		OutPutImage( smt );
 		cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 4 );
 //		OutPutImage( bin );
 		cv::bitwise_not( bin, inv );
-	} else {	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½dï¿½qï¿½ï¿½ï¿½ï¿½ï¿½jï¿½Fè‡’lï¿½Å’èƒ‚ï¿½[ï¿½h
+	} else {	// ƒnƒbƒVƒ…\’zƒ‚[ƒhi“dq•¶‘jFè‡’lŒÅ’èƒ‚[ƒh
 		if ( eVariousAutoMaskSize ) {
 			mask_size = VariousLangMaskSize( fname );
 			cv::GaussianBlur(img, smt, cv::Size(mask_size, mask_size), 0);	// OpenCV 1.0
 		}
 		else {
-			if ( gaussian_parameter <= 0 ) {	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½0ï¿½È‰ï¿½ï¿½È‚ï¿½Rï¿½sï¿½[
+			if ( gaussian_parameter <= 0 ) {	// ƒpƒ‰ƒ[ƒ^‚ª0ˆÈ‰º‚È‚çƒRƒs[
 				img.copyTo(smt);
 			} else {
 				cv::GaussianBlur(img, smt, cv::Size(gaussian_parameter, gaussian_parameter), 0);	// OpenCV 1.0
@@ -255,7 +255,7 @@ cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter 
 }
 
 int GetConnectedImageJp( cv::Mat src, cv::Mat dst )
-// ï¿½ï¿½ï¿½{ï¿½êƒ‚ï¿½[ï¿½h
+// “ú–{Œêƒ‚[ƒh
 {
 	cv::Mat smt, bin;
 	cv::Size size;
@@ -266,21 +266,21 @@ int GetConnectedImageJp( cv::Mat src, cv::Mat dst )
 	smt = cv::Mat::zeros(size, CV_8UC1);
 	bin = cv::Mat::zeros(size, CV_8UC1);
 
-	// ï¿½Kï¿½Eï¿½Vï¿½Aï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Új
+	// ƒKƒEƒVƒAƒ“iˆê‰ñ–Új
 	cv::GaussianBlur(src, smt, cv::Size(eJpGParam1*2+1, eJpGParam1*2+1), 0);
-	// ï¿½ï¿½lï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Új
+	// “ñ’l‰»iˆê‰ñ–Új
 	cv::adaptiveThreshold( smt, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::ADAPTIVE_THRESH_MEAN_C, eJpAdpBlock*2+1, eJpAdpSub );
-	// ï¿½Kï¿½Eï¿½Vï¿½Aï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Új
+	// ƒKƒEƒVƒAƒ“i“ñ‰ñ–Új
 	cv::GaussianBlur(bin, smt, cv::Size(eJpGParam2*2+1, eJpGParam2*2+1), 0);
-	// ï¿½ï¿½lï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Új
+	// “ñ’l‰»i“ñ‰ñ–Új
 	cv::threshold( smt, bin, eJpThr, 255, cv::THRESH_BINARY );
-	// ï¿½ï¿½ï¿½]ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½Ì‚ï¿½ï¿½ßj
+	// ”½“]i“Á’¥“_’Šo‚Ì‚½‚ßj
 	cv::bitwise_not( bin, dst );
 
 }
 
 cv::Mat GetConnectedImageJp2( const char *fname, int mode )
-// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½iï¿½ï¿½ï¿½{ï¿½êƒ‚ï¿½[ï¿½hï¿½jï¿½ï¿½Ì‚Í‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½H
+// “Á’¥“_’Šoi“ú–{Œêƒ‚[ƒhjã‚Ì‚Í‰½‚¾‚Á‚¯H
 {
 	cv::Mat img, smt, bin, inv;
 	cv::Size img_size;
@@ -296,24 +296,24 @@ cv::Mat GetConnectedImageJp2( const char *fname, int mode )
 	inv = cv::Mat::zeros(img_size, CV_8UC1);
 	smt = cv::Mat::zeros(img_size, CV_8UC1);
 
-	if ( mode == RETRIEVE_MODE ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½h
-		// ï¿½Kï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
+	if ( mode == RETRIEVE_MODE ) {	// ŒŸõƒ‚[ƒh
+		// “K‰“ñ’l‰»
 		cv::adaptiveThreshold( img, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 12 );
-		cv::GaussianBlur(bin, smt, cv::Size(3/* 1 */, 3/* 1 */), 0);	// 1ï¿½Í‰ğ‘œ“xï¿½ï¿½ï¿½á‚¢ï¿½ê‡
+		cv::GaussianBlur(bin, smt, cv::Size(3/* 1 */, 3/* 1 */), 0);	// 1‚Í‰ğ‘œ“x‚ª’á‚¢ê‡
 		cv::threshold( smt, bin, 200, 255, cv::THRESH_BINARY );
 		cv::bitwise_not( bin, inv );
 	}
-	else { // ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½[ï¿½h
-		// ï¿½Kï¿½Eï¿½Vï¿½Aï¿½ï¿½
+	else { // ƒnƒbƒVƒ…\’zƒ‚[ƒh
+		// ƒKƒEƒVƒAƒ“
 //		cv::GaussianBlur(img, smt, cv::Size(7, 7), 0);	// OpenCV 1.0
 		// 07/07/24
 		cv::GaussianBlur(img, smt, cv::Size(3, 3), 0);	// OpenCV 1.0
-		// 2ï¿½lï¿½ï¿½
+		// 2’l‰»
 		cv::threshold( smt, bin, 228, 255, cv::THRESH_BINARY );
-		// ï¿½ï¿½ï¿½]
+		// ”½“]
 		cv::bitwise_not( bin, inv );
 	}
-	// ï¿½Jï¿½ï¿½
+	// ŠJ•ú
 
 
 
@@ -323,7 +323,7 @@ cv::Mat GetConnectedImageJp2( const char *fname, int mode )
 }
 
 int AutoConnectTest( char *fname, cv::Size *size )
-// ï¿½Pï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½Xï¿½g
+// ’PŒê‚Ì©“®Œ‹‡ƒeƒXƒg
 {
 	int i, num, chsize;
 	cv::Mat img, bin, inv, smt, pt;
@@ -337,7 +337,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 
 	img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
 	if (img.empty()) {
-		fprintf(stderr, "ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½%sï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n", fname);
+		fprintf(stderr, "‰æ‘œƒtƒ@ƒCƒ‹%s‚ªŠJ‚¯‚Ü‚¹‚ñ\n", fname);
 		return 0;
 	}
 
@@ -358,7 +358,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 #ifdef DIC_MODE
 	cv::bitwise_not( img, inv );
 //	OutPutImage( inv );
-	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 	InitHist( &hist, 100, 0, 1000 );
     i = 0;
     for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
@@ -366,7 +366,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 		double d00;
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
-		if ( d00 <= 0.5 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		if ( d00 <= 0.5 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 		AddDataHist( &hist, sqrt(d00) );
 		i++;
     }
@@ -388,14 +388,14 @@ int AutoConnectTest( char *fname, cv::Size *size )
 	cv::bitwise_not( bin, inv );
 //	OutPutImage( inv );
 
-	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 
-	// ï¿½_ï¿½Ìï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½gï¿½iï¿½bï¿½ï¿½j
+	// “_‚Ì”‚ğƒJƒEƒ“ƒgib’èj
 	i = 0;
 	for ( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 	num = i;
 
-	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½Eï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Z
+	// ˜AŒ‹¬•ª‚ğ•`‰æEdS‚ğŒvZ
 	InitHist( &hist, 100, 0, 1000 );
 //	InitHist( &hist, 200, 0, 20 );
     i = 0;
@@ -405,12 +405,12 @@ int AutoConnectTest( char *fname, cv::Size *size )
 
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
-		if ( d00 <= 0.5 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		if ( d00 <= 0.5 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 //		printf("%f\n", d00);
 		AddDataHist( &hist, sqrt(d00) );
 		i++;
     }
-	num = i;	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌXï¿½V
+	num = i;	// ˜AŒ‹¬•ª”‚ÌXV
 
 //	printf("%d\n", num);
 //	printf("%f\n", GetMaxBin(&hist));
@@ -430,9 +430,9 @@ int AutoConnectTest( char *fname, cv::Size *size )
 //	OutPutImage( bin );
 	cv::bitwise_not( bin, inv );
 #ifdef DRAW_POINT
-	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 
-	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½Eï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Z
+	// ˜AŒ‹¬•ª‚ğ•`‰æEdS‚ğŒvZ
     i = 0;
     for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
@@ -441,7 +441,7 @@ int AutoConnectTest( char *fname, cv::Size *size )
 
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
-		if ( d00 < 0.00001 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		if ( d00 < 0.00001 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 
 		p.x = (int)(mom.m10 / d00);
 		p.y = (int)(mom.m01 / d00);
@@ -468,15 +468,15 @@ cv::Mat GetConnectedImageCam( cv::Mat src )
 		return cv::Mat();
 	}
 #endif
-	// ï¿½æ‘œï¿½Ìì¬
+	// ‰æ‘œ‚Ìì¬
 	if (gray.empty())
 		gray = cv::Mat::zeros(src.size(), CV_8UC1);
 	if (bin.empty())
 		bin = cv::Mat::zeros(src.size(), CV_8UC1);
 	inv = cv::Mat::zeros(src.size(), CV_8UC1);
-	// ï¿½Oï¿½ï¿½ï¿½Cï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½É•ÏŠï¿½
+	// ƒOƒŒƒCƒXƒP[ƒ‹‚É•ÏŠ·
 	cv::cvtColor( src, gray, cv::COLOR_BGR2GRAY );
-	// ï¿½Kï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
+	// “K‰“ñ’l‰»
 	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 10 );
 	// 07/06/07
 	cv::GaussianBlur(bin, gray, cv::Size(3, 3), 0);
@@ -498,15 +498,15 @@ cv::Mat GetConnectedImageCamJp2( cv::Mat src )
 	cv::Mat gray, bin, inv;
 
 #ifdef WIN32
-	// ï¿½æ‘œï¿½Ìì¬
+	// ‰æ‘œ‚Ìì¬
 	gray = cv::Mat::zeros(src.size(), CV_8UC1);
 	bin = cv::Mat::zeros(src.size(), CV_8UC1);
 	inv = cv::Mat::zeros(src.size(), CV_8UC1);
-	// ï¿½Oï¿½ï¿½ï¿½Cï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½É•ÏŠï¿½
+	// ƒOƒŒƒCƒXƒP[ƒ‹‚É•ÏŠ·
 	cv::cvtColor( src, gray, cv::COLOR_BGR2GRAY );
-	// ï¿½Kï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
+	// “K‰“ñ’l‰»
 //	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 101, 12 );
-	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 141, 12 );	// MIRU07 ï¿½ï¿½ï¿½Ê‚ï¿½Îï¿½
+	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 141, 12 );	// MIRU07 — Ê‚è‘Îô
 //	cv::bitwise_not( bin, inv );
 	cv::GaussianBlur(bin, gray, cv::Size(3, 3), 0);
 //	cv::imwrite( "smooth.bmp", gray );
@@ -521,7 +521,7 @@ cv::Mat GetConnectedImageCamJp2( cv::Mat src )
 }
 
 int VariousLangMaskSize( const char *fname )
-// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½Xï¿½Nï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ÉŒï¿½ï¿½ï¿½
+// ƒtƒ@ƒCƒ‹–¼‚©‚çƒ}ƒXƒNƒTƒCƒY‚ğ©“®“I‚ÉŒˆ’è
 {
 	char path[kMaxPathLen], basename[kMaxPathLen];
 	char prefixes[][20] = { "arabic", "chinese", "english", "french", "hindi", "japanese", "korean", "lhao", "russian", "spanish", "tamil", "thai" };
@@ -537,7 +537,7 @@ int VariousLangMaskSize( const char *fname )
 }
 
 int VariousLangMaskSizeDualChar( const char *fname )
-// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½Xï¿½Nï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ÉŒï¿½ï¿½ï¿½iï¿½fï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½Ìê‡ï¿½j
+// ƒtƒ@ƒCƒ‹–¼‚©‚çƒ}ƒXƒNƒTƒCƒY‚ğ©“®“I‚ÉŒˆ’èiƒfƒ…ƒAƒ‹ƒnƒbƒVƒ…‚Ì•¶š‚Ìê‡j
 {
 	char path[kMaxPathLen], basename[kMaxPathLen];
 	char prefixes[][20] = { "arabic", "chinese", "english", "french", "hindi", "japanese", "korean", "lhao", "russian", "spanish", "tamil", "thai" };
@@ -553,7 +553,7 @@ int VariousLangMaskSizeDualChar( const char *fname )
 }
 
 int VariousLangMaskSizeDualWord( const char *fname )
-// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½Xï¿½Nï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ÉŒï¿½ï¿½ï¿½iï¿½fï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì’Pï¿½ï¿½Ìê‡ï¿½j
+// ƒtƒ@ƒCƒ‹–¼‚©‚çƒ}ƒXƒNƒTƒCƒY‚ğ©“®“I‚ÉŒˆ’èiƒfƒ…ƒAƒ‹ƒnƒbƒVƒ…‚Ì’PŒê‚Ìê‡j
 {
 	char path[kMaxPathLen], basename[kMaxPathLen];
 	char prefixes[][20] = { "arabic", "chinese", "english", "french", "hindi", "japanese", "korean", "lhao", "russian", "spanish", "tamil", "thai" };

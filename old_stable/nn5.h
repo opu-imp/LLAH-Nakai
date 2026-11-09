@@ -18,7 +18,7 @@ typedef struct _strRandPs {
 #define	kEnoughNum	(3)
 #define	kVoteThr	(10)
 #define	kPNum	(10)
-// ï¿½Å‚ï¿½ï¿½Ø‚ï¿½ÖŒW
+// ‘Å‚¿Ø‚èŠÖŒW
 #define	kTermPNum	(50)
 #define	kTermVNum	(10)
 

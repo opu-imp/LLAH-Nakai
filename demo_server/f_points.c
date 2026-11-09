@@ -8,7 +8,7 @@
 #include "dirs.h"
 
 int MakeFeaturePointsFromImage(cv::Point **ps, cv::Mat img, cv::Size *size)
-// ï¿½Â—Ìˆæ‚©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ð“¾‚ï¿½
+// •Â—Ìˆæ‚©‚ç“Á’¥“_‚ð“¾‚é
 {
 	int i, num = 0;
     std::vector<std::vector<cv::Point>> contours;
@@ -25,9 +25,9 @@ int MakeFeaturePointsFromImage(cv::Point **ps, cv::Mat img, cv::Size *size)
 	OutPutImage( bin );
 	cv::floodFill(bin, cv::Point(300,300), cBlack, nullptr, cv::Scalar::all(0), cv::Scalar::all(0), 4);
 	OutPutImage( bin );
-    cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ð’Šoï¿½ï¿½ï¿½ï¿½
+    cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ð’Šo‚·‚é
 
-	num = CalcCentres(ps, contours, hierarchy, size, NULL);	// ï¿½eï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	num = CalcCentres(ps, contours, hierarchy, size, NULL);	// Še˜AŒ‹¬•ª‚ÌdS‚ðŒvŽZ‚·‚é
 
 	p = cv::Mat::zeros(cv::Size(size->width, size->height), CV_8UC1);
 	for ( i = 0; i < num; i++ ) {

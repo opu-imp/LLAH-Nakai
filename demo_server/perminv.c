@@ -110,44 +110,44 @@ void TestPerminv(cv::Size size, cv::Point *ps, int num, int *nears[] )
 }
 
 double CalcFp( double rho )
-// F+ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½H
+// F+‚ğŒvZ‚·‚éH
 {
 //	return (double)(rho*rho*(1.0L-rho)*(1.0L-rho))/(pow((long double)rho*rho-rho+1.0L, 3));
 	return (double)((double)8/(double)5) * ((rho*rho*(1.0L-rho)*(1-rho))/((rho*rho-rho+1.0L)*(rho*rho-rho+1.0L)*(rho*rho-rho+1.0L)));
 }
 
 double CalcFd( double rho )
-// F.ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½H
+// F.‚ğŒvZ‚·‚éH
 {
 	return (((double)3.0)*rho*rho*(1.0L-rho)*(1.0L-rho)) / (2.0L*pow(rho, 6) - 6.0L*(pow(rho, 5)) + 11.0L*(pow(rho, 4)) - 12.0L*(pow(rho,3)) + 11.0L*rho*rho - 6.0L*rho + 2.0L);
 }
 
 double CalcFdashp( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
-// F'+ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// F'+‚ğŒvZ‚·‚é
 {
 	return CalcPsi(CalcRho(p1, p2, p3, p4, p5)) + CalcPsi(CalcRho(p1, p2, p3, p5, p4)) + CalcPsi(CalcRho(p1, p2, p4, p5, p3));
 }
 
 double CalcFdashd( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
-// F'.ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// F'.‚ğŒvZ‚·‚é
 {
 	return CalcPsi(CalcRho(p1, p2, p3, p4, p5)) * CalcPsi(CalcRho(p1, p2, p3, p5, p4)) * CalcPsi(CalcRho(p1, p2, p4, p5, p3));
 }
 
 double CalcPsi( double rho )
-// psiï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// psi‚ğŒvZ‚·‚é
 {
 	return (2*rho)/(rho*rho+1);
 }
 
 double CalcRho( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
-// rhoï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// rho‚ğŒvZ‚·‚é
 {
 	return (CalcP(p1, p2, p3) * CalcP(p1, p4, p5)) / (CalcP(p1, p2, p4) * CalcP(p1, p3, p5));
 }
 
 double CalcP( cv::Point p1, cv::Point p2, cv::Point p3 )
-// Pï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// P‚ğŒvZ‚·‚é
 {
 	double ab, ac, abac;
 
@@ -159,7 +159,7 @@ double CalcP( cv::Point p1, cv::Point p2, cv::Point p3 )
 }
 
 void MakeCom6of8( void )
-// 8ï¿½Â‚ï¿½ï¿½ï¿½6ï¿½Âï¿½ï¿½oï¿½ï¿½ï¿½gï¿½İï¿½ï¿½í‚¹
+// 8ŒÂ‚©‚ç6ŒÂæ‚èo‚·‘g‚İ‡‚í‚¹
 {
 	int i, j, k, l, m, n, num;
 
@@ -185,7 +185,7 @@ void MakeCom6of8( void )
 }
 
 void MakeCom4of6( void )
-// 6ï¿½Â‚ï¿½ï¿½ï¿½4ï¿½Âï¿½ï¿½oï¿½ï¿½ï¿½gï¿½İï¿½ï¿½í‚¹
+// 6ŒÂ‚©‚ç4ŒÂæ‚èo‚·‘g‚İ‡‚í‚¹
 {
 	int i, j, k, l, num;
 

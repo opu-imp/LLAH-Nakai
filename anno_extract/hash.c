@@ -29,7 +29,7 @@ unsigned int HashFunc( char *index, int num)
 }
 
 unsigned int CountHashList( int index )
-// indexï¿½Ô–Ú‚Ìƒï¿½ï¿½Xï¿½gï¿½Tï¿½Cï¿½Yï¿½ğ“¾‚ï¿½
+// index”Ô–Ú‚ÌƒŠƒXƒgƒTƒCƒY‚ğ“¾‚é
 {
 	unsigned int count;
 	strHList *hp;
@@ -38,7 +38,7 @@ unsigned int CountHashList( int index )
 }
 
 void SaveHash( void )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½
+// ƒnƒbƒVƒ…‚ğƒZ[ƒu‚·‚é
 {
 	unsigned int i, j, n;
 	strHList *hp;
@@ -62,7 +62,7 @@ void SaveHash( void )
 }
 
 int LoadHash( int num )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½
+// ƒnƒbƒVƒ…‚ğƒ[ƒh‚·‚é
 {
 	unsigned int i, index, n;
 	unsigned short doc, point;
@@ -89,7 +89,7 @@ int LoadHash( int num )
 }
 
 int ChkHash( void )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½
+// ƒnƒbƒVƒ…‚ğƒ`ƒFƒbƒN‚·‚é
 {
 	unsigned long i, ent, total_ent, len, pow_sum;
 	strHList *hl;
@@ -115,7 +115,7 @@ int ChkHash( void )
 
 
 strHList *ReadHash( char *index, int num )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½Ô‚ï¿½
+// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚ğ•Ô‚·
 {
 	unsigned int hindex;
 	hindex = HashFunc( index, num );
@@ -123,7 +123,7 @@ strHList *ReadHash( char *index, int num )
 }
 
 int SearchHash( unsigned int index, unsigned int doc )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½indexï¿½Ô–Ú‚ï¿½ï¿½ï¿½docï¿½ï¿½Tï¿½ï¿½ï¿½Dï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Î^ï¿½Cï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½Î‹Uï¿½ï¿½Ô‚ï¿½
+// ƒnƒbƒVƒ…‚Ìindex”Ô–Ú‚©‚çdoc‚ğ’T‚·DŒ©‚Â‚©‚ê‚Î^CŒ©‚Â‚©‚ç‚È‚¯‚ê‚Î‹U‚ğ•Ô‚·
 {
 	strHList *hp;
 
@@ -135,7 +135,7 @@ int SearchHash( unsigned int index, unsigned int doc )
 }
 
 int AddHash( char *index, int num, unsigned short doc, unsigned short point )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½
+// ƒnƒbƒVƒ…‚É“o˜^‚·‚é
 {
 	unsigned int hindex;
 	strHList *hp;
@@ -158,7 +158,7 @@ int AddHash( char *index, int num, unsigned short doc, unsigned short point )
 }
 
 void PrintHash( void )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½Ê‚Éoï¿½Í‚ï¿½ï¿½ï¿½
+// ƒnƒbƒVƒ…‚Ìƒf[ƒ^‚ğ‰æ–Ê‚Éo—Í‚·‚é
 {
 	unsigned int i;
 	int j;
@@ -180,7 +180,7 @@ void PrintHash( void )
 }
 
 void InitHash( void )
-// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½j
+// ƒnƒbƒVƒ…‚ğ‰Šú‰»‚·‚éi‰ğ•ú‚Í‚µ‚È‚¢j
 {
 	int i;
 	count = 0;

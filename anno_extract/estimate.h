@@ -1,10 +1,10 @@
-#define	kTryParamRand	(1000)	/* пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅЙЋЛ‰eпїЅПЉпїЅпїЅМѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅМђпїЅпїЅпїЅпїЅпїЅsпїЅпїЅпїЅпїЅ */
+#define	kTryParamRand	(1000)	/* ѓ‰ѓ“ѓ_ѓЂ‚ЙЋЛ‰e•ПЉ·‚Мѓpѓ‰ѓЃЃ[ѓ^‚Мђ„’и‚рЌs‚¤‰сђ” */
 
-// RANSACпїЅЕ‚МѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
-#define	kRANSACTry	(100)	/* пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅМЊvпїЅZпїЅпїЅ */
-#define	kRANSACThr	(100.0)	/* пїЅпїЅпїЅпїЅпїЅiпїЅМ‚QпїЅпїЅjпїЅпїЅи‡’l */
-#define	kRANSACMinScore	(4)	/* пїЅЕЏпїЅпїЅXпїЅRпїЅA */
-#define	kRANSACRefineNum	(100)	/* пїЅпїЅиђёпїЅxпїЅМЌпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅпїЅпїЅпїЅЯ‚пїЅЫ‚МђпїЅ */
+// RANSAC‚Е‚Мѓpѓ‰ѓЃЃ[ѓ^
+#define	kRANSACTry	(100)	/* ѓpѓ‰ѓЃЃ[ѓ^‚МЊvЋZ‰сђ” */
+#define	kRANSACThr	(100.0)	/* ‹——ЈЃi‚М‚QЏжЃj‚Ми‡’l */
+#define	kRANSACMinScore	(4)	/* ЌЕЏ¬ѓXѓRѓA */
+#define	kRANSACRefineNum	(100)	/* ‚ж‚иђё“x‚МЌ‚‚ўѓpѓ‰ѓЃЃ[ѓ^‚р‹Ѓ‚Я‚йЌЫ‚Мђ” */
 
 typedef int keytype;
 

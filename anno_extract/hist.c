@@ -4,7 +4,7 @@
 #include "dirs.h"
 
 int InitHist( strHist *hist, int size, double min, double max )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒqƒXƒgƒOƒ‰ƒ€‚ğ‰Šú‰»‚·‚é
 {
 	if ( size <= 0 || min >= max )	return 0;
 	hist->size = size;
@@ -16,12 +16,12 @@ int InitHist( strHist *hist, int size, double min, double max )
 }
 
 void ReleaseHist( strHist *hist )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒqƒXƒgƒOƒ‰ƒ€‚ğŠJ•ú‚·‚é
 {
 	free(hist->bin);
 }
 int AddDataHist( strHist *hist, double dat )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Éƒfï¿½[ï¿½^ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒqƒXƒgƒOƒ‰ƒ€‚Éƒf[ƒ^‚ğ’Ç‰Á‚·‚é
 {
 	int idx;
 
@@ -35,7 +35,7 @@ int AddDataHist( strHist *hist, double dat )
 }
 
 double GetMaxBin( strHist *hist )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ÌÅ‘ï¿½Ì‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½binï¿½Ì‰Eï¿½[ï¿½ï¿½Ô‚ï¿½
+// ƒqƒXƒgƒOƒ‰ƒ€‚ÌÅ‘å‚Ì‚à‚Ì‚ğ‚à‚Âbin‚Ì‰E’[‚ğ•Ô‚·
 {
 	int i, max = 0, max_bin = 0;
 	
@@ -49,7 +49,7 @@ double GetMaxBin( strHist *hist )
 }
 
 void OutPutHist( strHist *hist, int width, int height )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½æ‚µï¿½Äƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Éoï¿½Í‚ï¿½ï¿½ï¿½
+// ƒqƒXƒgƒOƒ‰ƒ€‚ğ•`‰æ‚µ‚Äƒtƒ@ƒCƒ‹‚Éo—Í‚·‚é
 {
 	int i;
 	cv::Point p1, p2;
@@ -68,7 +68,7 @@ void OutPutHist( strHist *hist, int width, int height )
 }
 
 void DisplayHistNum(strHist *hist)
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚Éoï¿½Í‚ï¿½ï¿½ï¿½
+// ƒqƒXƒgƒOƒ‰ƒ€‚ğ‰æ–Ê‚Éo—Í‚·‚é
 {
 	int i;
 

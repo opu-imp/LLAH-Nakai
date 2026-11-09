@@ -8,7 +8,7 @@
 #include "projrecov.h"
 
 void GetNumRand( int num, int max, int *arr )
-// 0ï¿½`max-1ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½numï¿½Âï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Carrï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
+// 0`max-1‚Ì®”‚ğd•¡‚È‚µ‚ÅnumŒÂ¶¬‚µCarr‚ÉŠi”[‚·‚é
 {
 /*	int i, j, r;
 
@@ -34,7 +34,7 @@ gen:
 }
 
 int CompareDouble( const double *a, const double *b )
-// doubleï¿½Ì’lï¿½ï¿½ï¿½rï¿½ï¿½ï¿½ï¿½
+// double‚Ì’l‚ğ”äŠr‚·‚é
 {
 	if ( *a < *b )	return -1;
 	else if ( *a > *b )	return 1;
@@ -42,7 +42,7 @@ int CompareDouble( const double *a, const double *b )
 }
 
 double GetMedian( double *arr, int num )
-// ï¿½Tï¿½Cï¿½Ynumï¿½Ì”zï¿½ï¿½arrï¿½iï¿½ï¿½\ï¿½[ï¿½gï¿½jï¿½ï¿½ï¿½çƒï¿½fï¿½Bï¿½Aï¿½ï¿½ï¿½lï¿½ğ“¾‚ï¿½
+// ƒTƒCƒYnum‚Ì”z—ñarri”ñƒ\[ƒgj‚©‚çƒƒfƒBƒAƒ“’l‚ğ“¾‚é
 {
 	int i;
 	for ( i = 0; i < num; i++ )
@@ -57,7 +57,7 @@ double GetMedian( double *arr, int num )
 }
 
 int IsNearParam( strProjParam *param1, strProjParam *param2 )
-// ï¿½ß‚ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½
+// ‹ß‚¢ƒpƒ‰ƒ[ƒ^‚©
 {
 	double diff = 0.0L;
 
@@ -75,17 +75,17 @@ int IsNearParam( strProjParam *param1, strProjParam *param2 )
 }
 
 void CalcProjParamTop( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param, int mode, int method )
-// ps->corpsï¿½Ö‚ÌË‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½(mode==1ï¿½È‚ï¿½tï¿½j
+// ps->corps‚Ö‚ÌË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é(mode==1‚È‚ç‹tj
 {
 	int i, j, randpi[4];
 	strPoint strp1[4], strp2[4];
 	strProjParam paramarr[kTryParamRand];
 
-	if ( method == PARAM_IWAMURA ) {	// ï¿½â‘ºï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Ìê‡
+	if ( method == PARAM_IWAMURA ) {	// Šâ‘ºƒƒ\ƒbƒh‚Ìê‡
 		srand(clock());
 
 		for ( j = 0; j < kTryParamRand; j++ ) {
-			// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½4ï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
+			// ƒ‰ƒ“ƒ_ƒ€‚É4“_”ñ•œŒ³’Šo‚·‚é
 			GetNumRand( 4, cor_num, randpi );
 			for ( i = 0; i < 4; i++ ) {
 				strp1[i].x = corps[cor[randpi[i]][1]].x;
@@ -98,31 +98,31 @@ void CalcProjParamTop( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_nu
 			else
 				CalcProjParam( strp2, strp1, &(paramarr[j]) );
 		}
-		// ï¿½Kï¿½Ø‚Èƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+		// “KØ‚Èƒpƒ‰ƒ[ƒ^‚ğŒvZ‚·‚é
 		GetAppropriateParam( paramarr, param );
 	}
-	else if ( method == PARAM_RANSAC ) {	// RANSACï¿½Ìê‡
+	else if ( method == PARAM_RANSAC ) {	// RANSAC‚Ìê‡
 		GetAppropriateParamRANSAC( ps, corps, cor, cor_num, param, mode );
 	}
 }
 
 int GetAppropriateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param, int mode )
-// RANSACï¿½É‚ï¿½ï¿½ï¿½ÄË‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// RANSAC‚É‚æ‚Á‚ÄË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
 {
 	int i, j, randpi[4], score, max_score = -1, max_param = -1;
 	strPoint strp1[4], strp2[4];
 	strProjParam paramarr[kRANSACTry], zero_param;
 	
 	zero_param.a1 = 0.0; zero_param.a2 = 0.0; zero_param.a3 = 0.0; zero_param.b1 = 0.0; zero_param.b2 = 0.0; zero_param.b3 = 0.0; zero_param.c1 = 0.0; zero_param.c2 = 0.0;
-	for ( j = 0; j < kRANSACTry; j++ ) {	// kRANSACTryï¿½ï¿½Jï¿½ï¿½Ô‚ï¿½
-		GetNumRand( 4, cor_num, randpi );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½4ï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
+	for ( j = 0; j < kRANSACTry; j++ ) {	// kRANSACTry‰ñŒJ‚è•Ô‚·
+		GetNumRand( 4, cor_num, randpi );	// ƒ‰ƒ“ƒ_ƒ€‚É4“_”ñ•œŒ³’Šo‚·‚é
 		for ( i = 0; i < 4; i++ ) {
 			strp1[i].x = corps[cor[randpi[i]][1]].x;
 			strp1[i].y = corps[cor[randpi[i]][1]].y;
 			strp2[i].x = ps[cor[randpi[i]][0]].x;
 			strp2[i].y = ps[cor[randpi[i]][0]].y;
 		}
-		// 4ï¿½_ï¿½ï¿½pï¿½ï¿½ï¿½Äƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		// 4“_‚ğ—p‚¢‚Äƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
 		if ( mode == PROJ_NORMAL )
 			CalcProjParam( strp1, strp2, &(paramarr[j]) );
 		else
@@ -134,14 +134,14 @@ int GetAppropriateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], in
 			max_param = j;
 		}
 	}
-	if ( max_score < kRANSACMinScore ) {	// ï¿½Å‘ï¿½Xï¿½Rï¿½Aï¿½ï¿½è‡’lï¿½È‰ï¿½
+	if ( max_score < kRANSACMinScore ) {	// Å‘åƒXƒRƒA‚ªè‡’lˆÈ‰º
 		*param = zero_param;
 	}
 	else {
-		// ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½Tï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚È‚ï¿½ï¿½ï¿½
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½xï¿½ï¿½ï¿½á‚­ï¿½È‚ï¿½Dï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½Ï‚ï¿½ï¿½ï¿½ï¿½è‚µï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
+		// “¾‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚ğƒTƒ|[ƒg‚·‚é‘Î‰“_‚©‚çƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚È‚¨‚·
+		// ‚©‚¦‚Á‚Ä¸“x‚ª’á‚­‚È‚éD‰ºè‚É•½‹Ï‚µ‚½‚è‚µ‚È‚¢•û‚ª‚¢‚¢‚Ì‚©
 //		GetRefinedParamRANSAC( ps, corps, cor, cor_num, &(paramarr[max_param]), param, mode );
-		// ï¿½Å‘ï¿½ÌƒXï¿½Rï¿½Aï¿½ğ“¾‚ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½Ô‚ï¿½
+		// Å‘å‚ÌƒXƒRƒA‚ğ“¾‚½ƒpƒ‰ƒ[ƒ^‚ğ•Ô‚·
 		*param = paramarr[max_param];
 	}
 //	*param = paramarr[max_param];
@@ -149,7 +149,7 @@ int GetAppropriateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], in
 }
 
 int EvaluateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param, int mode )
-// RANSACï¿½Å‚Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•]ï¿½ï¿½
+// RANSAC‚Å‚Ìƒpƒ‰ƒ[ƒ^‚Ì•]‰¿
 {
 	int i, score = 0;
 	double dist;
@@ -168,17 +168,17 @@ int EvaluateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_
 			p2.x = corps[cor[i][1]].x;
 			p2.y = corps[cor[i][1]].y;
 		}
-		// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ç‹ï¿½ß‚ï¿½ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½Ìï¿½ï¿½Wï¿½Æ‚Ì‹ï¿½ï¿½ï¿½ï¿½iï¿½Ì‚Qï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		// ƒpƒ‰ƒ[ƒ^‚©‚ç‹‚ß‚ç‚ê‚é‘Î‰“_‚ÌÀ•W‚Æ‚Ì‹——£i‚Ì‚Qæj‚ğ‹‚ß‚é
 		ProjTrans( &p1, &p2h, param );
 		dist = (p2.x-p2h.x)*(p2.x-p2h.x)+(p2.y-p2h.y)*(p2.y-p2h.y);
 //		printf("%f\n", dist);
-		if ( dist < kRANSACThr )	score++;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‡’lï¿½È‰ï¿½ï¿½È‚ï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½g
+		if ( dist < kRANSACThr )	score++;	// ‹——£‚ªè‡’lˆÈ‰º‚È‚çƒCƒ“ƒNƒŠƒƒ“ƒg
 	}
 	return score;
 }
 
 void GetRefinedParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param_src, strProjParam *param_dst, int mode )
-// ï¿½ï¿½è¸ï¿½xï¿½Ìï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// ‚æ‚è¸“x‚Ì‚‚¢ƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
 {
 	int i, j, randpi[4], *support, sup_num = 0;
 	double dist;
@@ -186,9 +186,9 @@ void GetRefinedParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int c
 	strProjParam param_cur, zero_param;
 	
 	zero_param.a1 = 0.0; zero_param.a2 = 0.0; zero_param.a3 = 0.0; zero_param.b1 = 0.0; zero_param.b2 = 0.0; zero_param.b3 = 0.0; zero_param.c1 = 0.0; zero_param.c2 = 0.0;
-	support = (int *)calloc( cor_num, sizeof(int) );	// paramï¿½ï¿½ï¿½Tï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	support = (int *)calloc( cor_num, sizeof(int) );	// param‚ğƒTƒ|[ƒg‚·‚é‘Î‰“_‚Ì‰Šú‰»
 	
-	for ( i = 0; i < cor_num; i++ ) {	// paramï¿½ï¿½ï¿½Tï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½Tï¿½ï¿½
+	for ( i = 0; i < cor_num; i++ ) {	// param‚ğƒTƒ|[ƒg‚·‚é‘Î‰“_‚ğ’T‚·
 		if ( mode == PROJ_NORMAL ) {
 			p1.x = corps[cor[i][1]].x;
 			p1.y = corps[cor[i][1]].y;
@@ -201,23 +201,23 @@ void GetRefinedParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int c
 			p2.x = corps[cor[i][1]].x;
 			p2.y = corps[cor[i][1]].y;
 		}
-		// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ç‹ï¿½ß‚ï¿½ï¿½ï¿½Î‰ï¿½ï¿½_ï¿½Ìï¿½ï¿½Wï¿½Æ‚Ì‹ï¿½ï¿½ï¿½ï¿½iï¿½Ì‚Qï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		// ƒpƒ‰ƒ[ƒ^‚©‚ç‹‚ß‚ç‚ê‚é‘Î‰“_‚ÌÀ•W‚Æ‚Ì‹——£i‚Ì‚Qæj‚ğ‹‚ß‚é
 		ProjTrans( &p1, &p2h, param_src );
 		dist = (p2.x-p2h.x)*(p2.x-p2h.x)+(p2.y-p2h.y)*(p2.y-p2h.y);
-		if ( dist < kRANSACThr ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‡’lï¿½È‰ï¿½ï¿½È‚ï¿½Tï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚É’Ç‰ï¿½
+		if ( dist < kRANSACThr ) {	// ‹——£‚ªè‡’lˆÈ‰º‚È‚çƒTƒ|[ƒg‚·‚é‚à‚Ì‚É’Ç‰Á
 			support[sup_num++] = i;
 		}
 	}
-	*param_dst = zero_param;	// ï¿½ï¿½ï¿½×‚Äƒ[ï¿½ï¿½ï¿½Åï¿½ï¿½ï¿½ï¿½ï¿½
-	for ( j = 0; j < kRANSACRefineNum; j++ ) {	// kRANSACRefineNumï¿½ï¿½Jï¿½ï¿½Ô‚ï¿½
-		GetNumRand( 4, sup_num, randpi );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½4ï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
+	*param_dst = zero_param;	// ‚·‚×‚Äƒ[ƒ‚Å‰Šú‰»
+	for ( j = 0; j < kRANSACRefineNum; j++ ) {	// kRANSACRefineNum‰ñŒJ‚è•Ô‚·
+		GetNumRand( 4, sup_num, randpi );	// ƒ‰ƒ“ƒ_ƒ€‚É4“_”ñ•œŒ³’Šo‚·‚é
 		for ( i = 0; i < 4; i++ ) {
 			strp1[i].x = corps[cor[support[randpi[i]]][1]].x;
 			strp1[i].y = corps[cor[support[randpi[i]]][1]].y;
 			strp2[i].x = ps[cor[support[randpi[i]]][0]].x;
 			strp2[i].y = ps[cor[support[randpi[i]]][0]].y;
 		}
-		// 4ï¿½_ï¿½ï¿½pï¿½ï¿½ï¿½Äƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		// 4“_‚ğ—p‚¢‚Äƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
 		if ( mode == PROJ_NORMAL )
 			CalcProjParam( strp1, strp2, &param_cur );
 		else
@@ -244,7 +244,7 @@ void GetRefinedParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int c
 }
 
 void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv::Size size, cv::Mat src )
-// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½â³ï¿½Tï¿½u
+// Ë‰e•ÏŠ·•â³ƒTƒu
 {
 	int i, j, randpi[4];
 //	double a1s[kTryParamRand], a2s[kTryParamRand], a3s[kTryParamRand], b1s[kTryParamRand], b2s[kTryParamRand], b3s[kTryParamRand], c1s[kTryParamRand], c2s[kTryParamRand];
@@ -261,7 +261,7 @@ void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv:
 	srand(clock());
 
 	for ( j = 0; j < kTryParamRand; j++ ) {
-		// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½4ï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
+		// ƒ‰ƒ“ƒ_ƒ€‚É4“_”ñ•œŒ³’Šo‚·‚é
 		GetNumRand( 4, cor_num, randpi );
 
 		for ( i = 0; i < 4; i++ ) {
@@ -273,7 +273,7 @@ void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv:
 		CalcProjParam( strp1, strp2, &(paramarr[j]) );
 	}
 
-	// ï¿½Kï¿½Ø‚Èƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	// “KØ‚Èƒpƒ‰ƒ[ƒ^‚ğŒvZ‚·‚é
 	GetAppropriateParam( paramarr, &param );
 
 	img = cv::Mat::zeros(size, CV_8UC1);
@@ -285,14 +285,14 @@ void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv:
 			if ( pp2.x >= src.cols || pp2.y >= src.rows || pp2.x < 0 || pp2.y < 0 )
 				img.data[j*(int)img.step[0]+i] = 0;
 			else
-				img.data[j*(int)img.step[0]+i] = src.data[pp2.y*(int)src.step[0]+pp2.x]; // imageDataï¿½Ì•ï¿½ï¿½ï¿½widthStepï¿½Å’ï¿½`ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚±ï¿½Æ‚É’ï¿½ï¿½ï¿½
+				img.data[j*(int)img.step[0]+i] = src.data[pp2.y*(int)src.step[0]+pp2.x]; // imageData‚Ì•‚ÍwidthStep‚Å’è‹`‚³‚ê‚Ä‚¢‚é‚±‚Æ‚É’ˆÓ
 		}
 	}
 	OutPutImage(img);
 }
 
 void GetAppropriateParam( strProjParam *paramarr, strProjParam *param )
-// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½Ì”zï¿½ï¿½paramarr[]ï¿½ï¿½ï¿½ï¿½Kï¿½Ø‚Èƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^paramï¿½ğ“¾‚ï¿½
+// ƒpƒ‰ƒ[ƒ^\‘¢‘Ì”z—ñparamarr[]‚©‚ç“KØ‚Èƒpƒ‰ƒ[ƒ^param‚ğ“¾‚é
 {
 #if 0
 	int i, j, paramvote[kTryParamRand], maxvote = 0, maxparam;
@@ -333,7 +333,7 @@ void GetAppropriateParam( strProjParam *paramarr, strProjParam *param )
 		pdouble[i][6] = paramarr[i].c1;
 		pdouble[i][7] = paramarr[i].c2;
 	}
-	MeanParam( pdouble, mean, kTryParamRand, kErrorThrMeanParam, kNumVectorMeanParam );	// ï¿½Âï¿½ï¿½Å’ï¿½
+	MeanParam( pdouble, mean, kTryParamRand, kErrorThrMeanParam, kNumVectorMeanParam );	// ŒÂ”ŒÅ’è
 	param->a1 = mean[0];
 	param->a2 = mean[1];
 	param->a3 = mean[2];
@@ -346,7 +346,7 @@ void GetAppropriateParam( strProjParam *paramarr, strProjParam *param )
 }
 
 void RPTMain( char *fname1, char *fname2 )
-// ï¿½eï¿½Xï¿½gï¿½Ìƒï¿½ï¿½Cï¿½ï¿½
+// ƒeƒXƒg‚ÌƒƒCƒ“
 {
 	cv::Mat img1, img2;
 	cv::Point p1[4], p2[4];
@@ -396,7 +396,7 @@ void RPTMain( char *fname1, char *fname2 )
 }
 
 void RecoverPTTest( cv::Mat img1, cv::Mat img2, cv::Point *p1, cv::Point *p2 )
-// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½â³ï¿½Ìƒeï¿½Xï¿½g
+// Ë‰e•ÏŠ·•â³‚ÌƒeƒXƒg
 {
 	int i, j;
 	strPoint strp1[4], strp2[4], pp1, pp2;
@@ -420,14 +420,14 @@ void RecoverPTTest( cv::Mat img1, cv::Mat img2, cv::Point *p1, cv::Point *p2 )
 			pp1.x = i;
 			pp1.y = j;
 			ProjTrans( &pp1, &pp2, &param );
-			recov.data[j*(int)img1.step[0]+i] = img2.data[pp2.y*(int)img2.step[0]+pp2.x]; // imageDataï¿½Ì•ï¿½ï¿½ï¿½widthStepï¿½Å’ï¿½`ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚±ï¿½Æ‚É’ï¿½ï¿½ï¿½
+			recov.data[j*(int)img1.step[0]+i] = img2.data[pp2.y*(int)img2.step[0]+pp2.x]; // imageData‚Ì•‚ÍwidthStep‚Å’è‹`‚³‚ê‚Ä‚¢‚é‚±‚Æ‚É’ˆÓ
 		}
 	}
 	OutPutImage( recov );
 }
 
-// err0: ï¿½Pï¿½Â‘Oï¿½ÌŒë·ï¿½ÆVï¿½ï¿½ï¿½ÉŒvï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ë·ï¿½ï¿½err0ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½Iï¿½ï¿½
-// threshold: ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½×‚ï¿½ï¿½Æ‚ï¿½ï¿½Cthresholdï¿½Â‚Ü‚Å‚Íï¿½ï¿½ï¿½Ì•ï¿½ï¿½Ï’lï¿½ÌŒvï¿½Zï¿½Égï¿½ï¿½(inside)
+// err0: ‚P‚Â‘O‚ÌŒë·‚ÆV‚½‚ÉŒvZ‚µ‚½Œë·‚ªerr0–¢–‚È‚çI—¹
+// threshold: “_‚ğ‹——£‚ª‹ß‚¢‡‚É•À‚×‚½‚Æ‚«CthresholdŒÂ‚Ü‚Å‚ÍŸ‰ñ‚Ì•½‹Ï’l‚ÌŒvZ‚Ég‚¤(inside)
 void MeanParam( double data[kTryParamRand][8], double *mean, int n, double err0, int threshold) {
 	// variable for "for"
 	int i,j;
@@ -467,7 +467,7 @@ void MeanParam( double data[kTryParamRand][8], double *mean, int n, double err0,
 	// initialization of size_flag1
 	size_flag1 = n;
 
-	// loop (counterï¿½ï¿½0ï¿½ï¿½1ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½err0ï¿½É‚ï¿½ï¿½]ï¿½ï¿½ï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½Dï¿½Â‚Ü‚ï¿½Cï¿½Qï¿½ï¿½Í•Kï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½)
+	// loop (counter‚ª0‚©1‚Ì‚Æ‚«‚Íerr0‚É‚æ‚é•]‰¿‚Í‚µ‚È‚¢D‚Â‚Ü‚èC‚Q‰ñ‚Í•K‚¸ƒ‹[ƒv‚·‚é)
 	  while ( fabs(err-err_prev) > err0 || counter<=1) {
 	
 		// calculate mean
@@ -515,11 +515,11 @@ void MeanParam( double data[kTryParamRand][8], double *mean, int n, double err0,
 		for (i=0; i<n; i++) {
 			dist_n[i] = i;
 		}
-		// dist[dist_n[i]]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½Ô‚æ‚¤ï¿½ï¿½dist_nï¿½ï¿½ï¿½\ï¿½[ï¿½g
+		// dist[dist_n[i]]‚ª¬‚³‚¢‡‚É•À‚Ô‚æ‚¤‚Édist_n‚ğƒ\[ƒg
 //		quicksort(dist,dist_n,pdist,1,n);
 //		quicksort(dist,dist_n,0,n-1);
 		simplesort(dist,dist_n,0,n-1);
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½insideï¿½ÉCï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½outsideï¿½É‚ï¿½ï¿½ï¿½
+		// ‹——£‚ª¬‚³‚¢‚à‚Ì‚ğinside‚ÉC‚»‚¤‚Å‚È‚¢‚à‚Ì‚ğoutside‚É‚·‚é
 		for (i=0; i<threshold; i++) {
 			inside_flag[dist_n[i]] = 1;
 			size_flag1++;
@@ -534,7 +534,7 @@ void MeanParam( double data[kTryParamRand][8], double *mean, int n, double err0,
 }
 
 double GetPPVar( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num )
-// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•ï¿½ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// Ë‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚Ì•ªU‚ğ‹‚ß‚é
 {
 	int i, j, randpi[4];
 	static int first_flag = 0, seed;
@@ -549,7 +549,7 @@ double GetPPVar( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num )
 	srand(seed++);
 
 	for ( j = 0; j < kTryParamRand; j++ ) {
-		// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½4ï¿½_ï¿½ñ•œŒï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
+		// ƒ‰ƒ“ƒ_ƒ€‚É4“_”ñ•œŒ³’Šo‚·‚é
 		GetNumRand( 4, cor_num, randpi );
 
 		for ( i = 0; i < 4; i++ ) {
@@ -561,12 +561,12 @@ double GetPPVar( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num )
 		CalcProjParam( strp1, strp2, &(paramarr[j]) );
 	}
 
-	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Ì•ï¿½ï¿½Uï¿½Ì‘ï¿½ï¿½aï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½Cï¿½Ô‚ï¿½
+	// ƒpƒ‰ƒ[ƒ^‚Ì•ªU‚Ì‘˜a‚ğŒvZ‚µC•Ô‚·
 	return GetPPVarSub( paramarr );
 }
 
 double GetPPVarSub( strProjParam *paramarr )
-// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½Ì”zï¿½ï¿½paramarr[]ï¿½ï¿½ï¿½ï¿½Kï¿½Ø‚Èƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^paramï¿½ğ“¾‚ï¿½
+// ƒpƒ‰ƒ[ƒ^\‘¢‘Ì”z—ñparamarr[]‚©‚ç“KØ‚Èƒpƒ‰ƒ[ƒ^param‚ğ“¾‚é
 {
 	int i;
 	double pdouble[kTryParamRand][8]/*, mean[8]*/;
@@ -635,7 +635,7 @@ double GetPPVarSubSub( double data[kTryParamRand][8], int n, double err0, int th
 	// initialization of size_flag1
 	size_flag1 = n;
 
-	// loop (counterï¿½ï¿½0ï¿½ï¿½1ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½err0ï¿½É‚ï¿½ï¿½]ï¿½ï¿½ï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½Dï¿½Â‚Ü‚ï¿½Cï¿½Qï¿½ï¿½Í•Kï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½)
+	// loop (counter‚ª0‚©1‚Ì‚Æ‚«‚Íerr0‚É‚æ‚é•]‰¿‚Í‚µ‚È‚¢D‚Â‚Ü‚èC‚Q‰ñ‚Í•K‚¸ƒ‹[ƒv‚·‚é)
 	  while ( fabs(err-err_prev) > err0 || counter<=1) {
 	
 		// calculate mean
@@ -684,11 +684,11 @@ double GetPPVarSubSub( double data[kTryParamRand][8], int n, double err0, int th
 		for (i=0; i<n; i++) {
 			dist_n[i] = i;
 		}
-		// dist[dist_n[i]]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½Ô‚æ‚¤ï¿½ï¿½dist_nï¿½ï¿½ï¿½\ï¿½[ï¿½g
+		// dist[dist_n[i]]‚ª¬‚³‚¢‡‚É•À‚Ô‚æ‚¤‚Édist_n‚ğƒ\[ƒg
 //		quicksort(dist,dist_n,pdist,1,n);
 //		quicksort(dist,dist_n,0,n-1);
 		simplesort(dist,dist_n,0,n-1);
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½insideï¿½ÉCï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½outsideï¿½É‚ï¿½ï¿½ï¿½
+		// ‹——£‚ª¬‚³‚¢‚à‚Ì‚ğinside‚ÉC‚»‚¤‚Å‚È‚¢‚à‚Ì‚ğoutside‚É‚·‚é
 		for (i=0; i<threshold; i++) {
 			inside_flag[dist_n[i]] = 1;
 			size_flag1++;

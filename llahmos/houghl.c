@@ -10,7 +10,7 @@
 void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, int corder );
 
 void CalcHoughLineCRHist(cv::Point *ps, int pt_num,  cv::Size size)
-// ï¿½_ï¿½ÌWï¿½ï¿½ï¿½ï¿½Houghï¿½ÏŠï¿½ï¿½ï¿½ï¿½Ä’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ç•¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚Äƒqï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½
+// “_‚ÌW‡‚ğHough•ÏŠ·‚µ‚Ä’¼ü‚ğŒŸo‚µCüã‚Ì“_‚©‚ç•¡”ä‚ğ‹‚ß‚ÄƒqƒXƒgƒOƒ‰ƒ€‚ğì¬‚·‚é
 {
 	int i, line_num;
 	cv::Mat cent;
@@ -21,10 +21,10 @@ void CalcHoughLineCRHist(cv::Point *ps, int pt_num,  cv::Size size)
 	cent.setTo(cv::Scalar::all(0));
 
 	for ( i = 0; i < pt_num; i++ ) {
-		cv::circle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// ï¿½_ï¿½Ì•`ï¿½ï¿½
+		cv::circle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// “_‚Ì•`‰æ
 	}
 
-	line_num = CalcHoughLinesImg(cent, &lines);	// ï¿½æ‘œï¿½ï¿½ï¿½ï¿½Houghï¿½ÏŠï¿½ï¿½Å’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	line_num = CalcHoughLinesImg(cent, &lines);	// ‰æ‘œ‚©‚çHough•ÏŠ·‚Å’¼ü‚ğ‹‚ß‚é
 
 //	for ( i = 0; i < line_num; i++ )	printf("%f %f\n", lines[i].rho, lines[i].theta);
 
@@ -50,7 +50,7 @@ void CalcHoughLineCRHist(cv::Point *ps, int pt_num,  cv::Size size)
 }
 
 void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, int corder )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½iï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï‚ï¿½
+// ü‚©‚çƒqƒXƒgƒOƒ‰ƒ€‚ğì¬‚·‚éiƒqƒXƒgƒOƒ‰ƒ€‚Í‰Šú‰»Ï‚İ
 {
 	int i, j, pt_num, p1, p2, p3, p4;
 	double cr = 0.0;
@@ -60,7 +60,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 	for ( i = 0; i < line_num; i++ ) {
 		cur = lines[i].first;
 		j = 0;
-		while ( cur != NULL) {	// ï¿½_ï¿½ï¿½ptsï¿½ÉƒRï¿½sï¿½[
+		while ( cur != NULL) {	// “_‚ğpts‚ÉƒRƒs[
 			pts[j].x = cur->pt.x;
 			pts[j].y = cur->pt.y;
 			cur = cur->next;
@@ -68,7 +68,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 		}
 		pt_num = j;
 		switch (corder) {
-			case kSeqOrder:	// ï¿½æ“ªï¿½ï¿½ï¿½ï¿½4ï¿½Â‚ï¿½ï¿½ï¿½
+			case kSeqOrder:	// æ“ª‚©‚ç4‚Â‚¸‚Â
                 for ( j = 0; j+4 <= pt_num; j++ ) {
 					switch (ctype) {
 						case kUseCR:
@@ -82,7 +82,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
                     AddDataHist(hist, cr);
                     }
 				break;
-			case kAllAssort:	// ï¿½ï¿½ï¿½×‚Ä‚Ì‘gï¿½İï¿½ï¿½í‚¹
+			case kAllAssort:	// ‚·‚×‚Ä‚Ì‘g‚İ‡‚í‚¹
 				for ( p1 = 0; p1 < pt_num; p1++ ) {
 					for ( p2 = 0; p2 < pt_num; p2++ ) {
 						if ( p2 == p1 ) continue;
@@ -110,7 +110,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 }
 
 void ResisterPointToLines( cv::Point pt, strLineForCR *lines, int line_num )
-// ï¿½_ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É“oï¿½^ï¿½ï¿½ï¿½ï¿½
+// “_‚ğ‹ß‚¢’¼ü‚É“o˜^‚·‚é
 {
 	int i;
 
@@ -122,7 +122,7 @@ void ResisterPointToLines( cv::Point pt, strLineForCR *lines, int line_num )
 }
 
 void AddPoint( cv::Point pt, strLineForCR *line )
-// ï¿½_ï¿½ğ’¼ï¿½ï¿½Ì“_ï¿½ï¿½ï¿½Xï¿½gï¿½É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// “_‚ğ’¼ü‚Ì“_ƒŠƒXƒg‚É’Ç‰Á‚·‚é
 {
 	strPtList *newpl = (strPtList *)calloc(1, sizeof(strPtList));
 	strPtList *cur;
@@ -143,7 +143,7 @@ void AddPoint( cv::Point pt, strLineForCR *line )
 
 
 int IsCloseToLine( cv::Point pt, strLineForCR *line )
-// ï¿½_ï¿½Æ’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‚·ï¿½ï¿½
+// “_‚Æ’¼ü‚ª‹ß‚¢‚©”»’è‚·‚é
 {
 	if ( fabs((pt.x * cos(line->theta) + pt.y * sin(line->theta)) - line->rho) < kCloseToLine )
 		return 1;
@@ -152,7 +152,7 @@ int IsCloseToLine( cv::Point pt, strLineForCR *line )
 }
 
 int x2yrh(int x, float rho, float theta)
-//	rho-thetaï¿½^ï¿½Ì’ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½yï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+//	rho-thetaŒ^‚Ì’¼ü‚Ì®‚Åx‚©‚çy‚ğ‹‚ß‚é
 {
 	return (int)((rho - x * cos(theta))/sin(theta));
 }
@@ -186,7 +186,7 @@ int CalcHoughLinesImg(cv::Mat dst, strLineForCR **line_cr)
 	OutPutImage(color_dst);
 
 //    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 2, CV_PI/180, /*150*/4, 0, 0 );
-//htest.bmpï¿½p    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 1, CV_PI/90, /*150*/3, 0, 0 );
+//htest.bmp—p    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 1, CV_PI/90, /*150*/3, 0, 0 );
     std::vector<cv::Vec2f> lines_vec;
     cv::HoughLines(dst, lines_vec, 8, CV_PI/180, /*150*/10);
 
@@ -206,7 +206,7 @@ int CalcHoughLinesImg(cv::Mat dst, strLineForCR **line_cr)
 
 //		printf("%f %f\n", rho, theta);
 //		printf("(0, %d) (%d, %d) (%d, 0) (%d, %d)\n", x2yrh(0, rho, theta), w, x2yrh(w, rho, theta), y2xrh(0, rho, theta), h, y2xrh(h, rho, theta));
-		// ï¿½È‰ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ì‹Nï¿½_ï¿½ÆIï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Dï¿½æ‘œï¿½ï¿½ï¿½oï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚È‚ï¿½sï¿½vï¿½D
+		// ˆÈ‰ºC’¼ü‚ğˆø‚­‚½‚ß‚Ì‹N“_‚ÆI“_‚ğŒ©‚Â‚¯‚éD‰æ‘œ‚ğo—Í‚µ‚È‚¢‚Ì‚È‚ç•s—vD
 		yt = x2yrh(0, rho, theta);
 		if ( yt >= 0 && yt < h && count < 2) {
 			pt[count].x = 0;
@@ -233,7 +233,7 @@ int CalcHoughLinesImg(cv::Mat dst, strLineForCR **line_cr)
 		}
         cv::line( color_dst, pt[0], pt[1], cWhite, 4, 8, 0 );
 
-		//ï¿½È‰ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÉŠÔˆï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½Dï¿½Tï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ÇMï¿½pï¿½Å‚ï¿½ï¿½È‚ï¿½ï¿½ÈD
+		//ˆÈ‰º‚É‚ ‚Á‚½’¼ü‚ğˆø‚­ƒvƒƒOƒ‰ƒ€‚ªŒ©–‚ÉŠÔˆá‚Á‚Ä‚¢‚½DƒTƒ“ƒvƒ‹‚Æ‚¢‚¦‚ÇM—p‚Å‚«‚È‚¢‚ÈD
 	}
 
 //	OutPutImage(dst);

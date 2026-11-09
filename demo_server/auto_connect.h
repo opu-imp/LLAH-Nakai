@@ -1,7 +1,7 @@
 //#define	kConnectHashImageThr	(220)
-// ï¿½ÅŒyï¿½Ê‚Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½Ì‚ï¿½ï¿½ß‚É•ÏXï¿½@07/06/07
+// ÅŒy—Ê‚Ì“Á’¥“_’Šo‚Ì‚½‚ß‚É•ÏX@07/06/07
 //#define	kConnectHashImageThr	(250)
-// ï¿½ï¿½ï¿½Xï¿½Lï¿½[ï¿½gï¿½mï¿½Cï¿½Yï¿½Îï¿½Ì‚ï¿½ï¿½ß‚É•ÏX
+// ƒ‚ƒXƒL[ƒgƒmƒCƒY‘Îô‚Ì‚½‚ß‚É•ÏX
 #define	kConnectHashImageThr	(240)
 #define	kImgMaxVal	(255)
 

@@ -5,48 +5,48 @@
 #include "ws_cl.h"
 
 SOCKET InitWinSockClTCP( u_short port, char *server_name )
-// WinSockï¿½ÌƒNï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// WinSock‚ÌƒNƒ‰ƒCƒAƒ“ƒg‚ğ‰Šú‰»
 {
 	SOCKET sock;
 	WSADATA wsaData;
 	struct sockaddr_in server;
 	unsigned int **addrptr;
 	
-	// winsock2ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	// winsock2‚Ì‰Šú‰»
 	if ( WSAStartup( MAKEWORD(2,0), &wsaData ) != 0 ) {
 		fprintf( stderr, "Error : WSAStartup failed\n" );
 		return INVALID_SOCKET;
 	}
-	// ï¿½\ï¿½Pï¿½bï¿½gï¿½Ìì¬
+	// ƒ\ƒPƒbƒg‚Ìì¬
 	sock = socket( AF_INET, SOCK_STREAM, 0 );
 	if ( sock == INVALID_SOCKET ) {
 		fprintf( stderr, "Error : socket error(%d)\n", WSAGetLastError() );
 		return INVALID_SOCKET;
 	}
-	// ï¿½Ú‘ï¿½ï¿½ï¿½wï¿½ï¿½pï¿½\ï¿½ï¿½ï¿½Ì‚Ìï¿½ï¿½ï¿½
+	// Ú‘±æw’è—p\‘¢‘Ì‚Ì€”õ
 	server.sin_family = AF_INET;
 	server.sin_port = htons( port );
 	server.sin_addr.S_un.S_addr = inet_addr( server_name );
-	if ( server.sin_addr.S_un.S_addr == 0xffffffff ) {	// inet_addrï¿½ï¿½ï¿½ï¿½ï¿½s
+	if ( server.sin_addr.S_un.S_addr == 0xffffffff ) {	// inet_addr‚ª¸”s
 		struct hostent *host;
-		host = gethostbyname( server_name );	// ï¿½zï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½æ“¾
+		host = gethostbyname( server_name );	// ƒzƒXƒg–¼‚©‚çƒAƒhƒŒƒX‚ğæ“¾
 		if (host == NULL) {
 			if ( WSAGetLastError() == WSAHOST_NOT_FOUND )
 				fprintf( stderr, "Error : host %s not found\n", server_name );
 			else	fprintf( stderr, "Error : gethostbyname\n" );
 			return INVALID_SOCKET;
 		}
-		addrptr = (unsigned int **)host->h_addr_list;	// ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½æ“¾
-		while ( *addrptr != NULL) {	// ï¿½ï¿½ï¿½×‚Ä‚ÌƒAï¿½hï¿½ï¿½ï¿½Xï¿½É‚Â‚ï¿½ï¿½ï¿½
+		addrptr = (unsigned int **)host->h_addr_list;	// ƒAƒhƒŒƒXƒŠƒXƒg‚ğæ“¾
+		while ( *addrptr != NULL) {	// ‚·‚×‚Ä‚ÌƒAƒhƒŒƒX‚É‚Â‚¢‚Ä
 			server.sin_addr.S_un.S_addr = *(*addrptr);
-			if ( connect( sock, (struct sockaddr *)&server, sizeof(server) ) == 0 )	break;	// connectï¿½ï¿½ï¿½ï¿½
-			addrptr++;	// ï¿½ï¿½ï¿½ÌƒAï¿½hï¿½ï¿½ï¿½Xï¿½Åï¿½ï¿½ï¿½
+			if ( connect( sock, (struct sockaddr *)&server, sizeof(server) ) == 0 )	break;	// connect¬Œ÷
+			addrptr++;	// Ÿ‚ÌƒAƒhƒŒƒX‚Å‚·
 		}
-		if ( *addrptr == NULL) {	// connectï¿½ï¿½ï¿½ï¿½ï¿½×‚Äï¿½ï¿½s
+		if ( *addrptr == NULL) {	// connect‚ª‚·‚×‚Ä¸”s
 			fprintf( stderr, "Error : connect(%d)\n", WSAGetLastError() );
 			return INVALID_SOCKET;
 		}
-	} else {	// inet_addr()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	} else {	// inet_addr()‚ª¬Œ÷
 		if ( connect( sock, (struct sockaddr *)&server, sizeof(server)) != 0 ) {
 			fprintf( stderr, "Error : connect(%d)\n", WSAGetLastError() );
 			return INVALID_SOCKET;
@@ -90,7 +90,7 @@ SOCKET AcceptWinSockSvTCP( SOCKET sid1 )
 }
 
 SOCKET InitWinSockClUDP( u_short port, char *server_name, struct sockaddr_in *addr )
-// WinSockï¿½ÌƒNï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iUDPï¿½j
+// WinSock‚ÌƒNƒ‰ƒCƒAƒ“ƒg‚ğ‰Šú‰»iUDPj
 {
 	SOCKET sock;
 	WSADATA wsaData;
@@ -102,8 +102,8 @@ SOCKET InitWinSockClUDP( u_short port, char *server_name, struct sockaddr_in *ad
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	addr->sin_family = AF_INET;
 	addr->sin_port = htons(port);
-	host = gethostbyname( server_name );	// ï¿½zï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½æ“¾
-	addrptr = (unsigned int **)host->h_addr_list;	// ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½æ“¾
+	host = gethostbyname( server_name );	// ƒzƒXƒg–¼‚©‚çƒAƒhƒŒƒX‚ğæ“¾
+	addrptr = (unsigned int **)host->h_addr_list;	// ƒAƒhƒŒƒXƒŠƒXƒg‚ğæ“¾
 	addr->sin_addr.S_un.S_addr = *(*addrptr);
 	
 	return sock;
@@ -127,8 +127,8 @@ SOCKET InitWinSockSvUDP( u_short port )
 	addr.sin_addr.S_un.S_addr = INADDR_ANY;
 //	addr.sin_addr.s_addr = INADDR_ANY;
 
-//	host = gethostbyname( "kana" );	// ï¿½zï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½æ“¾
-//	addrptr = (unsigned int **)host->h_addr_list;	// ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½æ“¾
+//	host = gethostbyname( "kana" );	// ƒzƒXƒg–¼‚©‚çƒAƒhƒŒƒX‚ğæ“¾
+//	addrptr = (unsigned int **)host->h_addr_list;	// ƒAƒhƒŒƒXƒŠƒXƒg‚ğæ“¾
 //	addr.sin_addr.S_un.S_addr = *(*addrptr);
 
 
@@ -139,7 +139,7 @@ SOCKET InitWinSockSvUDP( u_short port )
 }
 
 void CloseWinSock( SOCKET sock )
-// WinSockï¿½ÌƒNï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Iï¿½ï¿½
+// WinSock‚ÌƒNƒ‰ƒCƒAƒ“ƒg‚ğI—¹
 {
 	closesocket( sock );
 	WSACleanup();

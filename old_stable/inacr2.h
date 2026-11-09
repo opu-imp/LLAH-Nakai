@@ -1,5 +1,5 @@
-#define	kMaxPointNum	(2500)	/* ï¿½_ï¿½ÌÅ‘å” */
-#define	kDiscRes	(1000)	/* ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‰ğ‘œ“x */
+#define	kMaxPointNum	(2500)	/* “_‚ÌÅ‘å” */
+#define	kDiscRes	(1000)	/* —£U‰»ƒtƒ@ƒCƒ‹‚Ì‰ğ‘œ“x */
 
 //int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size );
 //void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 );

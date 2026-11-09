@@ -1,13 +1,13 @@
 /* dcams.c */
-#define	GLOBAL_DEFINE	/* externï¿½Ïï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½Ì‚ï¿½^ï¿½ï¿½ï¿½ï¿½ */
-// ï¿½ÏXï¿½eï¿½Xï¿½g
+#define	GLOBAL_DEFINE	/* extern•Ï”‚É‚±‚±‚ÅÀ‘Ì‚ğ—^‚¦‚é */
+// •ÏXƒeƒXƒg
 
 #include "def_general.h"
 
 #include <stdio.h>
 #include <math.h>
 
-// ï¿½lï¿½bï¿½gï¿½ï¿½ï¿½[ï¿½N
+// ƒlƒbƒgƒ[ƒN
 #ifdef	WIN32
 #include <winsock2.h>	// socket
 #include "ws_cl.h"
@@ -64,7 +64,7 @@
 #define	kClientName	"griffon"
 //#define	kClientName	"raptor"
 //#define	kClientname	"masamune"
-#define	kMaxNameLen	(20)	/* ï¿½Nï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ÌÅ‘å’·ï¿½ï¿½ */
+#define	kMaxNameLen	(20)	/* ƒNƒ‰ƒCƒAƒ“ƒg–¼‚ÌÅ‘å’·‚³ */
 
 #define	kTCP	(1)
 #define	kUDP	(2)
@@ -77,41 +77,41 @@
 #endif
 
 //#define	kTopThr	3
-//#define	kTopThr	0	/* ï¿½Å‚ï¿½ï¿½Ø‚èƒ‚ï¿½[ï¿½hï¿½Ìï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ß‚É•ÏX */
-#define	kTopThr	0	/* ï¿½Å‚ï¿½ï¿½Ø‚èƒ‚ï¿½[ï¿½hï¿½Ìï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ß‚É•ÏX */
-#define	kMinPoints	(20)	/* USBï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Å‚ÌÅï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ */
+//#define	kTopThr	0	/* ‘Å‚¿Ø‚èƒ‚[ƒh‚ÌÀŒ±‚Ì‚½‚ß‚É•ÏX */
+#define	kTopThr	0	/* ‘Å‚¿Ø‚èƒ‚[ƒh‚ÌÀŒ±‚Ì‚½‚ß‚É•ÏX */
+#define	kMinPoints	(20)	/* USBƒJƒƒ‰ƒ‚[ƒh‚Å‚ÌÅ¬“Á’¥“_” */
 
-#define	kMaxDocNameLen	(20)	/* ï¿½æ‘œï¿½ï¿½ï¿½ÌÅ‘å’· */
+#define	kMaxDocNameLen	(20)	/* ‰æ‘œ–¼‚ÌÅ‘å’· */
 
-#define	kRecvBuffSize	(sizeof(cv::Size) + sizeof(int) + sizeof(cv::Point) * kMaxPointNum)	/* ï¿½ï¿½Mï¿½ï¿½ï¿½Ìƒoï¿½bï¿½tï¿½@ï¿½ÌƒTï¿½Cï¿½Y */
-#define	kRecvBuffSizeAreas	(sizeof(cv::Size) + sizeof(int) + (sizeof(cv::Point) + sizeof(unsigned short)) * kMaxPointNum)	/* ï¿½ï¿½Mï¿½ï¿½ï¿½Ìƒoï¿½bï¿½tï¿½@ï¿½ÌƒTï¿½Cï¿½Yï¿½iï¿½ÊÏ‚ï¿½ï¿½ï¿½Mï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j */
+#define	kRecvBuffSize	(sizeof(cv::Size) + sizeof(int) + sizeof(cv::Point) * kMaxPointNum)	/* óM‚Ìƒoƒbƒtƒ@‚ÌƒTƒCƒY */
+#define	kRecvBuffSizeAreas	(sizeof(cv::Size) + sizeof(int) + (sizeof(cv::Point) + sizeof(unsigned short)) * kMaxPointNum)	/* óM‚Ìƒoƒbƒtƒ@‚ÌƒTƒCƒYi–ÊÏ‚àóMƒo[ƒWƒ‡ƒ“j */
 #define	kSendBuffSize	(kMaxDocNameLen + sizeof(strProjParam) + sizeof(cv::Size))
 
 long allocated_hash = 0;
 
 int RecvPoints( SOCKET sid, cv::Point **ps0, cv::Size *size )
-// ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½M
+// “_ƒf[ƒ^‚ğóM
 {
 	int i, num = 0, ret, buff_cur;
 	char buff[kRecvBuffSize];
 	cv::Point *ps;
 	
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½Éï¿½M
+	// ƒoƒbƒtƒ@‚ÉóM
 	ret = recv( sid, buff, kRecvBuffSize, RECV_FLAG );
-	if ( ret <= 0 )	return -1;	// ï¿½ï¿½Mï¿½ï¿½ï¿½s
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Tï¿½Cï¿½Yï¿½ğ“¾‚ï¿½
+	if ( ret <= 0 )	return -1;	// óM¸”s
+	// ƒoƒbƒtƒ@‚©‚ç‰æ‘œƒTƒCƒY‚ğ“¾‚é
 	for ( i = 0, buff_cur = 0; i < sizeof(cv::Size); i++, buff_cur++ ) {
 		((char *)size)[i] = buff[buff_cur];
 	}
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ğ“¾‚ï¿½
+	// ƒoƒbƒtƒ@‚©‚ç“Á’¥“_”‚ğ“¾‚é
 	for ( i = 0; i < sizeof(int); i++, buff_cur++ ) {
 		((char *)&num)[i] = buff[buff_cur];
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½1ï¿½Èï¿½È‚çƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
+	// “Á’¥“_”‚ª1ˆÈã‚È‚çƒƒ‚ƒŠ‚ğŠm•Û
 	if ( num > 0 )	ps = (cv::Point *)calloc( num, sizeof(cv::Point) );
 	else	ps = NULL;
 	*ps0 = ps;
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½ğ“¾‚ï¿½
+	// ƒoƒbƒtƒ@‚©‚ç“Á’¥“_ƒf[ƒ^‚ğ“¾‚é
 	for ( i = 0; i < (int)(sizeof(cv::Point) * num); i++, buff_cur++ ) {
 		((char *)ps)[i] = buff[buff_cur];
 	}
@@ -120,7 +120,7 @@ int RecvPoints( SOCKET sid, cv::Point **ps0, cv::Size *size )
 }
 
 int RecvPointsAreas( SOCKET sid, cv::Point **ps0, double **areas0, cv::Size *size )
-// ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½M
+// “_ƒf[ƒ^‚ğóM
 {
 	int i, num = 0, ret, buff_cur;
 	char buff[kRecvBuffSizeAreas];
@@ -128,18 +128,18 @@ int RecvPointsAreas( SOCKET sid, cv::Point **ps0, double **areas0, cv::Size *siz
 	double *areas;
 	unsigned short areas_us[kMaxPointNum];
 	
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½Éï¿½M
+	// ƒoƒbƒtƒ@‚ÉóM
 	ret = recv( sid, buff, kRecvBuffSizeAreas, RECV_FLAG );
-	if ( ret <= 0 )	return -1;	// ï¿½ï¿½Mï¿½ï¿½ï¿½s
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Tï¿½Cï¿½Yï¿½ğ“¾‚ï¿½
+	if ( ret <= 0 )	return -1;	// óM¸”s
+	// ƒoƒbƒtƒ@‚©‚ç‰æ‘œƒTƒCƒY‚ğ“¾‚é
 	for ( i = 0, buff_cur = 0; i < sizeof(cv::Size); i++, buff_cur++ ) {
 		((char *)size)[i] = buff[buff_cur];
 	}
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ğ“¾‚ï¿½
+	// ƒoƒbƒtƒ@‚©‚ç“Á’¥“_”‚ğ“¾‚é
 	for ( i = 0; i < sizeof(int); i++, buff_cur++ ) {
 		((char *)&num)[i] = buff[buff_cur];
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½1ï¿½Èï¿½È‚çƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
+	// “Á’¥“_”‚ª1ˆÈã‚È‚çƒƒ‚ƒŠ‚ğŠm•Û
 	if ( num > 0 )	{
 		ps = (cv::Point *)calloc( num, sizeof(cv::Point) );
 		areas = (double *)calloc( num, sizeof(double) );
@@ -150,11 +150,11 @@ int RecvPointsAreas( SOCKET sid, cv::Point **ps0, double **areas0, cv::Size *siz
 	}
 	*ps0 = ps;
 	*areas0 = areas;
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½ğ“¾‚ï¿½
+	// ƒoƒbƒtƒ@‚©‚ç“Á’¥“_ƒf[ƒ^‚ğ“¾‚é
 	for ( i = 0; i < (int)(sizeof(cv::Point) * num); i++, buff_cur++ ) {
 		((char *)ps)[i] = buff[buff_cur];
 	}
-	// ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ÊÏƒfï¿½[ï¿½^ï¿½ğ“¾‚ï¿½
+	// ƒoƒbƒtƒ@‚©‚ç–ÊÏƒf[ƒ^‚ğ“¾‚é
 	buff_cur = sizeof(cv::Size) + sizeof(int) + sizeof(cv::Point) * kMaxPointNum;
 	for ( i = 0; i < (int)(sizeof(unsigned short) * num); i++, buff_cur++ ) {
 		((char *)areas_us)[i] = buff[buff_cur];
@@ -168,7 +168,7 @@ int RecvPointsAreas( SOCKET sid, cv::Point **ps0, double **areas0, cv::Size *siz
 }
 
 int SendResult( SOCKET sid, char *doc_name, int len )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ‘—M
+// •¶‘–¼‚ğ‘—M
 {
 	return send( sid, doc_name, len, SEND_FLAG );
 }
@@ -185,19 +185,19 @@ int SendFileNameList( SOCKET sid, int num, char **fname_list, int len )
 }
 
 int SendResultCor( SOCKET sid, char *doc_name, int len, int doc, int pcor[][2], int pcornum, cv::Point *ps, cv::Point **psall, cv::Size size, cv::Size *sizeall )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‘Î‰ï¿½ï¿½_ï¿½ğ‘—M
+// •¶‘–¼‚Æ‘Î‰“_‚ğ‘—M
 {
 	int i, ret;
 	cv::Point corps[kMaxPointNum][2];
 	
-	if ( send( sid, doc_name, len, SEND_FLAG ) < 0 )	return -1;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ‘—M
-	if ( send( sid, &size, sizeof(cv::Size), SEND_FLAG ) < 0 )	return -1;	// ï¿½Nï¿½Gï¿½ï¿½ï¿½æ‘œï¿½ÌƒTï¿½Cï¿½Yï¿½ğ‘—M
-	if ( send( sid, &(sizeall[doc]), sizeof(cv::Size), SEND_FLAG ) < 0 )	return -1;	// ï¿½oï¿½^ï¿½æ‘œï¿½ÌƒTï¿½Cï¿½Yï¿½ğ‘—M
-	if ( ret = send( sid, &pcornum, sizeof(int), SEND_FLAG ) < 0 )	return -1;	// ï¿½Î‰ï¿½ï¿½Ìï¿½ï¿½ğ‘—M
+	if ( send( sid, doc_name, len, SEND_FLAG ) < 0 )	return -1;	// •¶‘–¼‚ğ‘—M
+	if ( send( sid, &size, sizeof(cv::Size), SEND_FLAG ) < 0 )	return -1;	// ƒNƒGƒŠ‰æ‘œ‚ÌƒTƒCƒY‚ğ‘—M
+	if ( send( sid, &(sizeall[doc]), sizeof(cv::Size), SEND_FLAG ) < 0 )	return -1;	// “o˜^‰æ‘œ‚ÌƒTƒCƒY‚ğ‘—M
+	if ( ret = send( sid, &pcornum, sizeof(int), SEND_FLAG ) < 0 )	return -1;	// ‘Î‰‚Ì”‚ğ‘—M
 	for ( i = 0; i < pcornum; i++ ) {
 //		printf("%d(%d,%d), %d(%d,%d)\n", pcor[i][0], ps[pcor[i][0]].x, ps[pcor[i][0]].y, pcor[i][1], psall[doc][pcor[i][1]].x, psall[doc][pcor[i][1]].y);
-//		ret = send( sid, &(ps[pcor[i][0]]), sizeof(cv::Point), SEND_FLAG );	// ï¿½Nï¿½Gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ‘—M
-//		ret = send( sid, &(psall[doc][pcor[i][1]]), sizeof(cv::Point), SEND_FLAG );	// ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ‘—M
+//		ret = send( sid, &(ps[pcor[i][0]]), sizeof(cv::Point), SEND_FLAG );	// ƒNƒGƒŠ‘¤“Á’¥“_‚ğ‘—M
+//		ret = send( sid, &(psall[doc][pcor[i][1]]), sizeof(cv::Point), SEND_FLAG );	// “o˜^‘¤“Á’¥“_‚ğ‘—M
 		corps[i][0] = ps[pcor[i][0]];
 		corps[i][1] = psall[doc][pcor[i][1]];
 	}
@@ -207,7 +207,7 @@ int SendResultCor( SOCKET sid, char *doc_name, int len, int doc, int pcor[][2], 
 }
 
 int SendResultParam( SOCKET sid, char *doc_name, int len, strProjParam *param, cv::Size *img_size, struct sockaddr_in *addr, int ptc )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆË‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ğ‘—M
+// •¶‘–¼‚ÆË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğ‘—M
 {
 	int ret;
 	char buff[kSendBuffSize];
@@ -238,17 +238,17 @@ int SendResultParam( SOCKET sid, char *doc_name, int len, strProjParam *param, c
 #endif
 }
 int RecvComSetting( SOCKET sid, int *ptc, int *pt_port, int *res_port, char *cl_name )
-// ï¿½ÊMï¿½İ’ï¿½ï¿½ï¿½ï¿½M
+// ’ÊMİ’è‚ğóM
 {
 	int ret;
 
-	ret = recv( sid, (char *)ptc, sizeof(int), RECV_FLAG );	// ï¿½vï¿½ï¿½ï¿½gï¿½Rï¿½ï¿½
+	ret = recv( sid, (char *)ptc, sizeof(int), RECV_FLAG );	// ƒvƒƒgƒRƒ‹
 	if ( ret <= 0 )	return -1;
-	ret = recv( sid, (char *)pt_port, sizeof(int), RECV_FLAG );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½|ï¿½[ï¿½g
+	ret = recv( sid, (char *)pt_port, sizeof(int), RECV_FLAG );	// “Á’¥“_ƒ|[ƒg
 	if ( ret <= 0 )	return -1;
-	ret = recv( sid, (char *)res_port, sizeof(int), RECV_FLAG );	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êƒ|ï¿½[ï¿½g
+	ret = recv( sid, (char *)res_port, sizeof(int), RECV_FLAG );	// ŒŸõŒ‹‰Êƒ|[ƒg
 	if ( ret <= 0 )	return -1;
-	ret = recv( sid, cl_name, kMaxNameLen, RECV_FLAG );	// ï¿½Nï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½
+	ret = recv( sid, cl_name, kMaxNameLen, RECV_FLAG );	// ƒNƒ‰ƒCƒAƒ“ƒg–¼
 	if ( ret <= 0 )	return -1;
 	
 	return 1;
@@ -269,27 +269,27 @@ int main( int argc, char** argv )
 	char fname[kMaxPathLen];
 	FILE *fp;
 	double prop;
-	// ï¿½ï¿½ï¿½Jï¿½ÉŒï¿½ï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½
+	// ŒöŠJ‚ÉŒü‚¯‚Ä‰ü•Ï
 	int ret;
 	cv::Point **reg_pss = NULL;
 	cv::Size *reg_sizes = NULL;
 	int *reg_nums = NULL;
 	char **dbcors = NULL;
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½p
+	// ÀŒ±ƒ‚[ƒh—p
 	int total_que = 0, suc_que = 0, total_time = 0, ret_time = 0;
 	double total_diff = 0.0L, total_top = 0.0L;
-	// ï¿½ÊÏ‚Ì—ï¿½ï¿½p
+	// –ÊÏ‚Ì—˜—p
 	double *areas = NULL, **reg_areass = NULL;
-	// DLLï¿½ï¿½ï¿½ï¿½ï¿½Ì‰ï¿½ï¿½ï¿½
+	// DLLŒü‚¯‚Ì‰ü•Ï
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
-	// ï¿½Î‰ï¿½ï¿½_
+	// ‘Î‰“_
 	int pcor[kMaxPointNum][2], pcornum = 0;
 	int i, j, rank;
 
 #ifdef	WIN_TIME
-	timeBeginPeriod( 1 );//ï¿½ï¿½ï¿½xï¿½ï¿½1msï¿½Éİ’ï¿½
+	timeBeginPeriod( 1 );//¸“x‚ğ1ms‚Éİ’è
 #endif
 	start = GetProcTimeMiliSec();
 
@@ -297,49 +297,49 @@ int main( int argc, char** argv )
 
 	if ( ( argi = AnalyzeArgAndSetExtern2( argc, argv ) ) < 0 )	return 1;
 	switch ( eEntireMode ) {
-		/************************ ï¿½ÊíŒŸï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½h ************************/
+		/************************ ’ÊíŒŸõƒ‚[ƒh ************************/
 		case RETRIEVE_MODE:
 			// ./dcams
-			// ï¿½Ã~ï¿½æŒŸï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Í–ï¿½ï¿½ï¿½ï¿½ï¿½
+			// Ã~‰æŒŸõƒ‚[ƒh‚Í–³Œø‰»
 #ifdef	WIN32
 			printf("usage: *s -c [registered image directory] (-o [db file dir] -f [registered image suffix]) / -S (-o [db file directry])\n", argv[0]);
 			return 1;
 #endif
 			fprintf( stderr, "Retrieval from Static Image\n" );
-			// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+			// İ’èƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 			ret = LoadConfig();
-			// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+			// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 			sprintf( fname, "%s%s", eDirsDir, eDiscFileName );
 			ret = LoadDisc( fname, &disc );
-			// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+			// ƒnƒbƒVƒ…‚Ì“Ç‚İ‚İ
 			if ( eNoHashList )		hash3 = LoadHash3( disc.num );
 			if ( eCompressHash )	hash2 = LoadHash2( disc.num );
 			else					hash = LoadHash( disc.num );
-			// ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+			// “_ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 			sprintf( fname, "%s%s", eDirsDir, ePointDatFileName );
 			ret = LoadPointFile2( fname, &reg_pss, &reg_areass, &reg_sizes, &reg_nums, &dbcors );
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½È‚ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ÌƒTï¿½Cï¿½Yï¿½ï¿½ï¿½oï¿½ï¿½
+			// ÀŒ±ƒ‚[ƒh‚È‚çƒnƒbƒVƒ…‚ÌƒTƒCƒY‚ğo—Í
 			if ( eExperimentMode )	printf( "Allocated Hash Size : %d\n", allocated_hash );
 
-			for ( ; argi < argc; argi++ ) {	// ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÈŠOï¿½Ìˆï¿½ï¿½ï¿½ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½s
+			for ( ; argi < argc; argi++ ) {	// ƒIƒvƒVƒ‡ƒ“ˆÈŠO‚Ìˆø”‚É‚Â‚¢‚ÄÀs
 				if ( !eExperimentMode ) {
 					fprintf( stdout, "%s\n", argv[argi] );
 					fprintf( stderr, "%s\n", argv[argi] );
 				}
-				// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
-				// datï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌƒTï¿½|ï¿½[ï¿½gï¿½Í‚ï¿½ï¿½È‚ï¿½
-#ifdef	WIN32	// OpenCVï¿½Ìƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù‚È‚é‚½ï¿½ï¿½
+				// Œ‹‡‰æ‘œ‚ğì¬
+				// datƒtƒ@ƒCƒ‹‚ÌƒTƒ|[ƒg‚Í‚µ‚È‚¢
+#ifdef	WIN32	// OpenCV‚Ìƒo[ƒWƒ‡ƒ“‚ªˆÙ‚È‚é‚½‚ß
 					img = GetConnectedImage( argv[argi], eEntireMode );
 #else
 				if ( eIsJp ) 	img = GetConnectedImageJp2( argv[argi], eEntireMode );
 				else			img = GetConnectedImage2( argv[argi], eEntireMode );
 #endif
 				if (img.empty())	continue;
-				// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
+				// “Á’¥“_‚ğ’Šo
 				num = MakeCentresFromImage( &ps, img, &img_size, &areas );
-				// ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Z
+				// ‹ß–T\‘¢‚ğŒvZ
 				MakeNearsFromCentres( ps, num, &nears );
-				// ï¿½ï¿½ï¿½ï¿½
+				// ŒŸõ
 				score = (int *)calloc( kMaxDocNum, sizeof(int) );
 #ifdef	DRAW_COR
 				GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
@@ -349,8 +349,8 @@ int main( int argc, char** argv )
 #ifdef	DRAW_COR_ALL
 				GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
 				res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, reg_nums, hash, hash2, hash3 );
-				res = 73;	// MIRU08ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Fcvpr011b040.jpgï¿½Å‚Ìï¿½ï¿½ï¿½ï¿½iï¿½Iï¿½ï¿½ï¿½Wï¿½iï¿½ï¿½ï¿½Å‚ï¿½2ï¿½Êj
-//				res = 9368;	// ï¿½Iï¿½ï¿½ï¿½Wï¿½iï¿½ï¿½ï¿½Å‚ï¿½1ï¿½Êiï¿½ï¿½Äï¿½@ï¿½Å‚ï¿½15ï¿½Êj
+				res = 73;	// MIRU08C³ÀŒ±Fcvpr011b040.jpg‚Å‚Ì³‰ğiƒIƒŠƒWƒiƒ‹‚Å‚Í2ˆÊj
+//				res = 9368;	// ƒIƒŠƒWƒiƒ‹‚Å‚Ì1ˆÊi’ñˆÄè–@‚Å‚Í15ˆÊj
 				pcornum = 0;
 				for ( j = 0; j < num; j++ ) {
 					if ( corres[j][res] >= 0 ) {
@@ -384,9 +384,9 @@ int main( int argc, char** argv )
 				res = RetrieveNN52( ps, areas, num, nears, img_size, score, &disc, reg_nums, &ret_time, hash, hash2, hash3 );
 #endif
 #endif
-//				OutPutResult( score, 0, 5, argv[argi] );	// ï¿½ï¿½ï¿½Ì‚Ü‚Ü‚Å‚Ígï¿½ï¿½ï¿½È‚ï¿½
+//				OutPutResult( score, 0, 5, argv[argi] );	// ‚»‚Ì‚Ü‚Ü‚Å‚Íg‚¦‚È‚¢
 				if ( !eExperimentMode )	printf( "%s : %d\n", dbcors[res], score[res] );
-				if ( eExperimentMode ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½È‚ç¸ï¿½xï¿½vï¿½ï¿½
+				if ( eExperimentMode ) {	// ÀŒ±ƒ‚[ƒh‚È‚ç¸“xŒv‘ª
 					total_que++;
 					if ( IsSucceed( argv[argi], dbcors[res] ) )	suc_que++;
 					total_time += ret_time;
@@ -395,63 +395,63 @@ int main( int argc, char** argv )
 				}
 				free( score );
 			}
-			if ( eExperimentMode ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½È‚çŒ‹ï¿½Êoï¿½ï¿½
+			if ( eExperimentMode ) {	// ÀŒ±ƒ‚[ƒh‚È‚çŒ‹‰Êo—Í
 				printf("Accuracy : %d/%d(%.2f\%)\n", suc_que, total_que, ((double)suc_que)/((double)total_que)*100 );
 				printf("Average Proc Time : %d micro sec\n", (int)(((double)total_time) / ((double)total_que)) );
 				printf("Average Top Vote : %.2f\n", (total_top / (double)total_que) );
 				printf("Average Diff : %.2f\n", (total_diff / (double)total_que) );
 			}
 			return 0;
-		/************************ USBï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½h ************************/
+		/************************ USBƒJƒƒ‰ƒ‚[ƒh ************************/
 		case USBCAM_SERVER_MODE:
 			ret = RetrieveUSBCamServer();
 			return 0;
-		/************************ ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½[ï¿½h ************************/
+		/************************ ƒnƒbƒVƒ…\’zƒ‚[ƒh ************************/
 		case CONST_HASH_MODE:
-			// ./dcams -c [ï¿½æ‘œï¿½Ìƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½] [ï¿½æ‘œï¿½ÌŠgï¿½ï¿½ï¿½q] (-o [ï¿½oï¿½Íƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½])
+			// ./dcams -c [‰æ‘œ‚ÌƒfƒBƒŒƒNƒgƒŠ] [‰æ‘œ‚ÌŠg’£q] (-o [o—ÍƒfƒBƒŒƒNƒgƒŠ])
 			fprintf( stderr, "Hash Constraction\n" );
-			// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ì’ï¿½ï¿½o
+			// “Á’¥“_‚Ì’Šo
 			fprintf( stderr, "Extracting Feature Points...\n" );
 //			ret = CreatePointFile3( &reg_pss, &reg_sizes, &reg_nums, &dbcors );
 			ret = CreatePointFile4( &reg_pss, &reg_areass, &reg_sizes, &reg_nums, &dbcors );
 			if ( ret <= 0 )	return 1;
 const_rest:
-			// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìì¬
+			// —£U‰»ƒtƒ@ƒCƒ‹‚Ìì¬
 			fprintf( stderr, "Making %s...\n", eDiscFileName );
 			ret = MakeDiscFile( min( eDocNumForMakeDisc, eDbDocs ), reg_pss, reg_nums, &disc );
 			if ( ret <= 0 )	return 1;
-			// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì\ï¿½z
+			// ƒnƒbƒVƒ…‚Ì\’z
 			fprintf( stderr, "Constructing Hash Table...\n" );
 			ret = ConstructHash2( eDbDocs, reg_pss, reg_areass, reg_nums, &disc, &hash, &hash2, &hash3 );
 			if ( ret <= 0 )	return 1;
-			// ï¿½Õ“Ë‚Ì‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½
+			// Õ“Ë‚Ì‘½‚¢€–Ú‚ğœ‹
 			if ( !eNoHashList && eRemoveCollision )	{
 				if ( eCompressHash )	ret = RefineHash2( hash2 );
 				else					ret = RefineHash( hash );
 			}
-			// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒ`ï¿½Fï¿½bï¿½N
+			// ƒnƒbƒVƒ…‚Ìƒ`ƒFƒbƒN
 			if ( eExperimentMode ) {
 				if ( eNoHashList )			ChkHash3( hash3 );
 				else if ( eCompressHash )	ChkHash2( hash2 );
 				else						ChkHash( hash );
 			}
-			// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì•Û‘ï¿½
+			// ƒnƒbƒVƒ…‚Ì•Û‘¶
 			fprintf( stderr, "Saving Hash Table...\n" );
 			if ( eNoHashList )			ret = SaveHash3( hash3 );
 			else if ( eCompressHash )	ret = SaveHash2( hash2 );
 			else						ret = SaveHash( hash );
 			if ( ret <= 0 )	return 1;
-			// ï¿½ï¿½ï¿½è”ï¿½ÌŒvï¿½Z
+			// ”ä—á’è”‚ÌŒvZ
 			fprintf( stderr, "Calculating Prop...\n" );
 			eProp = CalcProp2( min( ePropMakeNum, eDbDocs ), reg_pss, reg_areass, reg_nums, &disc, hash, hash2, hash3 );
-			// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì•Û‘ï¿½
+			// İ’èƒtƒ@ƒCƒ‹‚Ì•Û‘¶
 			fprintf( stderr, "Saving Config...\n" );
 			ret = SaveConfig();
 
 			if ( ret <= 0 )	return 1;
 
 			return 0;
-		/* point.datï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½[ï¿½h */
+		/* point.dat‚ğ—p‚¢‚½ƒnƒbƒVƒ…\’zƒ‚[ƒh */
 		case CONST_HASH_PF_MODE:
 			fprintf( stderr, "Hash Construction using point.dat\n" );
 			sprintf( fname, "%s%s", eDirsDir, ePointDatFileName );
@@ -470,81 +470,81 @@ const_rest:
 	if ( ( argi = AnalyzeArgAndSetExtern( argc, argv, &emode, &rmode, &fmode, &pmode ) ) < 0 )	return 1;
 	
 //	return 0;
-	// ï¿½È‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½É•ï¿½ï¿½ï¿½
-	/************************ ï¿½ÊíŒŸï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½h ************************/
+	// ˆÈ‰ºŒŸõCƒnƒbƒVƒ…\’z“™‚É•ªŠò
+	/************************ ’ÊíŒŸõƒ‚[ƒh ************************/
 	if ( emode == RETRIEVE_MODE || emode == RET_MP_MODE ) {
-		LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+		LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 		start_hl = GetProcTimeMiliSec();
-		LoadHash(disc.num);	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½h
+		LoadHash(disc.num);	// ƒnƒbƒVƒ…‚Ìƒ[ƒh
 		end_hl = GetProcTimeMiliSec();
 		printf("Hash loading time : %dms\n", end_hl - start_hl);
 		
 retrieve:		
 		
-		for ( ; argi < argc; argi++ ) {	// ï¿½ï¿½ï¿½×‚Ä‚Ìˆï¿½ï¿½ï¿½ï¿½É‚Â‚ï¿½ï¿½ï¿½
+		for ( ; argi < argc; argi++ ) {	// ‚·‚×‚Ä‚Ìˆø”‚É‚Â‚¢‚Ä
 			if ( strlen( argv[argi] ) >= kMaxPathLen ) {
-				fprintf( stderr, "error: at main in dirs.c: too long path %s\n", argv[argi] );	// ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒpï¿½Xï¿½Ì•ï¿½ï¿½ï¿½ï¿½ñ‚ª’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				fprintf( stderr, "error: at main in dirs.c: too long path %s\n", argv[argi] );	// ŒŸõƒtƒ@ƒCƒ‹‚ÌƒpƒX‚Ì•¶š—ñ‚ª’·‚·‚¬‚é
 				continue;
 			}
 			strcpy( fname, argv[argi] );
 			printf("%s\n", fname);
-			// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Ìì¬ï¿½iï¿½pï¿½Ó‚ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Í‚İ—Ìˆï¿½È‚çƒï¿½[ï¿½hï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½ÎŒvï¿½Zï¿½j
+			// Œ‹‡‰æ‘œ‚Ìì¬i—pˆÓ‚³‚ê‚Ä‚¢‚é‚©ˆÍ‚İ—Ìˆæ‚È‚çƒ[ƒhC‚»‚¤‚Å‚È‚¯‚ê‚ÎŒvZj
 			start_con = GetProcTimeMiliSec();
-			if ( pmode == PREPARED_MODE || fmode == ENCLOSED_MODE ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½pï¿½Ó‚ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Cï¿½Í‚Ü‚ê‚½ï¿½Ìˆï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½É‚ï¿½ï¿½ï¿½È‚ï¿½
+			if ( pmode == PREPARED_MODE || fmode == ENCLOSED_MODE ) {	// Œ‹‡‰æ‘œ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚é‚©CˆÍ‚Ü‚ê‚½—Ìˆæ‚ğ“Á’¥“_‚É‚·‚é‚È‚ç
 				img = cv::imread(fname, cv::IMREAD_GRAYSCALE);
 	if (img.empty()) {
-					fprintf(stderr, "ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½%sï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n", fname);
+					fprintf(stderr, "‰æ‘œƒtƒ@ƒCƒ‹%s‚ªŠJ‚¯‚Ü‚¹‚ñ\n", fname);
 					return 1;
 				}
-				if ( pmode == PREPARED_MODE && rmode == RECOVER_MODE )	argi++;	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½eï¿½ÕÏ‚İ‚ÅCï¿½Ê“rï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ï¿½Ë‰eï¿½ÏŠï¿½ï¿½Ì•â³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
+				if ( pmode == PREPARED_MODE && rmode == RECOVER_MODE )	argi++;	// Œ‹‡‰æ‘œ‚ª—eˆÕÏ‚İ‚ÅC•Ê“rŒ³‰æ‘œ‚©‚çË‰e•ÏŠ·‚Ì•â³‚ğ‚µ‚½‚¢‚È‚ç
 			}
 			else if ( fmode != USEPF_MODE && !IsTxt(fname) && !IsDat(fname) ) {
-				if ( (img = GetConnectedImage( fname, emode )).empty() ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
-					fprintf(stderr, "%sï¿½ï¿½ï¿½çŒ‹ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½Ì‚Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n", fname);
+				if ( (img = GetConnectedImage( fname, emode )).empty() ) {	// Œ‹‡‰æ‘œ‚ğì¬
+					fprintf(stderr, "%s‚©‚çŒ‹‡‰æ‘œ‚ğì¬‚·‚é‚Ì‚É¸”s‚µ‚Ü‚µ‚½\n", fname);
 					return 1;
 				}
 			}
 			end_con = GetProcTimeMiliSec();
 //			printf("Create word-connected image : %dms\n", end_con - start_con);
-			// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½iï¿½Í‚İ—Ìˆï¿½È‚çŒ´ï¿½æ‘œï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šo
+			// Œ‹‡‰æ‘œiˆÍ‚İ—Ìˆæ‚È‚çŒ´‰æ‘œj‚©‚ç“Á’¥“_‚ğ’Šo
 			start_fp = GetProcTimeMiliSec();
 			if ( IsTxt( fname ) || IsDat( fname ) ) {
 				num = LoadPointFile( fname, &ps, &img_size );
-			} else if ( fmode == CONNECTED_MODE ) {	// ï¿½Pï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‚ï¿½ï¿½ï¿½
-				num = MakeCentresFromImage( &ps, img, &img_size, NULL );	// ï¿½æ‘œï¿½ï¿½ï¿½ï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
-			} else if ( fmode == ENCLOSED_MODE ) {	// ï¿½Í‚Ü‚ê‚½ï¿½Ìˆï¿½Ìdï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‚ï¿½ï¿½ï¿½
+			} else if ( fmode == CONNECTED_MODE ) {	// ’PŒê‚ÌdS‚ğ“Á’¥“_‚Æ‚·‚é
+				num = MakeCentresFromImage( &ps, img, &img_size, NULL );	// ‰æ‘œ‚©‚çdS‚ğŒvZ‚·‚é
+			} else if ( fmode == ENCLOSED_MODE ) {	// ˆÍ‚Ü‚ê‚½—Ìˆæ‚ÌdS‚ğ“Á’¥“_‚Æ‚·‚é
 				num = MakeFeaturePointsFromImage( &ps, img, &img_size );
 			} else if ( fmode == USEPF_MODE ) {
 				num = LoadPointFile( fname, &ps, &img_size );
 			} else {
-				fprintf(stderr, "ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Å‚ï¿½\n");
+				fprintf(stderr, "“Á’¥“_’Šoƒ‚[ƒh‚ª•s³‚Å‚·\n");
 				return 1;
 			}
 			if ( num == 0 ) {
-				fprintf(stderr, "ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½\n");
+				fprintf(stderr, "˜AŒ‹¬•ª‚ª‚İ‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½\n");
 				return 1;
 			}
-//			return 1;	// ï¿½rï¿½ï¿½ï¿½Iï¿½ï¿½
+//			return 1;	// “r’†I—¹
 			start_nears = GetProcTimeMiliSec();
-            MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
-//			num = ScreenPointsWithNears( ps, num, nears );	// ï¿½ß–Tï¿½_ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½Ä“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ó‚é‚¢ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½
+            MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
+//			num = ScreenPointsWithNears( ps, num, nears );	// ‹ß–T“_‚Ì‹——£‚ğ—p‚¢‚Ä“Á’¥“_‚ğ‚Ó‚é‚¢‚É‚©‚¯‚é
             end_fp = GetProcTimeMiliSec();
 //           printf("nears: %d\n", end_fp - start_nears );
 //			printf("Extract feature points and analyse neighbors : %dms\n", end_fp - start_fp );
 			score = (int *)calloc( kMaxDocNum, sizeof(int) );
-			// ï¿½ï¿½ï¿½ï¿½
+			// ŒŸõ
 			if ( rmode == RECOVER_MODE ) {
-                res = RetrieveAndRecover( ps, num, nears, img_size, fname, emode );	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÑË‰eï¿½ÏŠï¿½ï¿½Ì•â³
+                res = RetrieveAndRecover( ps, num, nears, img_size, fname, emode );	// ŒŸõ‚¨‚æ‚ÑË‰e•ÏŠ·‚Ì•â³
 			} else {
-				res = RetrieveNN5( ps, num, nears, img_size, score );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
+				res = RetrieveNN5( ps, num, nears, img_size, score );	// ŒŸõ‚Ì‚İ
 			}
-			// ï¿½ï¿½ï¿½ë‚¢ï¿½ï¿½Æ‰ï¿½ï¿½
+			// ‚¢‚ë‚¢‚ë‚Æ‰ğ•ú
 			if (ps != NULL && num > 0 )
-				ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
-			ReleaseNears( nears, num );	// nearsï¿½Ì‰ï¿½ï¿½
+				ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
+			ReleaseNears( nears, num );	// nears‚Ì‰ğ•ú
 			if ( fmode != USEPF_MODE && !IsDat( fname ) && !IsTxt( fname ))
 			printf("%d\n", score[0]);
-			// ï¿½vï¿½Zï¿½ï¿½ï¿½Ô‚Ì•\ï¿½ï¿½
+			// ŒvZŠÔ‚Ì•\¦
 			OutPutResult( score, end-start, 5, fname );
 			free(score);
 		}
@@ -553,7 +553,7 @@ retrieve:
 		printf("Total processing time : %dms\n", end-start);
 		return 0;
 	}
-	/************************ USBï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½h ************************/
+	/************************ USBƒJƒƒ‰ƒ‚[ƒh ************************/
 	else if ( emode == USBCAM_SERVER_MODE ) {
 		SOCKET sid1, sid2, sidpt, sidres;
 		int i, ret, start_com = 0, end_com, start_cam, end_cam;
@@ -568,37 +568,37 @@ retrieve:
 		
 		fprintf(stderr, "USB Camera Server Mode\n");
 		fprintf(stderr, "%d\n%d\n%d\n%d\n%s\n%s\n", eTCPPort, eProtocol, ePointPort, eResultPort, eClientName, eServerName);
-		LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+		LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 		start_hl = GetProcTimeMiliSec();
-		LoadHash(disc.num);	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½h
+		LoadHash(disc.num);	// ƒnƒbƒVƒ…‚Ìƒ[ƒh
 		end_hl = GetProcTimeMiliSec();
 		fprintf(stderr, "Hash loading time : %dms\n", end_hl - start_hl);
 		LoadPointFileAll( &psall, &sizeall, &numall );
-		// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
+		// ‘g‚İ‡‚í‚¹‚Ìì¬
 		GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-		// ï¿½lï¿½bï¿½gï¿½ï¿½ï¿½[ï¿½Nï¿½ÖŒW
+		// ƒlƒbƒgƒ[ƒNŠÖŒW
 		fprintf(stderr, "Ready\n");
-		// ï¿½lï¿½Sï¿½Vï¿½Gï¿½Cï¿½gï¿½Jï¿½n
+		// ƒlƒSƒVƒGƒCƒgŠJn
 start_nego:
 		fprintf(stderr, "Start negotiation\n");
 #ifdef WIN32
-		if ( ( sid1 = InitWinSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 1;	// socketï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+		if ( ( sid1 = InitWinSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 1;	// socket‚Ì‰Šú‰»
 		if ( ( sid2 = AcceptWinSockSvTCP( sid1 ) ) < 0 )	return 1;	// accept
 #else
-		if ( ( sid1 = InitSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 1;	// socketï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+		if ( ( sid1 = InitSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 1;	// socket‚Ì‰Šú‰»
 		if ( ( sid2 = AcceptSockSvTCP( sid1 ) ) < 0 )	return 1;	// accept
 #endif
-		ret = RecvComSetting( sid2, &eProtocol, &ePointPort, &eResultPort, eClientName );	// ï¿½ÊMï¿½İ’ï¿½ï¿½ï¿½ï¿½M
+		ret = RecvComSetting( sid2, &eProtocol, &ePointPort, &eResultPort, eClientName );	// ’ÊMİ’è‚ğóM
 		if ( ret < 0 )	return 1;
 		fprintf(stderr, "%d, %d, %d, %s\n", eProtocol, ePointPort, eResultPort, eClientName );
 
-		if ( eProtocol == kUDP ) {	// UDPï¿½Ìê‡ï¿½DTCPï¿½Ìê‡ï¿½ÍÚ‘ï¿½ï¿½Ï‚ï¿½
+		if ( eProtocol == kUDP ) {	// UDP‚Ìê‡DTCP‚Ìê‡‚ÍÚ‘±Ï‚İ
 #ifdef	WIN32
 			Sleep( 1000 );
 			if ( ( sidpt = InitWinSockSvUDP( ePointPort ) ) < 0 )	return 1;
 			if ( ( sidres = InitWinSockClUDP( eResultPort, eClientName, &addr ) ) < 0 )	return 1;
 #else
-			sleep(1);	// UDPï¿½Ìê‡ï¿½ÍƒNï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½ï¿½É‘Ò‚ï¿½ï¿½ï¿½Ô‚É‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½Î‚È‚ï¿½È‚ï¿½ï¿½Ì‚ï¿½
+			sleep(1);	// UDP‚Ìê‡‚ÍƒNƒ‰ƒCƒAƒ“ƒg‚ğæ‚É‘Ò‚¿ó‘Ô‚É‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢‚Ì‚Å
 			if ( ( sidpt = InitSockSvUDP( ePointPort ) ) < 0 )	return 1;
 			if ( ( sidres = InitSockClUDP( eResultPort, eClientName, &addr ) ) < 0 )	return 1;
 #endif
@@ -608,7 +608,7 @@ start_nego:
 		zero_param.a1 = 0.0; zero_param.a2 = 0.0; zero_param.a3 = 0.0; zero_param.b1 = 0.0; zero_param.b2 = 0.0; zero_param.b3 = 0.0; zero_param.c1 = 0.0; zero_param.c2 = 0.0;
 		param = zero_param;
 		start_com = GetProcTimeMiliSec();
-//		ret = SendResultCor( sid2, doc_name, 20, res, pcor, pcornum, ps, psall, img_size, sizeall );	// ï¿½_ï¿½~ï¿½[ï¿½ğ‘—M
+//		ret = SendResultCor( sid2, doc_name, 20, res, pcor, pcornum, ps, psall, img_size, sizeall );	// ƒ_ƒ~[‚ğ‘—M
 //		puts("send start");
 		if ( eProtocol == kTCP ) {
 			ret = SendResultParam( sid2, doc_name, kMaxDocNameLen, &param, NULL, &addr, eProtocol );
@@ -621,10 +621,10 @@ start_nego:
 			recv_dt = GetDayTimeMicroSec();
 //			puts("recv start");
 			if ( eProtocol == kTCP ) {
-				num = RecvPoints( sid2, &ps, &img_size );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½M
+				num = RecvPoints( sid2, &ps, &img_size );	// “Á’¥“_ƒf[ƒ^‚ğóM
 			}
 			else {
-				num = RecvPoints( sidpt, &ps, &img_size );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½M
+				num = RecvPoints( sidpt, &ps, &img_size );	// “Á’¥“_ƒf[ƒ^‚ğóM
 			}
 			num = ( num >= kMaxPointNum ) ? kMaxPointNum - 1 : num;
 //			printf("%d points received.\n", num);
@@ -634,44 +634,44 @@ start_nego:
 //			printf("com : %dms\n", end_com - start_com);
 //			printf("com : %dms\n", (int)(end_com_dt - start_com_dt)/1000);
 			start_cam_dt = GetDayTimeMicroSec();
-			if ( num < 0 )	break;	// ï¿½ÊMï¿½ï¿½ï¿½s
-			if ( num >= kMinPoints ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½lï¿½Èï¿½
+			if ( num < 0 )	break;	// ’ÊM¸”s
+			if ( num >= kMinPoints ) {	// “Á’¥“_”‚ªÅ¬’lˆÈã
 //				puts("start nears");
 				start_nears = GetProcTimeMiliSec();
 				start_ret_all = GetProcTimeMicroSec();
-//				MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
-				MakeNearsFromCentresDiv( ps, num, &img_size, kDivX, kDivY, eGroup1Num, &nears );	// ï¿½ß–Tï¿½_ï¿½vï¿½Zï¿½iï¿½ï¿½ï¿½ï¿½ï¿½Åj
+//				MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
+				MakeNearsFromCentresDiv( ps, num, &img_size, kDivX, kDivY, eGroup1Num, &nears );	// ‹ß–T“_ŒvZi•ªŠ„”Åj
 				end_nears = GetProcTimeMiliSec();
-				// ï¿½ï¿½ï¿½ï¿½
+				// ŒŸõ
 				start = GetProcTimeMiliSec();
 //				puts("start ret");
-//				res = RetrieveNN5( ps, num, nears, img_size, score );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
-				res = RetrieveNN5Cor( ps, num, nears, img_size, score, pcor, &pcornum, &disc );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
+//				res = RetrieveNN5( ps, num, nears, img_size, score );	// ŒŸõ‚Ì‚İ
+				res = RetrieveNN5Cor( ps, num, nears, img_size, score, pcor, &pcornum, &disc );	// ŒŸõ‚Ì‚İ
 				end = GetProcTimeMiliSec();
 				end_ret_all = GetProcTimeMicroSec();
 //				printf("retrieval(micro sec) : %d\n", end_ret_all - start_ret_all);
 				printf("%d\n", end_ret_all - start_ret_all);
 //				printf("ret_all : %dms\n", end - start);
 //				printf("nears : %dms\nret : %d\n", end_nears - start_nears, end - start );
-//				DrawCor( ps, num, img_size, res, psall[res], numall[res], sizeall[res], pcor, pcornum );	// ï¿½Î‰ï¿½ï¿½ÖŒWï¿½ï¿½`ï¿½ï¿½
-				// ï¿½Åï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½Èï¿½È‚ï¿½Aï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Z
+//				DrawCor( ps, num, img_size, res, psall[res], numall[res], sizeall[res], pcor, pcornum );	// ‘Î‰ŠÖŒW‚ğ•`‰æ
+				// Å¬‘Î‰“_”ˆÈã‚È‚çAË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğŒvZ
 				start = GetProcTimeMicroSec();
 //				puts("start est");
-//				if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_NORMAL, PARAM_IWAMURA );	// ï¿½Lï¿½ï¿½ï¿½vï¿½`ï¿½ï¿½ï¿½æ‘œï¿½Éã‘ï¿½ï¿½
-//				if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_IWAMURA );	// ï¿½oï¿½^ï¿½æ‘œï¿½Éã‘ï¿½ï¿½
-				if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// ï¿½oï¿½^ï¿½æ‘œï¿½Éã‘ï¿½ï¿½
+//				if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_NORMAL, PARAM_IWAMURA );	// ƒLƒƒƒvƒ`ƒƒ‰æ‘œ‚Éã‘‚«
+//				if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_IWAMURA );	// “o˜^‰æ‘œ‚Éã‘‚«
+				if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// “o˜^‰æ‘œ‚Éã‘‚«
 				else	param = zero_param;
 //				param = zero_param;
-//				printf("%lf %lf %lf %lf %lf %lf %lf %lf\n", param.a1, param.a2, param.a3, param.b1, param.b2, param.b3, param.c1, param.c2 );			// ï¿½ï¿½ï¿½ë‚¢ï¿½ï¿½Æ‰ï¿½ï¿½
+//				printf("%lf %lf %lf %lf %lf %lf %lf %lf\n", param.a1, param.a2, param.a3, param.b1, param.b2, param.b3, param.c1, param.c2 );			// ‚¢‚ë‚¢‚ë‚Æ‰ğ•ú
 				end = GetProcTimeMicroSec();
 //				printf("param_est : %d micoro sec\n", end - start );
 				if (ps != NULL && num > 0 )
-					ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
-				ReleaseNears( nears, num );	// nearsï¿½Ì‰ï¿½ï¿½
-				// ï¿½vï¿½Zï¿½ï¿½ï¿½Ô‚Ì•\ï¿½ï¿½
+					ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
+				ReleaseNears( nears, num );	// nears‚Ì‰ğ•ú
+				// ŒvZŠÔ‚Ì•\¦
 				OutPutResultSv( score, end-start, 0/*5*/, doc_name );
 			}
-			else {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½lï¿½ğ–‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½
+			else {	// “Á’¥“_”‚ªÅ¬’l‚ğ–‚½‚³‚È‚¢
 				puts("min");
 				doc_name[0] = '\0';
 				param = zero_param;
@@ -683,7 +683,7 @@ start_nego:
 			start_com = GetProcTimeMiliSec();
 			start_com_dt = GetDayTimeMicroSec();
 			send_dt = GetDayTimeMicroSec();
-//			ret = SendResultCor( sid2, doc_name, 20, res, pcor, pcornum, ps, psall, img_size, sizeall );	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚ğ‘—M
+//			ret = SendResultCor( sid2, doc_name, 20, res, pcor, pcornum, ps, psall, img_size, sizeall );	// ŒŸõŒ‹‰Ê‚ğ‘—M
 			if ( eProtocol == kTCP ) {
 				ret = SendResultParam( sid2, doc_name, kMaxDocNameLen, &param, NULL, &addr, eProtocol );
 			}
@@ -712,88 +712,88 @@ start_nego:
 		CloseSock( sid1 );	// close
 #endif
 		
-//		goto start_nego;	// ï¿½lï¿½Sï¿½Ò‚ï¿½ï¿½Ü‚Å–ß‚ï¿½
+//		goto start_nego;	// ƒlƒS‘Ò‚¿‚Ü‚Å–ß‚é
 		return 0;
 	}
-	/************************ ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½[ï¿½h ************************/
+	/************************ ƒnƒbƒVƒ…\’zƒ‚[ƒh ************************/
 	else if ( emode == CONST_HASH_MODE ) {
 			ConstructHash(fmode);
-			// ï¿½ï¿½ï¿½è”ï¿½ÌŒvï¿½Zï¿½Æ•Û‘ï¿½
+			// ”ä—á’è”‚ÌŒvZ‚Æ•Û‘¶
 			prop = CalcProp( ePropMakePath );
 			eProp = prop;
 			sprintf(fname, "%ssetting.txt", eDirsDir);
-			fp = fopen(fname, "a");	// ï¿½ï¿½ï¿½Ì‚æ‚¤ï¿½ÈŒ`ï¿½Å’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Í‚æ‚­ï¿½È‚ï¿½ï¿½Dï¿½vï¿½ï¿½ï¿½P
+			fp = fopen(fname, "a");	// ‚±‚Ì‚æ‚¤‚ÈŒ`‚Å’Ç‰Á‚·‚é‚Ì‚Í‚æ‚­‚È‚¢D—v‰ü‘P
 			fprintf(fp, "%lf\n%d\n", prop, eDbDocs);
 			fclose(fp);
 			
 			end = GetProcTimeMiliSec();
 //			printf("Total processing time : %dms\n", end-start);
 			
-//			goto check_hash;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ÖˆÚsï¿½@ï¿½êï¿½Iï¿½È‘[ï¿½u
+//			goto check_hash;	// ŒŸõƒ‚[ƒh‚ÖˆÚs@ˆê“I‚È‘[’u
 			SaveHash();
 			return 0;
 	}
-	/************************ ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½[ï¿½h ************************/
-	else if ( emode == ADD_HASH_MODE ) {	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½[ï¿½h
+	/************************ ƒnƒbƒVƒ…’Ç‰Áƒ‚[ƒh ************************/
+	else if ( emode == ADD_HASH_MODE ) {	// ƒnƒbƒVƒ…’Ç‰Áƒ‚[ƒh
 			ConstructHashAdd(fmode);
 			end = GetProcTimeMiliSec();
 			printf("Total processing time : %dms\n", end-start);
 			return 0;
 	}
-	/************************ ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½h ************************/
+	/************************ “Á’¥“_’Šoƒ‚[ƒh ************************/
 	else if ( emode == CREATE_QPF_MODE || emode == CREATE_RPF_MODE ) {	// Mode for creating point files of query/registered image
 		int connect_image_mode;
 		char in_fname[kMaxPathLen], out_fname[kMaxPathLen];
 
-		if ( argi + 1 >= argc ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì•sï¿½ï¿½
+		if ( argi + 1 >= argc ) {	// ˆø”‚Ì•s‘«
 			fprintf( stderr, "error: at main() in dirs.c: input file and/or output file is not specified\n" );
 			return 1;
 		}
 		strncpy( in_fname, argv[argi], kMaxPathLen );
 		strncpy( out_fname, argv[argi+1], kMaxPathLen );
-		if ( emode == CREATE_QPF_MODE )	connect_image_mode = RETRIEVE_MODE;	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Ìì¬ï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½ï¿½İ’ï¿½
+		if ( emode == CREATE_QPF_MODE )	connect_image_mode = RETRIEVE_MODE;	// Œ‹‡‰æ‘œ‚Ìì¬‚Ìƒ‚[ƒh‚ğİ’è
 		else	connect_image_mode = CONST_HASH_MODE;
 		CreatePointFile( in_fname, out_fname, connect_image_mode );
 		return 0;
 	}
-	/************************ ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½[ï¿½hï¿½Q ************************/
+	/************************ “Á’¥“_’Šoƒ‚[ƒh‚Q ************************/
 	else if ( emode == CREATE_RPF_MODE2 ) {
-		// ./dcams -G [ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½X] [ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½oï¿½Íƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½] [ï¿½Î‰ï¿½ï¿½ÖŒWï¿½tï¿½@ï¿½Cï¿½ï¿½] [ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½] [ï¿½Jï¿½nï¿½iï¿½ï¿½ï¿½oï¿½[ï¿½iï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½ï¿½0ï¿½j
+		// ./dcams -G [ŒŸõƒpƒX] [“Á’¥“_ƒtƒ@ƒCƒ‹o—ÍƒfƒBƒŒƒNƒgƒŠ] [‘Î‰ŠÖŒWƒtƒ@ƒCƒ‹] [“Á’¥“_”ƒtƒ@ƒCƒ‹] [ŠJnƒiƒ“ƒo[iƒfƒtƒHƒ‹ƒg‚Í0j
 		printf("RPF2\n");
 		CreatePointFile2();
 		return 0;
 	}
-	/************************ ï¿½eï¿½Xï¿½gï¿½ï¿½ï¿½[ï¿½h ************************/
+	/************************ ƒeƒXƒgƒ‚[ƒh ************************/
 	else if ( emode == TEST_MODE ) {
 //			AutoConnectTest( argv[2], &img_size );
 //			RecovPTFromTemp();
 //			printf("%d\n", sizeof(strHList));
-//			LoadDisc( kDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+//			LoadDisc( kDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 //			LoadHash(disc.num);
 //			ChkHash();
 
-		for ( ; argi < argc; argi++ ) {	// ï¿½ï¿½ï¿½×‚Ä‚Ìˆï¿½ï¿½ï¿½ï¿½É‚Â‚ï¿½ï¿½ï¿½
+		for ( ; argi < argc; argi++ ) {	// ‚·‚×‚Ä‚Ìˆø”‚É‚Â‚¢‚Ä
 			printf("%s\t", argv[argi]);
-			if ( (img = GetConnectedImage( argv[argi], RETRIEVE_MODE )).empty() ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
-				fprintf(stderr, "%sï¿½ï¿½ï¿½çŒ‹ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½Ì‚Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n", argv[argi]);
+			if ( (img = GetConnectedImage( argv[argi], RETRIEVE_MODE )).empty() ) {	// Œ‹‡‰æ‘œ‚ğì¬
+				fprintf(stderr, "%s‚©‚çŒ‹‡‰æ‘œ‚ğì¬‚·‚é‚Ì‚É¸”s‚µ‚Ü‚µ‚½\n", argv[argi]);
 				return 1;
 			}
-			num = MakeCentresFromImage( &ps, img, &img_size, NULL );	// ï¿½æ‘œï¿½ï¿½ï¿½ï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+			num = MakeCentresFromImage( &ps, img, &img_size, NULL );	// ‰æ‘œ‚©‚çdS‚ğŒvZ‚·‚é
 			printf("%d\n", num);
-			// ï¿½ï¿½ï¿½ë‚¢ï¿½ï¿½Æ‰ï¿½ï¿½
-			ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
+			// ‚¢‚ë‚¢‚ë‚Æ‰ğ•ú
+			ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
 		}
 		
 		return 0;
 	}
-	/************************ ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½[ï¿½h ************************/
+	/************************ ƒnƒbƒVƒ…ƒ`ƒFƒbƒNƒ‚[ƒh ************************/
 	else if ( emode == CHK_HASH_MODE ) {
-		LoadDisc( eDiscFileName, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
-		LoadHash(disc.num);	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½h
+		LoadDisc( eDiscFileName, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+		LoadHash(disc.num);	// ƒnƒbƒVƒ…‚Ìƒ[ƒh
 check_hash:
-		printf("%d\t", eDiscNum);	// ï¿½êï¿½[ï¿½u
+		printf("%d\t", eDiscNum);	// ˆê‘[’u
 		ChkHash();
-		goto retrieve;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Ö‚ÌˆÚsï¿½@ï¿½êï¿½Iï¿½È‘[ï¿½u
+		goto retrieve;	// ŒŸõƒ‚[ƒh‚Ö‚ÌˆÚs@ˆê“I‚È‘[’u
 		return 0;
 	}
 #endif
@@ -801,7 +801,7 @@ check_hash:
 }
 
 void DrawPoint( cv::Mat img, cv::Point p, cv::Scalar color )
-// imgï¿½ï¿½pï¿½ï¿½colorï¿½Å“_ï¿½ï¿½Å‚ï¿½
+// img‚Ìp‚Écolor‚Å“_‚ğ‘Å‚Â
 {
 #ifdef DRAW_BY_NUM
 	static n = 0;
@@ -817,7 +817,7 @@ void DrawPoint( cv::Mat img, cv::Point p, cv::Scalar color )
 }
 
 void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[])
-// ï¿½ï¿½ï¿½ï¿½Ì•ï¿½ï¿½@ï¿½Åƒfï¿½Bï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// •¡”ä‚Ì•û–@‚ÅƒfƒBƒXƒNƒŠƒvƒ^‚ğŒvZ‚·‚é
 {
 	int pt, pt0, ptd0, next/*, nlc, nl,*/, count = 0, cent[4];
 	double ang, cr;
@@ -826,19 +826,19 @@ void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[])
 #ifdef DRAW_PIC
 	DrawPoint( out_img, ps[pt], cWhite);
 #endif
-	next = FirstFirstRightPointCR(pt, ps, nears);	// 1ï¿½sï¿½Ú‚ÅÅï¿½ï¿½Ì‰Eï¿½Ì“_ï¿½ï¿½Tï¿½ï¿½
-	while ( next < 0 ) {	// 1ï¿½sï¿½Ú‚ÌÅï¿½ï¿½Ì‰Eï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡
-		if ( (pt = NextLineCR(pt, ps, nears, 0.0)) < 0 )	// ï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½Ìsï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡
+	next = FirstFirstRightPointCR(pt, ps, nears);	// 1s–Ú‚ÅÅ‰‚Ì‰E‚Ì“_‚ğ’T‚·
+	while ( next < 0 ) {	// 1s–Ú‚ÌÅ‰‚Ì‰E‚Ì“_‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡
+		if ( (pt = NextLineCR(pt, ps, nears, 0.0)) < 0 )	// ‚³‚ç‚ÉŸ‚Ìs‚à‚È‚¢ê‡
 			return;
-		next = FirstFirstRightPointCR(pt, ps, nears);	// ï¿½ï¿½ï¿½Ìsï¿½ï¿½1ï¿½sï¿½Ú‚Æ‚ï¿½ï¿½ÄÅï¿½ï¿½Ì‰Eï¿½Ì“_ï¿½ï¿½Tï¿½ï¿½
+		next = FirstFirstRightPointCR(pt, ps, nears);	// Ÿ‚Ìs‚ğ1s–Ú‚Æ‚µ‚ÄÅ‰‚Ì‰E‚Ì“_‚ğ’T‚·
 	}
-	ang = GetPointsAngle(ps[pt], ps[next]);	// ï¿½Åï¿½ï¿½Ì“_ï¿½Æï¿½ï¿½Ì“_ï¿½ÅŠpï¿½xï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	ang = GetPointsAngle(ps[pt], ps[next]);	// Å‰‚Ì“_‚ÆŸ‚Ì“_‚ÅŠp“x‚ğŒvZ‚·‚é
 
-	cent[count++] = pt;	// ï¿½_ï¿½ï¿½Û‘ï¿½
+	cent[count++] = pt;	// “_‚ğ•Û‘¶
 	
-	ptd0 = pt;	// ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½`ï¿½ï¿½p
+	ptd0 = pt;	// ƒ‰ƒCƒ“•`‰æ—p
 	pt0 = pt;
-//	nlc = NextLineCR(pt, ps, nears, ang);	// ï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìs
+//	nlc = NextLineCR(pt, ps, nears, ang);	// ‚Æ‚è‚ ‚¦‚¸Ÿ‚Ìs
 	pt = next;
 	cent[count++] = pt;
 #ifdef DRAW_PIC
@@ -846,44 +846,44 @@ void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[])
 	cv::line( out_img, ps[ptd0], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
 	ptd0 = pt;
-	while ( (pt = RightPointCR(pt, pt0, ps, nears[pt], ang)) >= 0 ) {	//	ï¿½Eï¿½Öƒgï¿½ï¿½ï¿½[ï¿½X
-		//	ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+	while ( (pt = RightPointCR(pt, pt0, ps, nears[pt], ang)) >= 0 ) {	//	‰E‚ÖƒgƒŒ[ƒX
+		//	‰½‚©‚Ìˆ—
 #ifdef DRAW_PIC
 		DrawPoint( out_img, ps[pt], cWhite);
 		cv::line( out_img, ps[ptd0], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
-		ang = GetPointsAngle(ps[pt0], ps[pt]);	// ï¿½pï¿½xï¿½ï¿½ï¿½Xï¿½V
+		ang = GetPointsAngle(ps[pt0], ps[pt]);	// Šp“x‚ğXV
 //		nl = NextLineCR(pt, ps, nears, ang);
-//		if ( ps[nl].y < ps[nlc].y )	// ï¿½ï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ï¿½Tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½Ìsï¿½ï¿½ï¿½_ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½È‚ï¿½
+//		if ( ps[nl].y < ps[nlc].y )	// ‚±‚Ì“_‚©‚ç’T‚µ‚½Ÿs‚Ìs“ª“_‚Ì•û‚ªã‚É‚ ‚é‚È‚ç
 //			nlc = nl;
 
-		cent[count++ % 4] = pt;	// ï¿½_ï¿½ï¿½Û‘ï¿½
-		if ( count % 4 == 0 ) {	// 4ï¿½Â‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½ï¿½
+		cent[count++ % 4] = pt;	// “_‚ğ•Û‘¶
+		if ( count % 4 == 0 ) {	// 4‚Â‚½‚Ü‚Á‚½‚ç
 			cr = CalcCR( ps[cent[0]], ps[cent[1]], ps[cent[2]], ps[cent[3]] ); 
 			printf("%lf ", cr);
 		}
 	}
 	printf("%d\n", count);
-	pt = NextLineCR(pt0, ps, nears, ang);	// ï¿½ï¿½ï¿½Ìsï¿½ï¿½
+	pt = NextLineCR(pt0, ps, nears, ang);	// Ÿ‚Ìs‚Ö
 //	pt = nlc;
 
-	while ( pt >= 0 ) {	// ï¿½ï¿½ï¿½Ìsï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ÎIï¿½ï¿½
+	while ( pt >= 0 ) {	// Ÿ‚Ìs‚ª‚È‚¯‚ê‚ÎI—¹
 		ptd0 = pt;
 		pt0 = pt;
-//		nlc = NextLineCR(pt, ps, nears, ang);	// ï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìs
+//		nlc = NextLineCR(pt, ps, nears, ang);	// ‚Æ‚è‚ ‚¦‚¸Ÿ‚Ìs
 		count = 0;
 		cent[count++] = pt;
 #ifdef DRAW_PIC
 		DrawPoint( out_img, ps[pt], cWhite);
 #endif
-		if ( (next = FirstRightPointCR(pt, ps, nears, ang)) >= 0 )	// ï¿½Eï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡
-			ang = GetPointsAngle(ps[pt], ps[next]);	// ï¿½pï¿½xï¿½ï¿½ï¿½vï¿½Z
+		if ( (next = FirstRightPointCR(pt, ps, nears, ang)) >= 0 )	// ‰E‚Ì“_‚ªŒ©‚Â‚©‚Á‚½ê‡
+			ang = GetPointsAngle(ps[pt], ps[next]);	// Šp“x‚ğŒvZ
 		pt = next;
 
-		while ( pt >= 0 ) {	// ï¿½Eï¿½Ì“_ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ÎIï¿½ï¿½
-			// ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+		while ( pt >= 0 ) {	// ‰E‚Ì“_‚ª‚È‚¯‚ê‚ÎI—¹
+			// ‰½‚©‚Ìˆ—
 			cent[count++ % 4] = pt;
-			if ( count % 4 == 0 ) {	// 4ï¿½Â‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½ï¿½
+			if ( count % 4 == 0 ) {	// 4‚Â‚½‚Ü‚Á‚½‚ç
 				cr = CalcCR( ps[cent[0]], ps[cent[1]], ps[cent[2]], ps[cent[3]] ); 
 				printf("%lf ", cr);
 			}
@@ -891,7 +891,7 @@ void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[])
 			DrawPoint( out_img, ps[pt], cWhite);
 			cv::line( out_img, ps[ptd0], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
-			ang = GetPointsAngle(ps[pt0], ps[pt]);	//ï¿½@ï¿½pï¿½xï¿½ï¿½ï¿½Xï¿½V
+			ang = GetPointsAngle(ps[pt0], ps[pt]);	//@Šp“x‚ğXV
 //			nl = NextLineCR(pt, ps, nears, ang);
 //			if ( ps[nl].y < ps[nlc].y )	nlc = nl;
 			ptd0 = pt;
@@ -904,7 +904,7 @@ void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[])
 }
 
 double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// •¡”ä‚ğŒvZ‚·‚é
 {
 	double d13, d23, d14, d24;
 	d13 = GetPointsDistance(p1, p3);
@@ -918,7 +918,7 @@ double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
 }
 
 double CalcJI( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
-// j-invariantï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// j-invariant‚ğŒvZ‚·‚é
 {
 	double tau;
 
@@ -927,7 +927,7 @@ double CalcJI( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
 }
 
 int FirstFirstRightPointCR(int pt, cv::Point *ps, int *nears[])
-// CRï¿½É‚ï¿½ï¿½ï¿½ï¿½ÄC1ï¿½sï¿½Ú‚ÌÅï¿½ï¿½Ì“_ptï¿½ï¿½ï¿½ç‚¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// CR‚É‚¨‚¢‚ÄC1s–Ú‚ÌÅ‰‚Ì“_pt‚©‚ç‚¾‚¢‚½‚¢‰E‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i, ptr;
 	double ang;
@@ -935,14 +935,14 @@ int FirstFirstRightPointCR(int pt, cv::Point *ps, int *nears[])
 	for ( i = 0; i < kNears; i++ ) {
 		ptr = nears[pt][i];
 		ang = GetPointsAngle(ps[pt], ps[ptr]);
-		if ( fabs(ang) < kFFRAngle && RightPointCR(ptr, pt, ps, nears[ptr], ang) >= 0)	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ÅCï¿½Ù‚Æ‚ï¿½Ç“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚È‚ï¿½
+		if ( fabs(ang) < kFFRAngle && RightPointCR(ptr, pt, ps, nears[ptr], ang) >= 0)	// ‚¾‚¢‚½‚¢‰E‚ÅC‚Ù‚Æ‚ñ‚Ç“¯‚¶•ûŒü‚É“_‚ğ‚Â‚È‚ç
 			return ptr;
 	}
 	return -1;
 }
 
 int FirstRightPointCR(int pt, cv::Point *ps, int *nears[], double ang0)
-// CRï¿½É‚ï¿½ï¿½ï¿½ï¿½ÄC2ï¿½sï¿½ÚˆÈ~ï¿½ÌÅï¿½ï¿½Ì“_ptï¿½ï¿½ï¿½ç‚¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// CR‚É‚¨‚¢‚ÄC2s–ÚˆÈ~‚ÌÅ‰‚Ì“_pt‚©‚ç‚¾‚¢‚½‚¢‰E‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i, ptr;
 	double ang;
@@ -950,14 +950,14 @@ int FirstRightPointCR(int pt, cv::Point *ps, int *nears[], double ang0)
 	for ( i = 0; i < kNears; i++ ) {
 		ptr = nears[pt][i];
 		ang = GetPointsAngle(ps[pt], ps[ptr]);
-		if ( fabs(ang0-ang) < kRoughlyAngle && RightPointCR(ptr, pt, ps, nears[ptr], ang) >= 0)	// ang0ï¿½Æ‚ï¿½â“¯ï¿½ï¿½ï¿½ÅCï¿½Ù‚Æ‚ï¿½Ç“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚È‚ï¿½
+		if ( fabs(ang0-ang) < kRoughlyAngle && RightPointCR(ptr, pt, ps, nears[ptr], ang) >= 0)	// ang0‚Æ‚â‚â“¯‚¶‚ÅC‚Ù‚Æ‚ñ‚Ç“¯‚¶•ûŒü‚É“_‚ğ‚Â‚È‚ç
 			return ptr;
 	}
 	return -1;
 }
 
 int RightPointCR(int pt, int pt0, cv::Point *ps, int nears[], long double ang0 )
-// CRï¿½É‚ï¿½ï¿½ï¿½ï¿½ÄCptï¿½ï¿½ï¿½ï¿½angï¿½Æ‚Ù‚Æ‚ï¿½Ç“ï¿½ï¿½ï¿½ï¿½pï¿½xï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// CR‚É‚¨‚¢‚ÄCpt‚©‚çang‚Æ‚Ù‚Æ‚ñ‚Ç“¯‚¶Šp“x‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i, ptr;
 	long double ang, ang1;
@@ -966,32 +966,32 @@ int RightPointCR(int pt, int pt0, cv::Point *ps, int nears[], long double ang0 )
 		ptr = nears[i];
 		ang = GetPointsAngle(ps[pt], ps[ptr]);
 		ang1 = GetPointsAngle(ps[pt0], ps[ptr]);
-		if ( fabs(ang0-ang) < kNearlyAngle || (fabs(ang0-ang) < kAlmostAngle && fabs(ang0-ang1) < kCloseAngle) )	// ï¿½Ù‚Æ‚ï¿½Ç“ï¿½ï¿½ï¿½ï¿½pï¿½xï¿½È‚ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‰Eï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Âsï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½pï¿½xï¿½È‚ï¿½
+		if ( fabs(ang0-ang) < kNearlyAngle || (fabs(ang0-ang) < kAlmostAngle && fabs(ang0-ang1) < kCloseAngle) )	// ‚Ù‚Æ‚ñ‚Ç“¯‚¶Šp“x‚È‚ç@‚à‚µ‚­‚Í‰E‘¤‚É‚ ‚èC‚©‚Âs“ª‚Æ‚²‚­‹ß‚¢Šp“x‚È‚ç
 			return ptr;
 	}
 	return -1;
 }
 
 int LeftPointCR(int pt, cv::Point *ps, int nears[], double ang0 )
-// CRï¿½É‚ï¿½ï¿½ï¿½ï¿½ÄCptï¿½ï¿½ï¿½ï¿½ang0ï¿½ï¿½180ï¿½xï¿½ï¿½ï¿½Î‚Ì‚ï¿½ï¿½Ì‚Æ‚ï¿½â“¯ï¿½ï¿½ï¿½pï¿½xï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// CR‚É‚¨‚¢‚ÄCpt‚©‚çang0‚Æ180“x”½‘Î‚Ì‚à‚Ì‚Æ‚â‚â“¯‚¶Šp“x‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i, ptr;
 	double ang;
 
-	if ( ang0 < 0 )	ang0 += M_PI;	// ang0ï¿½ï¿½180ï¿½xï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	if ( ang0 < 0 )	ang0 += M_PI;	// ang0‚ğ180“x”½“]‚³‚¹‚é
 	else			ang0 -= M_PI;
 
 	for ( i = 0; i < kNears; i++ ) {
 		ptr = nears[i];
 		ang = GetPointsAngle(ps[pt], ps[ptr]);
-		if ( fabs(ang0-ang) < kRoughlyAngle )	// ï¿½ï¿½â“¯ï¿½ï¿½ï¿½pï¿½xï¿½È‚ï¿½
+		if ( fabs(ang0-ang) < kRoughlyAngle )	// ‚â‚â“¯‚¶Šp“x‚È‚ç
 			return ptr;
 	}
 	return -1;
 }
 
 int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0)
-// CRï¿½É‚ï¿½ï¿½ï¿½ï¿½ÄCptï¿½ï¿½ï¿½çŸï¿½Ìsï¿½ÌÅï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Dï¿½iï¿½ï¿½Ì‰ï¿½ï¿½Ì“_ï¿½j
+// CR‚É‚¨‚¢‚ÄCpt‚©‚çŸ‚Ìs‚ÌÅ‰‚Ì“_‚ğŒ©‚Â‚¯‚éDi‘å‘Ì‰º‚Ì“_j
 {
 	int i, ptr;
 	double ang;
@@ -999,7 +999,7 @@ int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0)
 	for ( i = 0; i < kNears; i++ ) {
 		ptr = nears[pt][i];
 		ang = GetPointsAngle(ps[pt], ps[ptr]);
-		if ( fabs(ang - M_PI/2) < kNLAngle ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		if ( fabs(ang - M_PI/2) < kNLAngle ) {	// ‚¾‚¢‚½‚¢‰º
 			while ( (pt = LeftPointCR(ptr, ps, nears[ptr], ang0)) >= 0 ) {
 				ptr = pt;
 			}
@@ -1010,20 +1010,20 @@ int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0)
 }
 
 //long double GetPointsAngle(cv::Point p1, cv::Point p2)
-// p1ï¿½ï¿½ï¿½çŒ©ï¿½ï¿½p2ï¿½ÌŠpï¿½xï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½iï¿½ï¿½-3.14ï¿½ï¿½ï¿½ï¿½ï¿½3.14ï¿½j
+// p1‚©‚çŒ©‚½p2‚ÌŠp“x‚ğŒvZ‚·‚éi–ñ-3.14‚©‚ç–ñ3.14j
 //{
 //	return atan2(p2.y - p1.y, p2.x - p1.x);
 //}
 
 void Calc1NNDiscriptor(cv::Point *ps, int num, int *nears[], char disc[])
-// 1NNï¿½Åƒfï¿½Bï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½Cdiscï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// 1NN‚ÅƒfƒBƒXƒNƒŠƒvƒ^‚ğŒvZ‚µCdisc‚É‘‚«‚Ş
 {
 	int dp = 0, pt, pt0, rpt, *visited, connected, pt00;
 #ifdef	CON_WORD
 	double dist;
 #endif
 
-	// ï¿½Kï¿½ï¿½Lï¿½^ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½vï¿½hï¿½~ï¿½Ì‚ï¿½ï¿½ßj
+	// –K–â‹L˜^i–³ŒÀƒ‹[ƒv–h~‚Ì‚½‚ßj
 	visited = (int *)calloc(num, sizeof(int));
 
 	pt = FirstPoint(ps, num);
@@ -1036,7 +1036,7 @@ void Calc1NNDiscriptor(cv::Point *ps, int num, int *nears[], char disc[])
 #ifdef	CON_WORD
 		dist = -1.0;
 #endif
-		while ( pt >= 0 ) {	// ï¿½sï¿½Ìƒï¿½ï¿½[ï¿½v
+		while ( pt >= 0 ) {	// s‚Ìƒ‹[ƒv
 			visited[pt] = 1;
 #ifdef DRAW_PIC
 			cv::circle( out_img, ps[pt], 2, cWhite, -1, 1, 0 );
@@ -1076,7 +1076,7 @@ void Calc1NNDiscriptor(cv::Point *ps, int num, int *nears[], char disc[])
 }
 
 int IsConnected1NN(int p1, int p2, int *nears[])
-// p1ï¿½ï¿½p2ï¿½ï¿½1NNï¿½ÅÚ‘ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½ï¿½ï¿½×‚ï¿½
+// p1‚Æp2‚ª1NN‚ÅÚ‘±‚³‚ê‚Ä‚¢‚é‚©’²‚×‚é
 {
 	if ( nears[p1][0] == p2 || nears[p2][0] == p1 )
 		return 1;
@@ -1085,7 +1085,7 @@ int IsConnected1NN(int p1, int p2, int *nears[])
 }
 
 int IsConnectedWord(cv::Point p1, cv::Point p2, double *dist)
-// p1ï¿½ï¿½p2ï¿½ï¿½ï¿½Ú‘ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Cï¿½Pï¿½ï¿½Ì‹ï¿½Ø‚ï¿½Å’ï¿½ï¿½×‚ï¿½
+// p1‚Æp2‚ªÚ‘±‚³‚ê‚Ä‚¢‚é‚©C’PŒê‚Ì‹æØ‚è‚Å’²‚×‚é
 {
 	double d0 = *dist;
 
@@ -1097,13 +1097,13 @@ int IsConnectedWord(cv::Point p1, cv::Point p2, double *dist)
 }
 
 //double GetPointsDistance(cv::Point p1, cv::Point p2)
-// ï¿½_ï¿½Ìƒï¿½ï¿½[ï¿½Nï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// “_‚Ìƒ†[ƒNƒŠƒbƒh‹——£‚ğ‹‚ß‚é
 //{
 //		return sqrt((p1.x - p2.x)*(p1.x - p2.x)+(p1.y - p2.y)*(p1.y - p2.y));
 //}
 
 int FirstPoint(cv::Point *ps, int num)
-// ï¿½Åï¿½ï¿½Ì“_ï¿½iï¿½ï¿½ï¿½ï¿½Ì“_ï¿½jï¿½ğ“¾‚ï¿½
+// Å‰‚Ì“_i¶ã‚Ì“_j‚ğ“¾‚é
 {
 	int i, min_idx = -1;
 	double val, min_val = 1000000000;
@@ -1119,17 +1119,17 @@ int FirstPoint(cv::Point *ps, int num)
 }
 
 int NextLine(int pt, cv::Point *ps, int num, int *nears[], int visited[])
-// ptï¿½ï¿½ï¿½çŸï¿½Ìsï¿½ÌÅï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½iptï¿½Ì‰ï¿½ï¿½É‚È‚ï¿½ï¿½ï¿½Î‰Eï¿½Éiï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½Ä’ï¿½ï¿½×‚ï¿½Dï¿½ï¿½ï¿½Ìsï¿½ÉŒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç¶ï¿½É–ß‚ï¿½é‚¾ï¿½ï¿½ï¿½ß‚ï¿½j
+// pt‚©‚çŸ‚Ìs‚ÌÅ‰‚Ì“_‚ğŒ©‚Â‚¯‚éipt‚Ì‰º‚É‚È‚¯‚ê‚Î‰E‚Éi‚ñ‚Å‚¢‚Á‚Ä’²‚×‚éDŸ‚Ìs‚ÉŒ¾‚Á‚½‚ç¶‚É–ß‚ê‚é‚¾‚¯–ß‚éj
 {
 	int next, pt0;
 
 	pt0 = pt;
 	while ( (next = DownPoint(pt, ps, num, nears[pt])) < 0 ) {
-		if ( (pt = RightPoint(pt, ps, num, nears[pt])) < 0 )	// ï¿½Eï¿½Ì“_ï¿½Éiï¿½ï¿½
-			return -1;	// ï¿½È‚ï¿½ï¿½ï¿½Îï¿½ï¿½Ìsï¿½Í‚È‚ï¿½
+		if ( (pt = RightPoint(pt, ps, num, nears[pt])) < 0 )	// ‰E‚Ì“_‚Éi‚Ş
+			return -1;	// ‚È‚¯‚ê‚ÎŸ‚Ìs‚Í‚È‚¢
 	}
 	while ( (pt = LeftPoint(next, ps, num, nears[next], visited)) >= 0 ) {
-		// if ( visited[pt] )	break;	//ï¿½ï¿½ï¿½Å‚Ésï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½vï¿½hï¿½~ï¿½j
+		// if ( visited[pt] )	break;	//‚·‚Å‚És‚Á‚½‚±‚Æ‚ª‚ ‚éê‡i–³ŒÀƒ‹[ƒv–h~j
 		next = pt;
 	}
 //	if ( pt0 == next ) return -1;
@@ -1137,7 +1137,7 @@ int NextLine(int pt, cv::Point *ps, int num, int *nears[], int visited[])
 }
 
 int RightPoint(int pt, cv::Point *ps, int num, int nears[])
-// ptï¿½Ì‰Eï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// pt‚Ì‰E‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i;
 
@@ -1149,7 +1149,7 @@ int RightPoint(int pt, cv::Point *ps, int num, int nears[])
 }
 
 int LeftPoint(int pt, cv::Point *ps, int num, int nears[], int visited[])
-// ptï¿½Ìï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// pt‚Ì¶‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i;
 
@@ -1161,7 +1161,7 @@ int LeftPoint(int pt, cv::Point *ps, int num, int nears[], int visited[])
 }
 
 int DownPoint(int pt, cv::Point *ps, int num, int nears[])
-// ptï¿½Ì‰ï¿½ï¿½Ì“_ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
+// pt‚Ì‰º‚Ì“_‚ğŒ©‚Â‚¯‚é
 {
 	int i;
 
@@ -1173,7 +1173,7 @@ int DownPoint(int pt, cv::Point *ps, int num, int nears[])
 }
 
 int IsOnRight( cv::Point *p1, cv::Point *p2 )
-// p1ï¿½Ì‰Eï¿½ï¿½p2ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½×‚ï¿½
+// p1‚Ì‰E‚Ép2‚ª‚ ‚é‚©’²‚×‚é
 {
 	double deg = atan2(p2->y - p1->y, p2->x - p1->x);
 	if ( fabs(deg) < kRightRange )
@@ -1183,7 +1183,7 @@ int IsOnRight( cv::Point *p1, cv::Point *p2 )
 }
 
 int IsOnLeft( cv::Point *p1, cv::Point *p2 )
-// p1ï¿½Ìï¿½ï¿½ï¿½p2ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½×‚ï¿½
+// p1‚Ì¶‚Ép2‚ª‚ ‚é‚©’²‚×‚é
 {
 	double deg = atan2(p2->y - p1->y, p2->x - p1->x);
 	if ( fabs(fabs(deg) - M_PI) < kLeftRange )
@@ -1193,7 +1193,7 @@ int IsOnLeft( cv::Point *p1, cv::Point *p2 )
 }
 
 int IsOnDown( cv::Point *p1, cv::Point *p2 )
-// p1ï¿½Ì‰ï¿½ï¿½ï¿½p2ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½×‚ï¿½iï¿½ï¿½ï¿½Wï¿½nï¿½ï¿½ï¿½Êï¿½Æˆá‚¤ï¿½ï¿½ï¿½Æ‚É’ï¿½ï¿½ÓIï¿½j
+// p1‚Ì‰º‚Ép2‚ª‚ ‚é‚©’²‚×‚éiÀ•WŒn‚ª’Êí‚Æˆá‚¤‚±‚Æ‚É’ˆÓIj
 {
 	double deg = atan2(p2->y - p1->y, p2->x - p1->x);
 	if ( fabs(deg - M_PI/2) < kDownRange )
@@ -1203,7 +1203,7 @@ int IsOnDown( cv::Point *p1, cv::Point *p2 )
 }
 
 void JInvariantTest(void)
-// j-invariantï¿½Ìƒeï¿½Xï¿½g
+// j-invariant‚ÌƒeƒXƒg
 {
 	int i, j, k, l;
 	cv::Point p[4];
@@ -1232,8 +1232,8 @@ void JInvariantTest(void)
 }
 
 int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **areas)
-// ï¿½æ‘œï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½ï¿½Ädï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½Cï¿½dï¿½Sï¿½Ìï¿½ï¿½ï¿½Ô‚ï¿½
-// 06/01/12	ï¿½ÊÏ‚ÌŒvï¿½Zï¿½ï¿½Ç‰ï¿½
+// ‰æ‘œ‚Ìƒtƒ@ƒCƒ‹–¼‚ğ—^‚¦‚ÄdS‚ğŒvZ‚µCdS‚Ì”‚ğ•Ô‚·
+// 06/01/12	–ÊÏ‚ÌŒvZ‚ğ’Ç‰Á
 {
 	int num;
     std::vector<std::vector<cv::Point>> contours;
@@ -1243,16 +1243,16 @@ int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **a
 	size->width = img.cols;
 	size->height = img.rows;
 
-    cv::findContours(img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+    cv::findContours(img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 
-	num = CalcCentres(ps, contours, hierarchy, size, areas);	// ï¿½eï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	num = CalcCentres(ps, contours, hierarchy, size, areas);	// Še˜AŒ‹¬•ª‚ÌdS‚ğŒvZ‚·‚é
 
 	return num;
 }
 
 int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
-// ï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
-// 06/01/12	ï¿½ÊÏ‚ÌŒvï¿½Zï¿½ï¿½Ç‰ï¿½
+// dS‚ğŒvZ‚·‚é
+// 06/01/12	–ÊÏ‚ÌŒvZ‚ğ’Ç‰Á
 {
 	int i, num;
 	double *areas = NULL;
@@ -1265,20 +1265,20 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 	s.height = size->height;
 	img = cv::Mat::zeros(s, CV_8UC3);
 
-	// ï¿½_ï¿½Ìï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½gï¿½iï¿½bï¿½ï¿½j
+	// “_‚Ì”‚ğƒJƒEƒ“ƒgib’èj
 	i = 0;
 	for ( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 //	num = i;
-	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ï¿½Sï¿½~ï¿½ï¿½ï¿½Å˜Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½iï¿½{ï¿½ï¿½ï¿½Í‘å‚«ï¿½ï¿½ï¿½ğ’²‚×‚ï¿½ï¿½è‚·ï¿½×‚ï¿½ï¿½j
-	// ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½mï¿½Ûinumï¿½Ì’lï¿½Íï¿½ï¿½mï¿½Å‚Í‚È‚ï¿½ï¿½ï¿½ï¿½Cï¿½å‚«ï¿½ß‚Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚Åj
+	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ƒSƒ~“™‚Å˜AŒ‹¬•ª‚ª‘½‚·‚¬‚é‚Æ‚«i–{—ˆ‚Í‘å‚«‚³‚ğ’²‚×‚½‚è‚·‚×‚«j
+	// “_‚ğ“ü‚ê‚é”z—ñ‚ğŠm•Ûinum‚Ì’l‚Í³Šm‚Å‚Í‚È‚¢‚ªC‘å‚«‚ß‚Æ‚¢‚¤‚±‚Æ‚Åj
 	ps = (cv::Point *)calloc(num, sizeof(cv::Point));
 	*ps0 = ps;
-	// ï¿½ÊÏ‚ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
+	// –ÊÏ‚ğ“ü‚ê‚é”z—ñ‚ğŠm•Û
 	if ( areas0 ) {
 		areas = (double *)calloc(num, sizeof(double));
 		*areas0 = areas;
 	}
-	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½Eï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Z
+	// ˜AŒ‹¬•ª‚ğ•`‰æEdS‚ğŒvZ
     i = 0;
     for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] )
     {
@@ -1289,7 +1289,7 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 
 		mom = cv::moments(contours[ci]);
 		d00 = mom.m00;
-		if ( d00 < 0.00001 ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+		if ( d00 < 0.00001 ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 
 		ps[i].x = (int)(mom.m10 / d00);
 		ps[i].y = (int)(mom.m01 / d00);
@@ -1310,7 +1310,7 @@ int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, 
 		i++;
     }
 
-	num = i;	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌXï¿½V
+	num = i;	// ˜AŒ‹¬•ª”‚ÌXV
 
 //	OutPutImage( img );
 #ifdef SHOW_PIC
@@ -1336,7 +1336,7 @@ void ReleaseNears( int **nears, int num )
 }
 
 int OutPutImage(cv::Mat img)
-// ï¿½æ‘œï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½É•Û‘ï¿½ï¿½ï¿½ï¿½ï¿½Dï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½Iï¿½É˜Aï¿½Ô‚É‚È‚ï¿½
+// ‰æ‘œ‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚éDƒtƒ@ƒCƒ‹–¼‚Í©“®“I‚É˜A”Ô‚É‚È‚é
 {
 	static int n = 0;
 	char filename[kFileNameLen];
@@ -1346,31 +1346,31 @@ int OutPutImage(cv::Mat img)
 }
 
 void OutPutResult( int *s, int t, int disp, char *qname0 )
-// ï¿½ï¿½ï¿½Ê‚Ì•\ï¿½ï¿½
+// Œ‹‰Ê‚Ì•\¦
 {
 	int i, j, k, n, last_slash, last_period, doc_num;
 	char line[kMaxPathLen], name0[kMaxPathLen], name[kMaxPathLen], qname[kMaxPathLen], **fname;
 	FILE *fp;
 	strScore *score;
 
-	// ï¿½Nï¿½Gï¿½ï¿½ï¿½Ìƒxï¿½[ï¿½Xï¿½lï¿½[ï¿½ï¿½ï¿½Ìæ“¾
+	// ƒNƒGƒŠ‚Ìƒx[ƒXƒl[ƒ€‚Ìæ“¾
 	for ( j = 0, last_slash = 0, last_period = strlen(qname0); qname0[j] != '\0'; j++ ) {
-		if ( qname0[j] == '/' )	last_slash = j;	// ï¿½ÅŒï¿½ÌƒXï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ÌˆÊ’u
-		else if ( qname0[j] == '.' )	last_period = j;	// ï¿½iï¿½ÅŒï¿½Ìjï¿½sï¿½ï¿½ï¿½Iï¿½hï¿½ÌˆÊ’u
+		if ( qname0[j] == '/' )	last_slash = j;	// ÅŒã‚ÌƒXƒ‰ƒbƒVƒ…‚ÌˆÊ’u
+		else if ( qname0[j] == '.' )	last_period = j;	// iÅŒã‚ÌjƒsƒŠƒIƒh‚ÌˆÊ’u
 	}
 	for ( j = last_slash + 1, k = 0; j < last_period; j++, k++ )	qname[k] = qname0[j];
 	qname[k] = '\0';
 //	puts(qname);
-	// ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+	// ‰æ‘œƒtƒ@ƒCƒ‹–¼‚Ì“Ç‚İ‚İ
 	fname = (char **)calloc(kMaxDocNum, sizeof(char *));
 	fp = fopen(eDBCorFileName, "r");
 	for ( i = 0; i < kMaxDocNum && fgets(line, kMaxPathLen, fp) != NULL; i++ ) {
-		sscanf(line, "%d %s", &n, name0);	// ï¿½tï¿½ï¿½ï¿½pï¿½Xï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+		sscanf(line, "%d %s", &n, name0);	// ƒtƒ‹ƒpƒX‚Ì“Ç‚İ‚İ
 		for ( j = 0, last_slash = 0, last_period = strlen(name0); name0[j] != '\0'; j++ ) {
-			if ( name0[j] == '/' )	last_slash = j;	// ï¿½ÅŒï¿½ÌƒXï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ÌˆÊ’u
-			else if ( name0[j] == '.' )	last_period = j;	// ï¿½iï¿½ÅŒï¿½Ìjï¿½sï¿½ï¿½ï¿½Iï¿½hï¿½ÌˆÊ’u
+			if ( name0[j] == '/' )	last_slash = j;	// ÅŒã‚ÌƒXƒ‰ƒbƒVƒ…‚ÌˆÊ’u
+			else if ( name0[j] == '.' )	last_period = j;	// iÅŒã‚ÌjƒsƒŠƒIƒh‚ÌˆÊ’u
 		}
-		// ï¿½xï¿½[ï¿½Xï¿½lï¿½[ï¿½ï¿½ï¿½Ìæ“¾
+		// ƒx[ƒXƒl[ƒ€‚Ìæ“¾
 		for ( j = last_slash + 1, k = 0; j < last_period; j++, k++ )	name[k] = name0[j];
 		name[k] = '\0';
 		fname[n] = (char *)malloc( sizeof(char) * (strlen(name)+1) );
@@ -1378,14 +1378,14 @@ void OutPutResult( int *s, int t, int disp, char *qname0 )
 	}
 	doc_num = i;
 	fclose(fp);
-	// ï¿½Xï¿½Rï¿½Aï¿½É“ï¿½ï¿½ï¿½ï¿½
+	// ƒXƒRƒA‚É“ü‚ê‚é
 	score = (strScore *)malloc(sizeof(strScore) * doc_num);
 	SetAndSortScore( score, s, doc_num );
-	// dispï¿½Ê‚Ü‚Å•\ï¿½ï¿½
+	// dispˆÊ‚Ü‚Å•\¦
 	for ( i = 0; i < disp; i++ ) {
 		printf("%s\t%d\n", fname[score[i].n], score[i].vote);
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚ï¿½
+	// ³‰ğ‚ª‰½ˆÊ‚©
 	for ( i = 0; i < doc_num; i++ ) {
 		if ( !strncmp(qname, fname[score[i].n], strlen(fname[score[i].n])) )	break;
 	}
@@ -1393,7 +1393,7 @@ void OutPutResult( int *s, int t, int disp, char *qname0 )
 	else	printf("Failed\n");
 	printf("Rank : %d\n", i+1);
 	printf("Ratio : %f\n", (double)score[0].vote / (double)score[1].vote);
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠJï¿½ï¿½
+	// ƒƒ‚ƒŠ‚ÌŠJ•ú
 	for ( i = 0; i < kMaxDocNum; i++ ) {
 		if ( fname[i] != NULL )	free(fname[i]);
 	}
@@ -1402,23 +1402,23 @@ void OutPutResult( int *s, int t, int disp, char *qname0 )
 }
 
 void OutPutResultSv( int *s, int t, int disp, char *result )
-// ï¿½ï¿½ï¿½Ê‚Ì•\ï¿½ï¿½
+// Œ‹‰Ê‚Ì•\¦
 {
 	int i, j, k, n, last_slash, last_period, doc_num;
 	char line[kMaxPathLen], name0[kMaxPathLen], name[kMaxPathLen], qname[kMaxPathLen], **fname;
 	FILE *fp;
 	strScore *score;
 
-	// ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+	// ‰æ‘œƒtƒ@ƒCƒ‹–¼‚Ì“Ç‚İ‚İ
 	fname = (char **)calloc(kMaxDocNum, sizeof(char *));
 	fp = fopen(eDBCorFileName, "r");
 	for ( i = 0; i < kMaxDocNum && fgets(line, kMaxPathLen, fp) != NULL; i++ ) {
-		sscanf(line, "%d %s", &n, name0);	// ï¿½tï¿½ï¿½ï¿½pï¿½Xï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+		sscanf(line, "%d %s", &n, name0);	// ƒtƒ‹ƒpƒX‚Ì“Ç‚İ‚İ
 		for ( j = 0, last_slash = 0, last_period = strlen(name0); name0[j] != '\0'; j++ ) {
-			if ( name0[j] == '/' )	last_slash = j;	// ï¿½ÅŒï¿½ÌƒXï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ÌˆÊ’u
-			else if ( name0[j] == '.' )	last_period = j;	// ï¿½iï¿½ÅŒï¿½Ìjï¿½sï¿½ï¿½ï¿½Iï¿½hï¿½ÌˆÊ’u
+			if ( name0[j] == '/' )	last_slash = j;	// ÅŒã‚ÌƒXƒ‰ƒbƒVƒ…‚ÌˆÊ’u
+			else if ( name0[j] == '.' )	last_period = j;	// iÅŒã‚ÌjƒsƒŠƒIƒh‚ÌˆÊ’u
 		}
-		// ï¿½xï¿½[ï¿½Xï¿½lï¿½[ï¿½ï¿½ï¿½Ìæ“¾
+		// ƒx[ƒXƒl[ƒ€‚Ìæ“¾
 		for ( j = last_slash + 1, k = 0; j < last_period; j++, k++ )	name[k] = name0[j];
 		name[k] = '\0';
 		fname[n] = (char *)malloc( sizeof(char) * (strlen(name)+1) );
@@ -1426,17 +1426,17 @@ void OutPutResultSv( int *s, int t, int disp, char *result )
 	}
 	doc_num = i;
 	fclose(fp);
-	// ï¿½Xï¿½Rï¿½Aï¿½É“ï¿½ï¿½ï¿½ï¿½
+	// ƒXƒRƒA‚É“ü‚ê‚é
 	score = (strScore *)malloc(sizeof(strScore) * doc_num);
 	SetAndSortScore( score, s, doc_num );
-	// dispï¿½Ê‚Ü‚Å•\ï¿½ï¿½
+	// dispˆÊ‚Ü‚Å•\¦
 	for ( i = 0; i < disp; i++ ) {
 		printf("%s\t%d\n", fname[score[i].n], score[i].vote);
 	}
-	// 1ï¿½Ê‚ï¿½è‡’lï¿½ğ’´‚ï¿½ï¿½ï¿½ï¿½ï¿½resultï¿½ÉƒRï¿½sï¿½[
+	// 1ˆÊ‚ªè‡’l‚ğ’´‚¦‚½‚çresult‚ÉƒRƒs[
 	if ( score[0].vote > kTopThr )	strcpy( result, fname[score[0].n] );
 	else	result[0] = '\0';
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠJï¿½ï¿½
+	// ƒƒ‚ƒŠ‚ÌŠJ•ú
 	for ( i = 0; i < kMaxDocNum; i++ ) {
 		if ( fname[i] != NULL )	free(fname[i]);
 	}
@@ -1447,12 +1447,12 @@ void OutPutResultSv( int *s, int t, int disp, char *result )
 #define	kScreenThr	(530)
 
 int ScreenPointsWithNears( cv::Point *ps, int num, int **nears )
-// ï¿½ß–Tï¿½_ï¿½ï¿½pï¿½ï¿½ï¿½Ä“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ó‚é‚¢ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½
+// ‹ß–T“_‚ğ—p‚¢‚Ä“Á’¥“_‚ğ‚Ó‚é‚¢‚É‚©‚¯‚é
 {
 	int i, cnt;
 	cv::Point *ps0;
 
-	// psï¿½ï¿½ps0ï¿½ÉƒRï¿½sï¿½[
+	// ps‚ğps0‚ÉƒRƒs[
 	ps0 = (cv::Point *)malloc( sizeof(cv::Point) * num );
 	for ( i = 0; i < num; i++ ) {
 		ps0[i].x = ps[i].x;
@@ -1470,14 +1470,14 @@ int ScreenPointsWithNears( cv::Point *ps, int num, int **nears )
 }
 
 void DisplayPs( void )
-// psï¿½Åï¿½ï¿½ï¿½\ï¿½ï¿½
+// ps‚Åî•ñ‚ğ•\¦
 {
 //	system("ps u | grep dirs | awk \'BEGIN { FS = \" \" }; { print $3\" \"$4\" \"$5\" \"$6}\'");
 	system("ps opcpu,vsize,size,rss");
 }
 
 void CreatePointFile( char *in_fname, char *out_fname, int mode )
-// ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½if_fnameï¿½ï¿½ï¿½ï¿½modeï¿½Å“ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’Šoï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½out_fnameï¿½Éoï¿½Í‚ï¿½ï¿½ï¿½B
+// ‰æ‘œƒtƒ@ƒCƒ‹if_fname‚©‚çmode‚Å“Á’¥“_‚ğ’Šo‚µA“Á’¥“_ƒtƒ@ƒCƒ‹‚Æ‚µ‚Äout_fname‚Éo—Í‚·‚éB
 {
 	cv::Mat img;
 	int num;
@@ -1485,18 +1485,18 @@ void CreatePointFile( char *in_fname, char *out_fname, int mode )
 	cv::Point *ps;
 	cv::Size img_size;
 	
-	if ( (img = GetConnectedImage( in_fname, mode )).empty() ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬
-		fprintf(stderr, "%sï¿½ï¿½ï¿½çŒ‹ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½ï¿½Ì‚Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n", in_fname);
+	if ( (img = GetConnectedImage( in_fname, mode )).empty() ) {	// Œ‹‡‰æ‘œ‚ğì¬
+		fprintf(stderr, "%s‚©‚çŒ‹‡‰æ‘œ‚ğì¬‚·‚é‚Ì‚É¸”s‚µ‚Ü‚µ‚½\n", in_fname);
 		return;
 	}
-	num = MakeCentresFromImage( &ps, img, &img_size, &areas );	// ï¿½æ‘œï¿½ï¿½ï¿½ï¿½dï¿½Sï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	num = MakeCentresFromImage( &ps, img, &img_size, &areas );	// ‰æ‘œ‚©‚çdS‚ğŒvZ‚·‚é
 	SavePointFile( out_fname, ps, num, &img_size, areas );
 	
 	return;
 }
 
 int RetrieveUSBCamServer( void )
-// USBï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Tï¿½[ï¿½oï¿½ï¿½ï¿½[ï¿½h
+// USBƒJƒƒ‰ƒT[ƒoƒ‚[ƒh
 {
 	int num, *numall = NULL, ret, res, *score = NULL, **nears = NULL;
 	int pcor[kMaxPointNum][2], pcornum = 0;
@@ -1508,51 +1508,51 @@ int RetrieveUSBCamServer( void )
 	strProjParam param, zero_param;
 	SOCKET sid1, sid2, sidpt, sidres;
 	struct sockaddr_in addr;
-	// DLLï¿½pï¿½ï¿½ï¿½ï¿½
+	// DLL—p‰ü•Ï
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
 
-	ret = LoadConfig();	// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+	ret = LoadConfig();	// İ’èƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 	if ( ret <= 0 )	return 0;
 	sprintf( fname, "%s%s", eDirsDir, eDiscFileName );
-	ret = LoadDisc( fname, &disc );	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+	ret = LoadDisc( fname, &disc );	// —£U‰»ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 	if ( ret <= 0 )	return 0;
-	// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+	// ƒnƒbƒVƒ…‚Ì“Ç‚İ‚İ
 	if ( eNoHashList )			hash3 = LoadHash3( disc.num );
 	else if ( eCompressHash )	hash2 = LoadHash2( disc.num );
 	else						hash = LoadHash( disc.num );
 	if ( ret <= 0 )	return 0;
 	sprintf( fname, "%s%s", eDirsDir, ePointDatFileName );
-	ret = LoadPointFile2( fname, &psall, &areaall, &sizeall, &numall, &dbcors );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½Ì“Ç‚İï¿½ï¿½ï¿½
+	ret = LoadPointFile2( fname, &psall, &areaall, &sizeall, &numall, &dbcors );	// “Á’¥“_ƒf[ƒ^‚Ì“Ç‚İ‚İ
 	if ( ret <= 0 )	return 0;
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½È‚ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½ÌƒTï¿½Cï¿½Yï¿½ï¿½ï¿½oï¿½ï¿½
+	// ÀŒ±ƒ‚[ƒh‚È‚çƒnƒbƒVƒ…‚ÌƒTƒCƒY‚ğo—Í
 	if ( eExperimentMode )	printf( "Allocated Hash Size : %d\n", allocated_hash );
-	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
+	// ‘g‚İ‡‚í‚¹‚Ìì¬
 	GenerateCombination( eInvType, eGroup1Num, eGroup2Num, eGroup3Num, SetCom1, SetCom2 );
-	// ï¿½lï¿½bï¿½gï¿½ï¿½ï¿½[ï¿½Nï¿½ÖŒW
+	// ƒlƒbƒgƒ[ƒNŠÖŒW
 //start_nego2:
 	printf("Ready\n");
 #ifdef WIN32
-	if ( ( sid1 = InitWinSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 1;	// socketï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	if ( ( sid1 = InitWinSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 1;	// socket‚Ì‰Šú‰»
 	if ( ( sid2 = AcceptWinSockSvTCP( sid1 ) ) < 0 )	return 1;	// accept
 #else
-	if ( ( sid1 = InitSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 0;	// socketï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	if ( ( sid1 = InitSockSvTCP( eTCPPort, eServerName ) ) < 0 )	return 0;	// socket‚Ì‰Šú‰»
 	if ( ( sid2 = AcceptSockSvTCP( sid1 ) ) < 0 )	return 0;	// accept
 #endif
-	ret = RecvComSetting( sid2, &eProtocol, &ePointPort, &eResultPort, eClientName );	// ï¿½ÊMï¿½İ’ï¿½ï¿½ï¿½ï¿½M
+	ret = RecvComSetting( sid2, &eProtocol, &ePointPort, &eResultPort, eClientName );	// ’ÊMİ’è‚ğóM
 	if ( ret < 0 )	return 0;
 //	send = SendFileNameList( sid2, 
 
 //	fprintf(stderr, "%d, %d, %d, %s\n", eProtocol, ePointPort, eResultPort, eClientName );
 
-	if ( eProtocol == kUDP ) {	// UDPï¿½Ìê‡ï¿½DTCPï¿½Ìê‡ï¿½ÍÚ‘ï¿½ï¿½Ï‚ï¿½
+	if ( eProtocol == kUDP ) {	// UDP‚Ìê‡DTCP‚Ìê‡‚ÍÚ‘±Ï‚İ
 #ifdef	WIN32
 		Sleep( 1000 );
 		if ( ( sidpt = InitWinSockSvUDP( ePointPort ) ) < 0 )	return 1;
 		if ( ( sidres = InitWinSockClUDP( eResultPort, eClientName, &addr ) ) < 0 )	return 1;
 #else
-		sleep(1);	// UDPï¿½Ìê‡ï¿½ÍƒNï¿½ï¿½ï¿½Cï¿½Aï¿½ï¿½ï¿½gï¿½ï¿½ï¿½É‘Ò‚ï¿½ï¿½ï¿½Ô‚É‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½Î‚È‚ï¿½È‚ï¿½ï¿½Ì‚ï¿½
+		sleep(1);	// UDP‚Ìê‡‚ÍƒNƒ‰ƒCƒAƒ“ƒg‚ğæ‚É‘Ò‚¿ó‘Ô‚É‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢‚Ì‚Å
 		if ( ( sidpt = InitSockSvUDP( ePointPort ) ) < 0 )	return 0;
 		if ( ( sidres = InitSockClUDP( eResultPort, eClientName, &addr ) ) < 0 )	return 0;
 #endif
@@ -1570,46 +1570,46 @@ int RetrieveUSBCamServer( void )
 	}
 		
 	for ( ; ; ) {
-		if ( eProtocol == kTCP ) num = RecvPointsAreas( sid2, &ps, &areas, &img_size );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½M
-		else					num = RecvPointsAreas( sidpt, &ps, &areas, &img_size );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½M
-		num = ( num >= kMaxPointNum ) ? kMaxPointNum - 1 : num;	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Å‘ï¿½lï¿½ğ’´‚ï¿½ï¿½ï¿½ê‡ï¿½Íï¿½ï¿½ï¿½
+		if ( eProtocol == kTCP ) num = RecvPointsAreas( sid2, &ps, &areas, &img_size );	// “Á’¥“_ƒf[ƒ^‚ğóM
+		else					num = RecvPointsAreas( sidpt, &ps, &areas, &img_size );	// “Á’¥“_ƒf[ƒ^‚ğóM
+		num = ( num >= kMaxPointNum ) ? kMaxPointNum - 1 : num;	// “Á’¥“_”‚ªÅ‘å’l‚ğ’´‚¦‚éê‡‚Í§ŒÀ
 //		printf("%d points received.\n", num);
-		if ( num < 0 )	break;	// ï¿½ÊMï¿½ï¿½ï¿½s
-		if ( num >= kMinPoints ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½lï¿½Èï¿½
-			MakeNearsFromCentresDiv( ps, num, &img_size, kDivX, kDivY, eGroup1Num, &nears );	// ï¿½ß–Tï¿½_ï¿½vï¿½Zï¿½iï¿½ï¿½ï¿½ï¿½ï¿½Åj
-			// ï¿½ï¿½ï¿½ï¿½
-			res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, numall, hash, hash2, hash3 );	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
-			// ï¿½Åï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½Èï¿½È‚ï¿½Aï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Z
-			if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// ï¿½oï¿½^ï¿½æ‘œï¿½Éã‘ï¿½ï¿½
+		if ( num < 0 )	break;	// ’ÊM¸”s
+		if ( num >= kMinPoints ) {	// “Á’¥“_”‚ªÅ¬’lˆÈã
+			MakeNearsFromCentresDiv( ps, num, &img_size, kDivX, kDivY, eGroup1Num, &nears );	// ‹ß–T“_ŒvZi•ªŠ„”Åj
+			// ŒŸõ
+			res = RetrieveNN5Cor2( ps, areas, num, nears, img_size, score, pcor, &pcornum, &disc, numall, hash, hash2, hash3 );	// ŒŸõ‚Ì‚İ
+			// Å¬‘Î‰“_”ˆÈã‚È‚çAË‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğŒvZ
+			if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// “o˜^‰æ‘œ‚Éã‘‚«
 			else	param = zero_param;
-			if (ps != NULL && num > 0 )	ReleaseCentres( ps );	// psï¿½Ì‰ï¿½ï¿½
+			if (ps != NULL && num > 0 )	ReleaseCentres( ps );	// ps‚Ì‰ğ•ú
 			if (areas != NULL && num > 0 )	free( areas );
-			ReleaseNears( nears, num );	// nearsï¿½Ì‰ï¿½ï¿½
-			// ï¿½vï¿½Zï¿½ï¿½ï¿½Ô‚Ì•\ï¿½ï¿½
+			ReleaseNears( nears, num );	// nears‚Ì‰ğ•ú
+			// ŒvZŠÔ‚Ì•\¦
 //			OutPutResultSv( score, end-start, 0/*5*/, doc_name );
-			if ( score[res] > kTopThr ) {	// ï¿½gï¿½bï¿½vï¿½Ì“ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½è‡’lï¿½È‰ï¿½ï¿½iï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½j
+			if ( score[res] > kTopThr ) {	// ƒgƒbƒv‚Ì“¾•[”‚ªè‡’lˆÈ‰ºiƒŠƒWƒFƒNƒgj
 				GetBasename2( dbcors[res], kMaxPathLen, doc_name );
 			}
 			else {
 				doc_name[0] = '\0';
-				param = zero_param;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚Éƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚Ì‚ï¿½ï¿½Ï‚È‚Ì‚ï¿½
+				param = zero_param;	// ŒŸõŒ‹‰Ê‚ª‚È‚¢‚Ì‚Éƒpƒ‰ƒ[ƒ^‚¾‚¯‚ ‚é‚Á‚Ä‚Ì‚à•Ï‚È‚Ì‚Å
 			}
 			puts( doc_name );
 		}
-		else {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½lï¿½ğ–‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½
+		else {	// “Á’¥“_”‚ªÅ¬’l‚ğ–‚½‚³‚È‚¢
 //			puts("min");
 			doc_name[0] = '\0';
 			param = zero_param;
 		}
-		if ( doc_name[0] != '\0' )	res_size = sizeall[res];	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ç‚»ï¿½ÌƒTï¿½Cï¿½Y
-		else	res_size = sizeall[0];	// ï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½Îƒfï¿½[ï¿½^ï¿½xï¿½[ï¿½Xï¿½ï¿½0ï¿½Ô‚ÌƒTï¿½Cï¿½Y
+		if ( doc_name[0] != '\0' )	res_size = sizeall[res];	// ŒŸõ¬Œ÷‚È‚ç‚»‚ÌƒTƒCƒY
+		else	res_size = sizeall[0];	// ‚»‚¤‚Å‚È‚¯‚ê‚Îƒf[ƒ^ƒx[ƒX‚Ì0”Ô‚ÌƒTƒCƒY
 
 //		fprintf(stdout, "%s\n", doc_name);
 		if ( eProtocol == kTCP )	ret = SendResultParam( sid2, doc_name, kMaxDocNameLen, &param, &res_size, &addr, eProtocol );
 		else						ret = SendResultParam( sidres, doc_name, kMaxDocNameLen, &param, &res_size, &addr, eProtocol );
 		if ( ret < 0 )	break;
 	}
-	// ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// I—¹ˆ—
 	free(score);
 	if ( eProtocol == kUDP ) {
 #ifdef	WIN32
@@ -1628,12 +1628,12 @@ int RetrieveUSBCamServer( void )
 	CloseSock( sid1 );	// close
 #endif
 		
-//		goto start_nego2;	// ï¿½lï¿½Sï¿½Ò‚ï¿½ï¿½Ü‚Å–ß‚ï¿½
+//		goto start_nego2;	// ƒlƒS‘Ò‚¿‚Ü‚Å–ß‚é
 	return 1;
 }
 
 int IsSucceed( char *str1, char *str2 )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½pï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ÀŒ±ƒ‚[ƒh—pF¬Œ÷”»’è
 {
 	char base1[kMaxPathLen], base2[kMaxPathLen];
 
@@ -1645,7 +1645,7 @@ int IsSucceed( char *str1, char *str2 )
 }
 
 double Calc12Diff( int *score )
-// 1ï¿½Ê‚ï¿½2ï¿½Ê‚Ìï¿½ï¿½ï¿½ï¿½vï¿½Z
+// 1ˆÊ‚Æ2ˆÊ‚Ì·‚ğŒvZ
 {
 	int i, score_1st = 1, score_2nd = 1;
 

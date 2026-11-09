@@ -1,7 +1,7 @@
 #include <opencv2/opencv.hpp>
 
 void ClusterTest( void )
-// KMeans2ï¿½Ìƒeï¿½Xï¿½g
+// KMeans2‚ÌƒeƒXƒg
 {
 #if 0
 	int a=0;

@@ -4,7 +4,7 @@
 #include "annex_st.h"
 
 void SimilarTransformation( cv::Mat src, cv::Mat dst, double *param )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
+// ‘Š—•ÏŠ·‚·‚é
 {
 	int i, j;
 	cv::Point psrc, pdst;
@@ -33,7 +33,7 @@ void SimilarTransformation( cv::Mat src, cv::Mat dst, double *param )
 }
 
 void SimPoint( cv::Point *p1, cv::Point *p2, double *param )
-// ï¿½_ï¿½Ì‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// “_‚Ì‘Š—•ÏŠ·Œã‚ÌÀ•W‚ğ‹‚ß‚é
 {
 	double theta, s, tx, ty;
 	
@@ -49,7 +49,7 @@ void SimPoint( cv::Point *p1, cv::Point *p2, double *param )
 }
 
 void CalcSimParam( cv::Point p11, cv::Point p12, cv::Point p21, cv::Point p22, double *param )
-// p11,p12->p21,p22ï¿½Ö‚Æ‘ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// p11,p12->p21,p22‚Ö‚Æ‘Š—•ÏŠ·‚·‚éƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
 {
 	double theta, s, tx, ty;
 	
@@ -66,7 +66,7 @@ void CalcSimParam( cv::Point p11, cv::Point p12, cv::Point p21, cv::Point p22, d
 }
 
 void AffineTransformation( cv::Mat src, cv::Mat dst, double *param )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
+// ‘Š—•ÏŠ·‚·‚é
 {
 	int i, j;
 	cv::Point psrc, pdst;
@@ -95,7 +95,7 @@ void AffineTransformation( cv::Mat src, cv::Mat dst, double *param )
 }
 
 void AffPoint( cv::Point *p1, cv::Point *p2, double *param )
-// ï¿½_ï¿½ÌƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// “_‚ÌƒAƒtƒBƒ“•ÏŠ·Œã‚ÌÀ•W‚ğ‹‚ß‚é
 {
 	double a1, b1, c1, a2, b2, c2;
 
@@ -112,7 +112,7 @@ void AffPoint( cv::Point *p1, cv::Point *p2, double *param )
 }
 
 void CalcAffParam( cv::Point p11, cv::Point p12, cv::Point p13, cv::Point p21, cv::Point p22, cv::Point p23, double *param )
-// p11,p12,p13->p21,p22,p23ï¿½Ö‚ÆƒAï¿½tï¿½Bï¿½ï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// p11,p12,p13->p21,p22,p23‚Ö‚ÆƒAƒtƒBƒ“•ÏŠ·‚·‚éƒpƒ‰ƒ[ƒ^‚ğ‹‚ß‚é
 {
 	double a1, b1, c1, a2, b2, c2;
 	double x11, x12, x13, x21, x22, x23, y11, y12, y13, y21, y22, y23;

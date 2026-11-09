@@ -11,16 +11,16 @@
 #define	cBlue	cv::Scalar(255,0,0)
 #define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
-#define	kOrigNum	(3)	/* origï¿½Ì”Ôï¿½ */
-#define	kAnnoNum	(3)	/* annoï¿½Ì”Ôï¿½ */
+#define	kOrigNum	(3)	/* orig‚Ì”Ô† */
+#define	kAnnoNum	(3)	/* anno‚Ì”Ô† */
 
-// ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½v
+// •s•Ï—Êƒ^ƒCƒv
 #define	CR_AREA		(0)
 #define	CR_INTER	(1)
 #define	AFFINE		(2)
 #define	SIMILAR		(3)
 
-// ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
+// ƒfƒtƒHƒ‹ƒg‚Ìƒpƒ‰ƒ[ƒ^
 #define	kDefaultGroup1Num	(5)
 #define	kDefaultGroup2Num	(5)
 #define	kDefaultGroup3Num	(3)
@@ -55,7 +55,7 @@
 #define	kDefaultKMeansEpsilon	(1.0)
 #define	kDefaultMinAreaCl	(20)
 //#define	kDefaultMaxAreaCl	(1000)
-#define	kDefaultMaxAreaCl	(10000000000)	// ï¿½å‚«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
+#define	kDefaultMaxAreaCl	(10000000000)	// ‘å‚«‚·‚¬‚é‚à‚Ì‚ğœ‚©‚È‚¢ƒo[ƒWƒ‡ƒ“
 
 #define	kDefaultDiffNear	(4)
 #define	kDefaultDiffLeaveThr	(200000)
@@ -65,7 +65,7 @@
 
 #define	kResizeScale	(0.5)
 
-#define	kMaxParamValNum	(8)	/* ï¿½ÏŠï¿½ï¿½iï¿½ï¿½ï¿½ï¿½orï¿½Aï¿½tï¿½Bï¿½ï¿½ï¿½jï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ÌÅ‘å” */
+#define	kMaxParamValNum	(8)	/* •ÏŠ·i‘Š—orƒAƒtƒBƒ“jƒpƒ‰ƒ[ƒ^‚ÌÅ‘å” */
 
 int FindFromDefaultDir( char *fname, char *init_fn, char *out_fn );
 int InitAnnex( int argc, char *argv[], int *clcptr );

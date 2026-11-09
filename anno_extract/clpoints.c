@@ -10,7 +10,7 @@
 #include "proctime.h"
 
 void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int *nums, cv::Point **clps, double avgs[][3], char *dir, char *base )
-// ï¿½Fï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä˜Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìdï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+// FƒNƒ‰ƒXƒ^ƒŠƒ“ƒO‚µ‚Ä˜AŒ‹¬•ª‚ÌdS‚ğ‹‚ß‚é
 {
 	cv::Scalar color_tab[kMaxClusters];
 	cv::Mat sml, smt, climgs[kMaxClusters], climg, climgs2[kMaxClusters];
@@ -40,20 +40,20 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 #endif
 
 //	sml = src;
-	// ï¿½æ‘œï¿½Ìkï¿½ï¿½
+	// ‰æ‘œ‚Ìk¬
 	sml = cv::Mat::zeros(cv::Size( src.cols * eClScale, src.rows * eClScale ), CV_8UC3);
 	cv::resize( src, sml, sml.size(), 0, 0, cv::INTER_NEAREST );
 	w = sml.cols;
 	h = sml.rows;
-	// ï¿½_ï¿½Ìï¿½ï¿½ÌZï¿½o
+	// “_‚Ì”‚ÌZo
 	sample_count = w * h;
-	// ï¿½æ‘œï¿½ÌƒXï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½ï¿½Oï¿½ierodeï¿½j
+	// ‰æ‘œ‚ÌƒXƒ€[ƒWƒ“ƒOierodej
 	start = GetProcTimeMiliSec();
 	smt = cv::Mat::zeros(sml.size(), CV_8UC3);
 //	cv::GaussianBlur(sml, smt, cv::Size(7, 7), 0);
 	cv::erode( sml, smt, cv::Mat(), cv::Point(-1,-1), eErodeClIter );
 	printf("Smoothing image: %d msec\n", GetProcTimeMiliSec() - start);
-	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Eï¿½ï¿½Uï¿½kï¿½ï¿½ï¿½ï¿½
+	// ƒNƒ‰ƒXƒ^ƒŠƒ“ƒOEˆê’Uk¬”Å
 	start = GetProcTimeMiliSec();
 	w_small = (int)((double)w / (double)eClCmpStep + 0.9999);
 	h_small = (int)((double)h / (double)eClCmpStep + 0.9999);
@@ -61,8 +61,8 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	points_small = cv::Mat(sample_count_small, 1, CV_32FC3 , cv::Scalar(0));
 	clusters_small = cv::Mat(sample_count_small, 1, CV_32SC1 , cv::Scalar(0));
 	wstep = (int)smt.step[0];
-	// eClCmpStepï¿½ï¿½ï¿½Æ‚Éƒfï¿½[ï¿½^ï¿½ğ’Šoï¿½ï¿½ï¿½Apoints_smallï¿½Éİ’è‚·ï¿½ï¿½
-	// 1/eClCmpStepï¿½Ékï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½æ‘œï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Æ“ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+	// eClCmpStep‚²‚Æ‚Éƒf[ƒ^‚ğ’Šo‚µApoints_small‚Éİ’è‚·‚é
+	// 1/eClCmpStep‚Ék¬‚³‚ê‚½‰æ‘œ‚ÌƒNƒ‰ƒXƒ^ƒŠƒ“ƒO‚Æ“¯“™‚Ìˆ—
 	for ( j = 0, j_small = 0; j < h; j+=eClCmpStep, j_small++ ) {
 		for ( i = 0, i_small = 0; i < w; i+=eClCmpStep, i_small++ ) {
 			points_small.ptr<float>(0)[(w_small*j_small+i_small)*3] = (unsigned char)smt.data[(wstep*j)+i*3];
@@ -70,10 +70,10 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 			points_small.ptr<float>(0)[(w_small*j_small+i_small)*3+2] = (unsigned char)smt.data[(wstep*j)+i*3+2];
 		}
 	}
-	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½sï¿½ï¿½
+	// ƒNƒ‰ƒXƒ^ƒŠƒ“ƒO‚ğs‚¤
 	cv::kmeans( points_small, cluster_count, clusters_small, cv::TermCriteria( cv::TermCriteria::EPS+cv::TermCriteria::MAX_ITER, eKMeansMaxIter, eKMeansEpsilon ), 10, cv::KMEANS_RANDOM_CENTERS );
 	printf("Clustering: %d msec\n", GetProcTimeMiliSec() - start );
-#ifdef	CL_OUTPUT_IMAGE	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ê‚Ì•\ï¿½ï¿½
+#ifdef	CL_OUTPUT_IMAGE	// ƒNƒ‰ƒXƒ^ƒŠƒ“ƒOŒ‹‰Ê‚Ì•\¦
 //	fprintf( stderr, "Drawing result of clustering...\n" );
 	dst_small = cv::Mat::zeros(cv::Size( w_small, h_small ), CV_8UC3);
 	dst_small.setTo(cv::Scalar::all(0));
@@ -92,11 +92,11 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 #endif
 
 	
-	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚Ì•ï¿½ï¿½Ï’lï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	// ƒNƒ‰ƒXƒ^‚²‚Æ‚Ì•½‹Ï’l‚ğ‹‚ß‚é
 //	fprintf( stderr, "Calculating averages...\n" );
 	start = GetProcTimeMiliSec();
 	for ( i = 0; i < cluster_count; i++ ) {
-		// ï¿½ï¿½ï¿½Ï’lï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+		// •½‹Ï’l‚Ì‰Šú‰»
 		clcnt[i] = 0;
 		clsum[i][0] = 0.0;
 		clsum[i][1] = 0.0;
@@ -120,7 +120,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	}
 	printf("Calculating avg: %d msec\n", GetProcTimeMiliSec() - start);
 
-#ifdef	CL_OUTPUT_IMAGE	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ê‚Ì•\ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Ï’lï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
+#ifdef	CL_OUTPUT_IMAGE	// ƒNƒ‰ƒXƒ^ƒŠƒ“ƒOŒ‹‰Ê‚Ì•\¦i•½‹Ï’lƒo[ƒWƒ‡ƒ“j
 //	fprintf( stderr, "Drawing result of clustering...\n" );
 	dst_small = cv::Mat::zeros(cv::Size( w_small, h_small ), CV_8UC3);
 	dst_small.setTo(cv::Scalar::all(0));
@@ -137,7 +137,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	cv::imwrite( fname, dst_small );
 #endif
 
-	// ï¿½Å‚ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½Ï’lï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½^ï¿½ÉŠï¿½ï¿½è“–ï¿½Ä‚é‚±ï¿½Æ‚ÅƒNï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚Ì‰æ‘œï¿½ï¿½ï¿½ì¬
+	// Å‚à‹ß‚¢•½‹Ï’l‚ÌƒNƒ‰ƒXƒ^‚ÉŠ„‚è“–‚Ä‚é‚±‚Æ‚ÅƒNƒ‰ƒXƒ^‚²‚Æ‚Ì‰æ‘œ‚ğì¬
 //	fprintf( stderr, "Making images of clusters...\n" );
 	start = GetProcTimeMiliSec();
 	for ( i = 0; i < cluster_count; i++ ) {
@@ -156,16 +156,16 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	}
 	printf("Making images of clusters: %d msec\n", GetProcTimeMiliSec() - start);
 
-#ifdef	CL_OUTPUT_IMAGE	// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚Ì‰æ‘œï¿½ï¿½ï¿½oï¿½ï¿½
+#ifdef	CL_OUTPUT_IMAGE	// ƒNƒ‰ƒXƒ^‚²‚Æ‚Ì‰æ‘œ‚ğo—Í
 	for ( i = 0; i < cluster_count; i++ ) {
 		cv::Mat cland = cv::Mat::zeros(sml.size(), CV_8UC3);
 		cv::Mat clmask = cv::Mat::zeros(sml.size(), CV_8UC3);
 		cv::Mat clnot = cv::Mat::zeros(sml.size(), CV_8UC3);
-		cv::bitwise_not( sml, clnot );	// ï¿½ï¿½ï¿½æ‘œï¿½ğ”½“]
-		cv::cvtColor( climgs[i], clmask, cv::COLOR_GRAY2BGR );	// ï¿½}ï¿½Xï¿½Nï¿½ï¿½ï¿½ì¬
-		cland.setTo(cv::Scalar::all(0));	// ANDï¿½æ‘œï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+		cv::bitwise_not( sml, clnot );	// Œ³‰æ‘œ‚ğ”½“]
+		cv::cvtColor( climgs[i], clmask, cv::COLOR_GRAY2BGR );	// ƒ}ƒXƒN‚ğì¬
+		cland.setTo(cv::Scalar::all(0));	// AND‰æ‘œ‚Ì‰Šú‰»
 		cv::bitwise_and( clnot, clmask, cland );	// AND
-		cv::bitwise_not( cland, clnot );	// ï¿½ï¿½ï¿½]
+		cv::bitwise_not( cland, clnot );	// ”½“]
 		sprintf( fname, "%s%s02cl%d.jpg", dir, base, i );
 		cv::imwrite( fname, climgs[i] );
 		sprintf( fname, "%s%s02cland%d.jpg", dir, base, i );
@@ -174,7 +174,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 
 	}
 #endif
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ or ï¿½å‚«ï¿½ß‚ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ¬‚³‚·‚¬‚é or ‘å‚«‰ß‚¬‚é˜AŒ‹¬•ª‚ğœ‹
 //	fprintf( stderr, "Cleaning cluster images...\n" );
 	start = GetProcTimeMiliSec();
 #ifdef	CL_OUTPUT_IMAGE
@@ -184,13 +184,13 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 	}
 #endif
 	for ( i = 0; i < cluster_count; i++ ) {
-		// ï¿½Ü‚ï¿½ï¿½Íï¿½ï¿½ğ”‚ï¿½ï¿½ï¿½
+		// ‚Ü‚¸‚Í”‚ğ”‚¦‚é
 		nums[i] = 0;
-	    cv::findContours(climgs[i], contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE );	// ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ’Šoï¿½ï¿½ï¿½ï¿½
+	    cv::findContours(climgs[i], contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE );	// ˜AŒ‹¬•ª‚ğ’Šo‚·‚é
 		for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {
 			mom = cv::moments(contours[_ci]);
 			d00 = mom.m00;
-			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
+			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
 			nums[i]++;
 		}
 		clps[i] = (cv::Point *)calloc( nums[i], sizeof(cv::Point) );
@@ -198,8 +198,8 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 		for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) {
 			mom = cv::moments(contours[ci]);
 			d00 = mom.m00;
-			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½O
-			clps[i][j].x = (int)(mom.m10 / d00 / eClScale );	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìï¿½ï¿½Wï¿½Íƒï¿½ï¿½Tï¿½Cï¿½Yï¿½Oï¿½Ì‚ï¿½ï¿½Ì‚É‚ï¿½ï¿½ï¿½
+			if ( d00 < eMinAreaCl || d00 > eMaxAreaCl ) continue;	// ¬‚³‚·‚¬‚é˜AŒ‹¬•ª‚ÍœŠO
+			clps[i][j].x = (int)(mom.m10 / d00 / eClScale );	// “Á’¥“_‚ÌÀ•W‚ÍƒŠƒTƒCƒY‘O‚Ì‚à‚Ì‚É‚·‚é
 			clps[i][j].y = (int)(mom.m01 / d00 / eClScale );
 			j++;
 #ifdef	CL_OUTPUT_IMAGE
@@ -215,7 +215,7 @@ void ColorClusteringAndMakePoints( cv::Mat src, int cluster_count, int mode, int
 }
 
 int NearestCluster( unsigned char *pixels, double avgs[][3], int cluster_count )
-// ï¿½Å‚ï¿½ï¿½ß‚ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½Tï¿½ï¿½
+// Å‚à‹ß‚¢ƒNƒ‰ƒXƒ^‚ğ’T‚·
 {
 	int i, j, min_cl;
 	double dist, min_dist, diff;
@@ -237,7 +237,7 @@ int NearestCluster( unsigned char *pixels, double avgs[][3], int cluster_count )
 }
 
 int SaveClusterPoints( char *fname, int cluster_count, int *nums, cv::Point **clps, double avgs[][3] )
-// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚Ì“_ï¿½fï¿½[ï¿½^ï¿½ï¿½Û‘ï¿½
+// ƒNƒ‰ƒXƒ^‚²‚Æ‚Ì“_ƒf[ƒ^‚ğ•Û‘¶
 {
 	int i, j;
 	FILE *fp;
@@ -259,7 +259,7 @@ int SaveClusterPoints( char *fname, int cluster_count, int *nums, cv::Point **cl
 }
 
 int LoadClusterPoints( char *fname, int *cluster_count, int *nums, cv::Point **clps, double avgs[][3] )
-// ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Æ‚Ì“_ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
+// ƒNƒ‰ƒXƒ^‚²‚Æ‚Ì“_ƒf[ƒ^‚ğ“Ç‚İ‚İ
 {
 	int i, j;
 	char line[kMaxLineLen];
@@ -287,13 +287,13 @@ int LoadClusterPoints( char *fname, int *cluster_count, int *nums, cv::Point **c
 }
 
 void SavePointFile( char *fname, cv::Point *ps, int num, cv::Size size )
-// ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ï¿½
+// “_ƒf[ƒ^‚ğ•Û‘¶‚·‚é
 {
 	int i;
 	FILE *fp;
 
 	fp = fopen(fname, "w");
-	fprintf(fp, "%d,%d\n", size.width, size.height);	// ï¿½æ“ªï¿½ÉƒTï¿½Cï¿½Yï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ï¿½
+	fprintf(fp, "%d,%d\n", size.width, size.height);	// æ“ª‚ÉƒTƒCƒY‚ğ•Û‘¶‚·‚é
 	for ( i = 0; i < num; i++ )
 		fprintf(fp, "%d,%d\n", ps[i].x, ps[i].y);
 	fclose(fp);

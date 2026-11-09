@@ -6,15 +6,15 @@
 	#define	SHOW_PIC
 	#define	SAVE_PIC
 #endif
-//#define	DRAW_BY_NUM	/* DrawPointï¿½Åï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+//#define	DRAW_BY_NUM	/* DrawPoint‚Å”š‚ğ•\¦‚·‚é*/
 //#define	DRAW_COR
 //#define	DRAW_COR_ALL
 //#define	DRAW_FP
 
-//#define	kNears	5	/* 1NN,Wordï¿½Ìê‡*/
-#define	kNears	30	/* CRï¿½Ìê‡ */
-#define	kDivX	4	/* MakeNearsFromCentresDivï¿½p */
-#define	kDivY	5	/* MakeNearsFromCentresDivï¿½p */
+//#define	kNears	5	/* 1NN,Word‚Ìê‡*/
+#define	kNears	30	/* CR‚Ìê‡ */
+#define	kDivX	4	/* MakeNearsFromCentresDiv—p */
+#define	kDivY	5	/* MakeNearsFromCentresDiv—p */
 #define	kRadRange (M_PI / 4.0)
 #define	kRightRange kRadRange
 #define	kLeftRange kRadRange
@@ -22,17 +22,17 @@
 #define	kDownRange kRadRange
 #define	kMaxDiscriptorSize	(4096)
 #define	kWordSep	(1.4)
-#define	kFFRAngle	(M_PI / 4.0)		/* FirstFirstRightPointCRï¿½pï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½v*/
-#define	kRoughlyAngle	(M_PI / 20.0)	/* FirstRightPointCRï¿½pï¿½uï¿½ï¿½â“¯ï¿½ï¿½ï¿½v*/
-#define	kNearlyAngle	(M_PI / 18.0)	/* RightPointCRï¿½pï¿½uï¿½Ù‚Æ‚ï¿½Ç“ï¿½ï¿½ï¿½ï¿½v*/
-#define	kNLAngle	(M_PI / 4.0)	/* NextLineCRï¿½p */
-//#define	kCloseAngle	(M_PI / 14400.0)	/* RightPointCRï¿½pï¿½@ï¿½sï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½Æ‚ÌŠpï¿½x*/
-#define	kCloseAngle	((long double)(M_PI / 1000000000.0L))	/* RightPointCRï¿½pï¿½@ï¿½sï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½Æ‚ÌŠpï¿½x */
-#define	kAlmostAngle	(M_PI / 4.0)	/* RightPointCRï¿½pï¿½@ï¿½Eï¿½ï¿½ï¿½É‚È‚ï¿½ï¿½Æï¿½ï¿½ï¿½Ì‚ï¿½*/
+#define	kFFRAngle	(M_PI / 4.0)		/* FirstFirstRightPointCR—pu‚¾‚¢‚½‚¢“¯‚¶v*/
+#define	kRoughlyAngle	(M_PI / 20.0)	/* FirstRightPointCR—pu‚â‚â“¯‚¶v*/
+#define	kNearlyAngle	(M_PI / 18.0)	/* RightPointCR—pu‚Ù‚Æ‚ñ‚Ç“¯‚¶v*/
+#define	kNLAngle	(M_PI / 4.0)	/* NextLineCR—p */
+//#define	kCloseAngle	(M_PI / 14400.0)	/* RightPointCR—p@s“ª‚Ì•¶š‚Æ‚ÌŠp“x*/
+#define	kCloseAngle	((long double)(M_PI / 1000000000.0L))	/* RightPointCR—p@s“ª‚Ì•¶š‚Æ‚ÌŠp“x */
+#define	kAlmostAngle	(M_PI / 4.0)	/* RightPointCR—p@‰E‘¤‚É‚È‚¢‚Æ¢‚é‚Ì‚Å*/
 
-#define	kLittleVal	(0.000001L)	/* CalcCRï¿½p */
-//#define	kMinPointsToCalcParam	(10)	/* ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½Û‚ÌÅï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½i4ï¿½Èï¿½É‚ï¿½ï¿½é‚±ï¿½Æj*/
-#define	kMinPointsToCalcParam	(4)	/* ï¿½Ë‰eï¿½ÏŠï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½Û‚ÌÅï¿½ï¿½Î‰ï¿½ï¿½_ï¿½ï¿½ï¿½i4ï¿½Èï¿½É‚ï¿½ï¿½é‚±ï¿½Æj*/
+#define	kLittleVal	(0.000001L)	/* CalcCR—p */
+//#define	kMinPointsToCalcParam	(10)	/* Ë‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğŒvZ‚·‚éÛ‚ÌÅ¬‘Î‰“_”i4ˆÈã‚É‚·‚é‚±‚Æj*/
+#define	kMinPointsToCalcParam	(4)	/* Ë‰e•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğŒvZ‚·‚éÛ‚ÌÅ¬‘Î‰“_”i4ˆÈã‚É‚·‚é‚±‚Æj*/
 
 #ifdef	WIN32
 #define	kAcrPath	"C:\\doc\\src\\vs\\acr2win\\debug\\acr2win.exe"
@@ -47,7 +47,7 @@
 #define	cBlue	cv::Scalar(255,0,0)
 #define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
-// ï¿½Sï¿½Ì‚Ìƒï¿½ï¿½[ï¿½h
+// ‘S‘Ì‚Ìƒ‚[ƒh
 #define	RETRIEVE_MODE	(0)
 #define	CONST_HASH_MODE	(1)
 #define	RET_MP_MODE			(2)
@@ -62,37 +62,37 @@
 #define	CONST_MULTI_HASH_MODE	(11)	/* Construct multiple hash tables */
 #define	CONST_DUAL_HASH_MODE	(12)	/* Construct dual hash */
 #define	USBCAM_SERVER_DUAL_HASH_MODE	(13)
-// ï¿½Ë‰eï¿½ÏŠï¿½ï¿½Ì•â³ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½
+// Ë‰e•ÏŠ·‚Ì•â³‚ğ‚·‚é‚©‚µ‚È‚¢‚©
 #define	NOT_RECOVER_MODE	(0)
 #define	RECOVER_MODE		(1)
-// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Í‰ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½
+// “Á’¥“_‚Í‰½‚ğg‚¤‚©
 #define	CONNECTED_MODE	(0)
 #define	ENCLOSED_MODE	(1)
-#define	USEPF_MODE		(2)	/* kPFPrefix, kPFSuffixï¿½Ì“_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ */
-// ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œï¿½Í—pï¿½Ó‚ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½iï¿½cï¿½ï¿½ï¿½ï¿½ï¿½j
+#define	USEPF_MODE		(2)	/* kPFPrefix, kPFSuffix‚Ì“_ƒtƒ@ƒCƒ‹‚ğg‚¤ */
+// Œ‹‡‰æ‘œ‚Í—pˆÓ‚³‚ê‚Ä‚¢‚é‚©ic‚·‚©j
 #define	NOT_PREPARED_MODE	(0)
 #define	PREPARED_MODE		(1)
 #define	LEAVE_MODE			(2)
 
-// ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½v
+// •s•Ï—Êƒ^ƒCƒv
 #define	CR_AREA		(0)
 #define	CR_INTER	(1)
 #define	AFFINE		(2)
 #define	SIMILAR		(3)
 
-// ï¿½sï¿½Ï—Êƒ^ï¿½Cï¿½vï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// •s•Ï—Êƒ^ƒCƒv‚ğ•\‚·•¶š
 #define	kInvCharCRArea	'r'
 #define	kInvCharCRInter	'i'
 #define	kInvCharAffine	'a'
 #define	kInvCharSimilar	's'
 
-// ï¿½Å‚ï¿½ï¿½Ø‚ï¿½ÖŒW
+// ‘Å‚¿Ø‚èŠÖŒW
 #define	TERM_NON	(0)
 #define	TERM_PNUM	(1)
 #define	TERM_RATE	(2)
 #define	TERM_VNUM	(3)
 
-// ï¿½gï¿½Ñ“dï¿½bï¿½ÌŠgï¿½å—¦
+// Œg‘Ñ“d˜b‚ÌŠg‘å—¦
 #define	kMPExp	9
 
 #define	GetPointsDistance(p1, p2)	(sqrt((p1.x - p2.x)*(p1.x - p2.x)+(p1.y - p2.y)*(p1.y - p2.y)))

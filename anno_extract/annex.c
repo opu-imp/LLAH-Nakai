@@ -16,7 +16,7 @@
 #include "proctime.h"
 
 unsigned char max3( unsigned char d1, unsigned char d2, unsigned char d3 )
-// 3пїЅВ‚МЌЕ‘пїЅlпїЅпїЅФ‚пїЅ
+// 3‚В‚МЌЕ‘е’l‚р•Ф‚·
 {
 	if ( d1 > d2 ) {
 		if ( d1 > d3 )	return d1;
@@ -29,7 +29,7 @@ unsigned char max3( unsigned char d1, unsigned char d2, unsigned char d3 )
 }
 
 void RGB2Gray( cv::Mat diff, cv::Mat gray )
-// пїЅJпїЅпїЅпїЅ[пїЅж‘њпїЅпїЅпїЅOпїЅпїЅпїЅCпїЅXпїЅPпїЅ[пїЅпїЅпїЅЙ•ПЉпїЅпїЅпїЅпїЅпїЅiRGBпїЅМЌЕ‘пїЅlпїЅпїЅпїЅZпїЅbпїЅgпїЅпїЅпїЅпїЅj
+// ѓJѓ‰Ѓ[‰ж‘њ‚рѓOѓЊѓCѓXѓPЃ[ѓ‹‚Й•ПЉ·‚·‚йЃiRGB‚МЌЕ‘е’l‚рѓZѓbѓg‚·‚йЃj
 {
 	int i, j, w, h, wstep_diff, wstep_gray;
 	unsigned char *diff_dat;
@@ -49,29 +49,29 @@ void RGB2Gray( cv::Mat diff, cv::Mat gray )
 
 
 int FindFromDefaultDir( char *fname, char *init_fn, char *out_fn )
-// пїЅJпїЅпїЅпїЅпїЅпїЅgпїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅпїЅпїЅinit_fnпїЅЙ‹LпїЅqпїЅпїЅпїЅпїЅД‚пїЅпїЅпїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅпїЅfnameпїЅпїЅTпїЅпїЅпїЅAпїЅpпїЅXпїЅпїЅпїЅмђ¬пїЅпїЅпїЅпїЅout_fnпїЅЙ“пїЅпїЅпїЅпїЅ
-// пїЅпїЅпїЅВ‚пїЅпїЅпїЅИ‚пїЅпїЅпїЅпїЅ0пїЅпїЅФ‚пїЅ
+// ѓJѓЊѓ“ѓgѓfѓBѓЊѓNѓgѓЉ‚Ё‚ж‚Сinit_fn‚Й‹LЏq‚і‚к‚Д‚ў‚йѓfѓBѓЊѓNѓgѓЉ‚©‚зfname‚р’T‚µЃAѓpѓX‚рЌмђ¬‚µ‚Дout_fn‚Й“ь‚к‚й
+// Њ©‚В‚©‚з‚И‚Ї‚к‚О0‚р•Ф‚·
 {
 	char line[kMaxLineLen];
 	FILE *fp, *fp_init;
 	
-	if ( ( fp = fopen( fname, "r" ) ) != NULL ) {	// пїЅпїЅпїЅМ‚Ь‚Ь‚Е‘пїЅпїЅпїЅ
+	if ( ( fp = fopen( fname, "r" ) ) != NULL ) {	// ‚»‚М‚Ь‚Ь‚Е‘¶ЌЭ
 		strcpy( out_fn, fname );
 		fclose( fp );
 		return 1;
 	}
-	if ( fname[0] == '/' ) {	// пїЅж“ЄпїЅпїЅ'/'пїЅiпїЅfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅпїЅпїЅwпїЅпїЅП‚ЭЃj
+	if ( fname[0] == '/' ) {	// ђж“Є‚Є'/'ЃiѓfѓBѓЊѓNѓgѓЉ‚ЄЋw’иЌП‚ЭЃj
 		return 0;
 	}
-	if ( ( fp_init = fopen( init_fn, "r" ) ) == NULL ) {	// init_fnпїЅпїЅпїЅJпїЅпїЅпїЅИ‚пїЅ
+	if ( ( fp_init = fopen( init_fn, "r" ) ) == NULL ) {	// init_fn‚ЄЉJ‚Ї‚И‚ў
 		return 0;
 	}
-	while ( fgets( line, kMaxLineLen, fp_init ) != NULL ) {	// пїЅпїЅsпїЅЗ‚ЭЌпїЅпїЅпїЅ
-		if ( line[strlen( line ) - 1] == '\n' ) {	// пїЅпїЅпїЅпїЅпїЅЙ‰пїЅпїЅsпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	while ( fgets( line, kMaxLineLen, fp_init ) != NULL ) {	// €кЌs“З‚ЭЌћ‚Ю
+		if ( line[strlen( line ) - 1] == '\n' ) {	// ––”ц‚Й‰ьЌs‚Є‚ ‚Б‚Ѕ‚з
 			line[strlen( line ) - 1] = '\0';
 		}
-		strcat(line, fname);	// пїЅpпїЅXпїЅпїЅпїЅмђ¬
-		if ( ( fp = fopen( line, "r" ) ) != NULL ) {	// пїЅмђ¬пїЅпїЅпїЅпїЅпїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅЕ‘пїЅпїЅпїЅ
+		strcat(line, fname);	// ѓpѓX‚рЌмђ¬
+		if ( ( fp = fopen( line, "r" ) ) != NULL ) {	// Ќмђ¬‚µ‚Ѕѓtѓ@ѓCѓ‹–ј‚Е‘¶ЌЭ
 			strcpy( out_fn, line );
 			fclose( fp );
 			fclose( fp_init );
@@ -82,11 +82,11 @@ int FindFromDefaultDir( char *fname, char *init_fn, char *out_fn )
 }
 
 int InitAnnex( int argc, char *argv[], int *clcptr )
-// пїЅRпїЅ}пїЅпїЅпїЅhпїЅпїЅпїЅCпїЅпїЅпїЅпїЅпїЅпїЅeпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅЭ’и‚·пїЅпїЅiannexпїЅpпїЅj
+// ѓRѓ}ѓ“ѓhѓ‰ѓCѓ“‚©‚зЉeЋнѓpѓ‰ѓЃЃ[ѓ^‚рђЭ’и‚·‚йЃiannex—pЃj
 {
 	int result, i, num, den;
 	
-	// пїЅfпїЅtпїЅHпїЅпїЅпїЅgпїЅlпїЅЙђЭ’пїЅ
+	// ѓfѓtѓHѓ‹ѓg’l‚ЙђЭ’и
 	eGroup1Num = kDefaultGroup1Num;
 	eGroup2Num = kDefaultGroup2Num;
 	eGroup3Num = kDefaultGroup3Num;
@@ -118,92 +118,92 @@ int InitAnnex( int argc, char *argv[], int *clcptr )
 	eOrigGaussParamMain = kDefaultOrigGaussParamMain;
 	eAnnoGaussPramMain = kDefaultAnnoGaussParamMain;
 
-	// пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅпїЅ
+	// ѓpѓ‰ѓЃЃ[ѓ^‰рђН
 	while ( ( result = getopt( argc, argv, "Ac:d:D:e:E:g:G:h:H:i:I:l:L:m:M:n:N:Oo:p:P:R:St:T:z:Z:" ) ) != -1 ) {
 		switch ( result ) {
-			case 'n':	// пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^n
+			case 'n':	// ѓpѓ‰ѓЃЃ[ѓ^n
 				eGroup1Num = atoi( optarg );
 				break;
-			case 'm':	// пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^m
+			case 'm':	// ѓpѓ‰ѓЃЃ[ѓ^m
 				eGroup2Num = atoi( optarg );
 				break;
-			case 'd':	// пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^kпїЅiпїЅпїЅпїЅUпїЅпїЅпїЅпїЅпїЅxпїЅпїЅпїЅпїЅпїЅj
+			case 'd':	// ѓpѓ‰ѓЃЃ[ѓ^kЃi—ЈЋU‰»ѓЊѓxѓ‹ђ”Ѓj
 				eDiscNum = atoi( optarg );
 				break;
-			case 'c':	// пїЅNпїЅпїЅпїЅXпїЅ^пїЅпїЅ
+			case 'c':	// ѓNѓ‰ѓXѓ^ђ”
 				*clcptr = atoi( optarg );
 				break;
-			case 'S':	// пїЅпїЅпїЅTпїЅCпїЅYпїЅпїЅпїЅ[пїЅhпїЅiпїЅпїЅпїЅЭ‚Н–пїЅпїЅпїЅпїЅj
+			case 'S':	// ѓЉѓTѓCѓYѓ‚Ѓ[ѓhЃiЊ»ЌЭ‚Н–іЊшЃj
 				eResizeMode = 1;
 				break;
-			case 'O':	// пїЅпїЅrпїЅОЏЫ‚пїЅпїЅIпїЅпїЅпїЅWпїЅiпїЅпїЅPDFпїЅпїЅпїЅз“ѕпїЅпїЅпїЅж‘њпїЅЖ‚пїЅпїЅйѓ‚пїЅ[пїЅh
+			case 'O':	// ”дЉr‘ОЏЫ‚рѓIѓЉѓWѓiѓ‹PDF‚©‚з“ѕ‚Ѕ‰ж‘њ‚Ж‚·‚йѓ‚Ѓ[ѓh
 				eOrigMode = 1;
 				break;
-			case 'A':	// TransModeпїЅпїЅпїЅAпїЅtпїЅBпїЅпїЅпїЅПЉпїЅпїЅЙ‚пїЅпїЅпїЅ
+			case 'A':	// TransMode‚рѓAѓtѓBѓ“•ПЉ·‚Й‚·‚й
 				eTransMode = AFFINE;
 				break;
-			case 'o':	// пїЅoпїЅНѓfпїЅBпїЅпїЅпїЅNпїЅgпїЅпїЅпїЅМђЭ’пїЅ
+			case 'o':	// Џo—НѓfѓBѓЊѓNѓgѓЉ‚МђЭ’и
 				strcpy( eOutPutDir, optarg );
 				AddSlash( eOutPutDir, kMaxPathLen );
 				break;
-			case 'z':	// mainпїЅЕЏkпїЅпїЅпїЅпїЅпїЅпїЅЫ‚М”{пїЅпїЅпїЅiпїЅпїЅпїЅж‘њпїЅj
+			case 'z':	// main‚ЕЏkЏ¬‚·‚йЌЫ‚М”{—¦ЃiЊі‰ж‘њЃj
 				eResizeMainOrig = atof( optarg );
 				break;
-			case 'Z':	// mainпїЅЕЏkпїЅпїЅпїЅпїЅпїЅпїЅЫ‚М”{пїЅпїЅпїЅiпїЅпїЅпїЅпїЅпїЅпїЅпїЅЭ‰ж‘њпїЅj
+			case 'Z':	// main‚ЕЏkЏ¬‚·‚йЌЫ‚М”{—¦ЃiЏ‘‚«Ќћ‚Э‰ж‘њЃj
 				eResizeMainAnno = atof( optarg );
 				break;
-			case 't':	// пїЅпїЅlпїЅпїЅпїЅпїЅпїЅпїЅЫ‚пїЅи‡’l
+			case 't':	// “с’l‰»‚·‚йЌЫ‚Ми‡’l
 				eBinThr = atof( optarg );
 				break;
-			case 'h':	// пїЅО‚пїЅО‚пїЅЙ‚И‚пїЅпїЅпїЅпїЅAпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЫ‚МѓпїЅпїЅпїЅпїЅtпїЅHпїЅпїЅпїЅWпїЅпїЅпїЅZпїЅМѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'h':	// ‚О‚з‚О‚з‚Й‚И‚Б‚ЅAЊ‹ђ¬•Є‚рЊ‹Ќ‡‚·‚йЌЫ‚Мѓ‚ѓ‹ѓtѓHѓЌѓW‰‰ЋZ‚Мѓpѓ‰ѓЃЃ[ѓ^
 				eClosingIter = atoi( optarg );
 				break;
-			case 'M':	// mainпїЅЕѓmпїЅCпїЅYпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЫ‚МЌЕЏпїЅпїЅКђпїЅ
+			case 'M':	// main‚ЕѓmѓCѓYЏњ‹Ћ‚·‚йЌЫ‚МЌЕЏ¬–КђП
 				eMinAreaMain = atof( optarg );
 				break;
-			case 'D':	// пїЅ}пїЅXпїЅNпїЅр‘ѕ‚з‚№пїЅпїЅЫ‚МѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'D':	// ѓ}ѓXѓN‚р‘ѕ‚з‚№‚йЌЫ‚Мѓpѓ‰ѓЃЃ[ѓ^
 				eDilMaskIter = atoi( optarg );
 				break;
-			case 'P':	// пїЅsпїЅП—К‚М—пїЅпїЅUпїЅпїЅпїЅeпїЅ[пїЅuпїЅпїЅпїЅпїЅпїЅмђ¬пїЅпїЅпїЅпїЅRпїЅ}пїЅпїЅпїЅhacr2пїЅМѓpпїЅX
+			case 'P':	// •s•П—К‚М—ЈЋU‰»ѓeЃ[ѓuѓ‹‚рЌмђ¬‚·‚йѓRѓ}ѓ“ѓhacr2‚МѓpѓX
 				strcpy( eAcr2Path, optarg );
 				break;
-			case 'L':	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅoпїЅпїЅпїЅЙЏkпїЅпїЅпїЅпїЅпїЅпїЅЫ‚М”{пїЅпїЅ
+			case 'L':	// “Б’Ґ“_’ЉЏoЋћ‚ЙЏkЏ¬‚·‚йЌЫ‚М”{—¦
 				eClScale = atof( optarg );
 				break;
-			case 'I':	// пїЅNпїЅпїЅпїЅXпїЅ^пїЅпїЅпїЅпїЅпїЅOпїЅМ‘OпїЅпїЅErodeпїЅпїЅпїЅпїЅЫ‚МѓpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'I':	// ѓNѓ‰ѓXѓ^ѓЉѓ“ѓO‚М‘O‚ЙErode‚·‚йЌЫ‚Мѓpѓ‰ѓЃЃ[ѓ^
 				eErodeClIter = atoi( optarg );
 				break;
-			case 'T':	// пїЅNпїЅпїЅпїЅXпїЅ^пїЅпїЅпїЅпїЅпїЅOпїЅOпїЅЙЏkпїЅпїЅпїЅпїЅпїЅпїЅЫ‚МѓXпїЅeпїЅbпїЅvпїЅi4пїЅИ‚пїЅTпїЅCпїЅYпїЅН–пїЅ1/4пїЅЙ‚И‚пїЅj
+			case 'T':	// ѓNѓ‰ѓXѓ^ѓЉѓ“ѓO‘O‚ЙЏkЏ¬‚·‚йЌЫ‚МѓXѓeѓbѓvЃi4‚И‚зѓTѓCѓY‚Н–с1/4‚Й‚И‚йЃj
 				eClCmpStep = atoi( optarg );
 				break;
-			case 'i':	// пїЅNпїЅпїЅпїЅXпїЅ^пїЅпїЅпїЅпїЅпїЅOпїЅпїЅпїЅМЌЕ‘пїЅJпїЅпїЅФ‚пїЅпїЅпїЅ
+			case 'i':	// ѓNѓ‰ѓXѓ^ѓЉѓ“ѓOЋћ‚МЌЕ‘еЊJ‚и•Ф‚µђ”
 				eKMeansMaxIter = atoi( optarg );
 				break;
-			case 'p':	// пїЅNпїЅпїЅпїЅXпїЅ^пїЅпїЅпїЅпїЅпїЅOпїЅпїЅпїЅМђпїЅпїЅxпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'p':	// ѓNѓ‰ѓXѓ^ѓЉѓ“ѓOЋћ‚Мђё“xѓpѓ‰ѓЃЃ[ѓ^
 				eKMeansEpsilon = atof( optarg );
 				break;
-			case 'e':	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅoпїЅЕ‚МѓmпїЅCпїЅYпїЅпїЅпїЅпїЅпїЅпїЅпїЅМЌЕЏпїЅпїЅКђпїЅ
+			case 'e':	// “Б’Ґ“_’ЉЏo‚Е‚МѓmѓCѓYЏњ‹ЋЋћ‚МЌЕЏ¬–КђП
 				eMinAreaCl = atof( optarg );
 				break;
-			case 'E':	// пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅoпїЅЕ‚МѓmпїЅCпїЅYпїЅпїЅпїЅпїЅпїЅпїЅпїЅМЌЕ‘пїЅКђпїЅ
+			case 'E':	// “Б’Ґ“_’ЉЏo‚Е‚МѓmѓCѓYЏњ‹ЋЋћ‚МЌЕ‘е–КђП
 				eMaxAreaCl = atof( optarg );
 				break;
-			case 'N':	// пїЅЕ‚пїЅпїЅЯ‚пїЅпїЅпїЅfпїЅпїЅTпїЅпїЅпїЅЫ‚М”Н€пїЅ
+			case 'N':	// ЌЕ‚а‹Я‚ў‰ж‘f‚р’T‚·ЌЫ‚М”Н€Н
 				eDiffNear = atoi( optarg );
 				break;
-			case 'l':	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅз‚ёпїЅЙ‚пїЅпїЅМ‚Ь‚ЬЋcпїЅпїЅпїЅЫ‚пїЅи‡’l
+			case 'l':	// Ќ·•Є‚рЋж‚з‚ё‚Й‚»‚М‚Ь‚ЬЋc‚·ЌЫ‚Ми‡’l
 				eDiffLeaveThr = atof( optarg );
 				break;
-			case 'H':	// пїЅ\пїЅпїЅпїЅЙ‹Я‚пїЅпїЅЖ‚Э‚И‚пїЅпїЅЫ‚пїЅи‡’l
+			case 'H':	// Џ\•Є‚Й‹Я‚ў‚Ж‚Э‚И‚·ЌЫ‚Ми‡’l
 				eDiffEraseThr = atof( optarg );
 				break;
-			case 'R':	// пїЅпїЅпїЅж‘њпїЅпїЅPDFпїЅМЏкЌ‡пїЅAпїЅпїЅпїЅж‘њпїЅпїЅerodeпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'R':	// Њі‰ж‘њ‚ЄPDF‚МЏкЌ‡ЃAЊі‰ж‘њ‚рerode‚·‚йѓpѓ‰ѓЃЃ[ѓ^
 				eOrigErodeIterMain = atoi( optarg );
 				break;
-			case 'G':	// пїЅпїЅпїЅж‘њпїЅпїЅпїЅXпїЅLпїЅпїЅпїЅпїЅпїЅМЏкЌ‡пїЅAпїЅпїЅпїЅж‘њпїЅпїЅGaussianпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'G':	// Њі‰ж‘њ‚ЄѓXѓLѓѓѓ“‚МЏкЌ‡ЃAЊі‰ж‘њ‚ЙGaussian‚р‚©‚Ї‚йѓpѓ‰ѓЃЃ[ѓ^
 				eOrigGaussParamMain = atoi( optarg );
 				break;
-			case 'g':	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅЭ‰ж‘њпїЅпїЅGaussianпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+			case 'g':	// Џ‘‚«Ќћ‚Э‰ж‘њ‚ЙGaussian‚р‚©‚Ї‚йѓpѓ‰ѓЃЃ[ѓ^
 				eAnnoGaussPramMain = atoi( optarg );
 				break;
 			case ':':
@@ -214,11 +214,11 @@ int InitAnnex( int argc, char *argv[], int *clcptr )
 				return 0;
 		}
 	}
-	if ( eBinThr < 0 ) {	// пїЅПЌXпїЅпїЅпїЅпїЅД‚пїЅпїЅИ‚пїЅ
+	if ( eBinThr < 0 ) {	// •ПЌX‚і‚к‚Д‚ў‚И‚ў
 		if ( eOrigMode )	eBinThr = kDefaultBinThrOrig;
 		else	eBinThr = kDefaultBinThrScan;
 	}
-	if ( optind + 1 >= argc ) {	// пїЅtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅИ‚пїЅ
+	if ( optind + 1 >= argc ) {	// ѓtѓ@ѓCѓ‹–ј‚Є‘«‚и‚И‚ў
 		fprintf( stderr, "Usage: annex [option] [original image] [annotated image]\n" );
 		return 0;
 	}
@@ -234,24 +234,24 @@ int InitAnnex( int argc, char *argv[], int *clcptr )
 //	strcpy( eOrigFileName, argv[optind] );
 //	strcpy( eAnnoFileName, argv[optind+1] );
 	
-	if ( eGroup1Num < eGroup2Num || eGroup2Num < eGroup3Num ) {	// n, mпїЅМ’lпїЅпїЅпїЅ`пїЅFпїЅbпїЅN
+	if ( eGroup1Num < eGroup2Num || eGroup2Num < eGroup3Num ) {	// n, m‚М’l‚рѓ`ѓFѓbѓN
 		fprintf( stderr, "Error: illegal n or m\n" );
 		return 0;
 	}
-	// nCmпїЅМђЭ’пїЅ
+	// nCm‚МђЭ’и
 	for ( i = 0, num = 1, den = 1; i < eGroup2Num; i++ ) {
 		num *= eGroup1Num - i;
 		den *= i + 1;
 	}
 	eNumCom1 = (int)(num / den);
-	// mCfпїЅМђЭ’пїЅ
+	// mCf‚МђЭ’и
 	for ( i = 0, num = 1, den = 1; i < eGroup3Num; i++ ) {
 		num *= eGroup2Num - i;
 		den *= i + 1;
 	}
 	eNumCom2 = (int)(num / den);
 
-	if ( *clcptr <= 1 || *clcptr > kMaxClusters ) {	// пїЅNпїЅпїЅпїЅXпїЅ^пїЅпїЅпїЅпїЅпїЅ`пїЅFпїЅbпїЅN
+	if ( *clcptr <= 1 || *clcptr > kMaxClusters ) {	// ѓNѓ‰ѓXѓ^ђ”‚рѓ`ѓFѓbѓN
 		fprintf( stderr, "Error: illegal number (2-%d)\n", kMaxClusters );
 		return 1;
 	}
@@ -268,24 +268,24 @@ int main( int argc, char *argv[] )
 	double d00;
 	int cluster_count, start_all, start;
 	char fname[kMaxPathLen], base[kFileNameLen];
-	// пїЅж‘њпїЅfпїЅ[пїЅ^пїЅЦ‚Мѓ|пїЅCпїЅпїЅпїЅ^пїЅBпїЅпїЅпїЅМ‚пїЅo***, a***пїЅЕЉmпїЅпїЅ
+	// ‰ж‘њѓfЃ[ѓ^‚Ц‚Мѓ|ѓCѓ“ѓ^ЃBЋА‘М‚Нo***, a***‚ЕЉm•Ы
 	cv::Mat orig, anno, orig_small, anno_small, anno_trans, orig_erode, anno_smth, diff, gray, bin, clean, small_mask, mask, dil_mask, anno_trans_big, nand, bin_erode, bin_dil;
-	// пїЅж‘њпїЅfпїЅ[пїЅ^пїЅМЋпїЅпїЅМ‚ЕЃAпїЅпїЅпїЅпїЅпїЅпїЅпїЅgпїЅпїЅпїЅЬ‚н‚·
-	// o***: пїЅпїЅпїЅж‘њпїЅпїЅпїЅAa***: пїЅпїЅпїЅпїЅпїЅпїЅпїЅЭ‰ж‘њпїЅпїЅпїЅA*6**: 600dpiпїЅiпїЅпїЅпїЅМѓTпїЅCпїЅYпїЅjпїЅA*3**: 300dpiпїЅiпїЅkпїЅпїЅпїЅTпїЅCпїЅYпїЅjпїЅA**3*: 3пїЅ`пїЅпїЅпїЅlпїЅпїЅпїЅiпїЅJпїЅпїЅпїЅ[пїЅjпїЅA**1*: 1пїЅ`пїЅпїЅпїЅlпїЅпїЅпїЅiпїЅOпїЅпїЅпїЅ[пїЅXпїЅPпїЅ[пїЅпїЅпїЅj
+	// ‰ж‘њѓfЃ[ѓ^‚МЋА‘М‚ЕЃA‚±‚к‚з‚рЋg‚ў‚Ь‚н‚·
+	// o***: Њі‰ж‘њ‘¤ЃAa***: Џ‘‚«Ќћ‚Э‰ж‘њ‘¤ЃA*6**: 600dpiЃiЊі‚МѓTѓCѓYЃjЃA*3**: 300dpiЃiЏkЏ¬ѓTѓCѓYЃjЃA**3*: 3ѓ`ѓѓѓlѓ‹ЃiѓJѓ‰Ѓ[ЃjЃA**1*: 1ѓ`ѓѓѓlѓ‹ЃiѓOѓЊЃ[ѓXѓPЃ[ѓ‹Ѓj
 	cv::Mat o631, o632, o633, o634, a631, o331, o332, o333, a331, o311, o312;
     std::vector<std::vector<cv::Point>> contours;
 
     std::vector<cv::Vec4i> hierarchy;
 	cv::Moments mom;
-	double param[kMaxParamValNum];	// пїЅпїЅпїЅпїЅ/пїЅAпїЅtпїЅBпїЅпїЅпїЅПЉпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^
+	double param[kMaxParamValNum];	// ‘ЉЋ—/ѓAѓtѓBѓ“•ПЉ·ѓpѓ‰ѓЃЃ[ѓ^
 
 	start_all = GetProcTimeMiliSec();
-	// пїЅпїЅпїЅпїЅпїЅпїЅ
+	// Џ‰Љъ‰»
 	if ( InitAnnex( argc, argv, &cluster_count ) == 0 ) {
 		fprintf( stderr, "Error: initialization\n" );
 		return 1;
 	}
-	// пїЅж‘њпїЅМѓпїЅпїЅ[пїЅh
+	// ‰ж‘њ‚МѓЌЃ[ѓh
 	start = GetProcTimeMiliSec();
 	orig = cv::imread(eOrigFileName, cv::IMREAD_COLOR); if ( orig.empty() ) {
 		fprintf( stderr, "Image file load error: %s\n", eOrigFileName );
@@ -296,7 +296,7 @@ int main( int argc, char *argv[] )
 		return 1;
 	}
 	printf("Loading image: %d msec\n", GetProcTimeMiliSec() - start );
-	// пїЅж‘њпїЅfпїЅ[пїЅ^пїЅМЋпїЅпїЅМ‚пїЅпїЅмђ¬
+	// ‰ж‘њѓfЃ[ѓ^‚МЋА‘М‚рЌмђ¬
 	o631 = orig;
 	o632 = cv::Mat::zeros(o631.size(), CV_8UC3);
 	o633 = cv::Mat::zeros(o631.size(), CV_8UC3);
@@ -309,12 +309,12 @@ int main( int argc, char *argv[] )
 	o311 = cv::Mat::zeros(o331.size(), CV_8UC1);
 	o312 = cv::Mat::zeros(o331.size(), CV_8UC1);
 	
-#ifdef	COR_PRESET_MODE	// пїЅО‰пїЅпїЅ_пїЅи“®пїЅЭ’иѓ‚пїЅ[пїЅhпїЅiпїЅпїЅпїЅЭ‚Н–пїЅпїЅпїЅпїЅj
+#ifdef	COR_PRESET_MODE	// ‘О‰ћ“_Ћи“®ђЭ’иѓ‚Ѓ[ѓhЃiЊ»ЌЭ‚Н–іЊшЃj
 	if ( TransformAnnoPreset( anno_small, orig_small, &param_small ) == 0 ) {
-		fprintf( stderr, "пїЅО‰пїЅпїЅпїЅпїЅД‚пїЅпїЅИ‚пїЅпїЅВ”\пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЬ‚пїЅпїЅB\n" );
+		fprintf( stderr, "‘О‰ћ‚µ‚Д‚ў‚И‚ў‰В”\ђ«‚Є‚ ‚и‚Ь‚·ЃB\n" );
 	}
 #else
-	// пїЅПЉпїЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅМЋж“ѕ
+	// •ПЉ·ѓpѓ‰ѓЃЃ[ѓ^‚МЋж“ѕ
 	start = GetProcTimeMiliSec();
 	if ( TransformAnno( anno, orig, cluster_count, param ) == 0 ) {
 		fprintf( stderr, "Warning: TransformAnno returned 0\n" );
@@ -323,7 +323,7 @@ int main( int argc, char *argv[] )
 	fprintf( stderr, "exit(CHK_COR defined)\n" );
 	return 1;
 #endif
-	// пїЅпїЅпїЅпїЅк‚ЅпїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅпїЅpпїЅпїЅпїЅДЏпїЅпїЅпїЅпїЅпїЅпїЅЭ‰ж‘њпїЅпїЅпїЅпїЅпїЅж‘њпїЅЙЌпїЅпїЅн‚№пїЅпїЅ
+	// “ѕ‚з‚к‚Ѕѓpѓ‰ѓЃЃ[ѓ^‚р—p‚ў‚ДЏ‘‚«Ќћ‚Э‰ж‘њ‚рЊі‰ж‘њ‚ЙЌ‡‚н‚№‚й
 	anno_trans_big = o634;
 	if ( eTransMode == SIMILAR ) {
 		SimilarTransformation( anno, anno_trans_big, param );
@@ -331,7 +331,7 @@ int main( int argc, char *argv[] )
 	else if ( eTransMode == AFFINE ) {
 		AffineTransformation( anno, anno_trans_big, param );
 	}
-	// пїЅИЌ~пїЅМЏпїЅпїЅпїЅпїЅМЊyпїЅпїЅпїЅМ‚пїЅпїЅЯЏkпїЅпїЅ
+	// €ИЌ~‚МЏ€—ќ‚МЊyЊё‚М‚Ѕ‚ЯЏkЏ¬
 	orig_small = o331;
 //	anno_small = a331;
 	cv::resize( orig, orig_small, orig_small.size(), 0, 0, cv::INTER_NEAREST );
@@ -342,19 +342,19 @@ int main( int argc, char *argv[] )
 //	SimilarTransformation( anno_small, anno_trans, &param_small );
 	printf("Transforming image: %d msec\n", GetProcTimeMiliSec() - start );
 #endif
-	GetBasename( eAnnoFileName, kMaxPathLen, base );	// пїЅпїЅпїЅпїЅпїЅЯ’пїЅпїЅМ‰ж‘њпїЅoпїЅН‚М‚пїЅпїЅЯ‚ЙѓtпїЅ@пїЅCпїЅпїЅпїЅпїЅпїЅпїЅпїЅж“ѕ
-#ifdef	ANNEX_OUTPUT_IMAGE	// пїЅпїЅпїЅпїЅпїЅЯ’пїЅпїЅМ‰ж‘њпїЅпїЅпїЅoпїЅпїЅ
+	GetBasename( eAnnoFileName, kMaxPathLen, base );	// Џ€—ќ‰Я’ц‚М‰ж‘њЏo—Н‚М‚Ѕ‚Я‚Йѓtѓ@ѓCѓ‹–ј‚рЋж“ѕ
+#ifdef	ANNEX_OUTPUT_IMAGE	// Џ€—ќ‰Я’ц‚М‰ж‘њ‚рЏo—Н
 	sprintf( fname, "%s%s06trans.jpg", eOutPutDir, base );
 	cv::imwrite( fname, anno_trans );
 #endif
-	// пїЅпїЅпїЅж‘њпїЅпїЅerodeпїЅпїЅпїЅAпїЅпїЅпїЅпїЅпїЅпїЅпїЅЭ‰ж‘њпїЅпїЅпїЅXпїЅпїЅпїЅ[пїЅWпїЅпїЅпїЅOпїЅпїЅпїЅпїЅ
+	// Њі‰ж‘њ‚рerode‚µЃAЏ‘‚«Ќћ‚Э‰ж‘њ‚рѓXѓЂЃ[ѓWѓ“ѓO‚·‚й
 	start = GetProcTimeMiliSec();
 	orig_erode = o333;
 //	cv::erode(orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), 15);
-	if ( eOrigMode ) {	// пїЅпїЅпїЅж‘њпїЅпїЅпїЅIпїЅпїЅпїЅWпїЅiпїЅпїЅпїЅМЏкЌ‡пїЅAпїЅЙ‚пїЅпїЅЭ‚пїЅпїЅДЊпїЅпїЅпїЅпїЅй‚ЅпїЅЯ‘пїЅпїЅз‚№пїЅпїЅKпїЅvпїЅпїЅпїЅпїЅпїЅпїЅ
+	if ( eOrigMode ) {	// Њі‰ж‘њ‚ЄѓIѓЉѓWѓiѓ‹‚МЏкЌ‡ЃA‚Й‚¶‚Э‚рЌДЊ»‚·‚й‚Ѕ‚Я‘ѕ‚з‚№‚й•K—v‚Є‚ ‚й
 		cv::erode( orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), eOrigErodeIterMain );
 	}
-	else {	// пїЅпїЅпїЅж‘њпїЅпїЅпїЅXпїЅLпїЅпїЅпїЅпїЅпїЅпїЅпїЅк‚ЅпїЅпїЅпїЅМ‚МЏкЌ‡пїЅЕ‚пїЅпїЅAпїЅKпїЅEпїЅVпїЅAпїЅпїЅпїЅtпїЅBпїЅпїЅпїЅ^пїЅЕѓhпїЅbпїЅgпїЅpпїЅ^пїЅ[пїЅпїЅпїЅпїЅпїЅЪ‚пїЅпїЅпїЅ
+	else {	// Њі‰ж‘њ‚ЄѓXѓLѓѓѓ“‚і‚к‚Ѕ‚а‚М‚МЏкЌ‡‚Е‚аЃAѓKѓEѓVѓAѓ“ѓtѓBѓ‹ѓ^‚Еѓhѓbѓgѓpѓ^Ѓ[ѓ“‚р‚Ъ‚©‚·
 //		cv::erode(orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), 10);
 		cv::GaussianBlur(orig_small, orig_erode, cv::Size(eOrigGaussParamMain, eOrigGaussParamMain), 0);
 	}
@@ -365,7 +365,7 @@ int main( int argc, char *argv[] )
 //	anno_trans.copyTo(anno_smth);
 //	cv::imwrite( "anno_smth.jpg", anno_smth );
 	printf("Eroding image: %d msec\n", GetProcTimeMiliSec() - start);
-	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// Ќ·•Є‚рЋж‚й
 	start = GetProcTimeMiliSec();
 	diff = o332;
 	GetDiffImage( diff, anno_smth, orig_erode, 1 );
@@ -374,12 +374,12 @@ int main( int argc, char *argv[] )
 	sprintf( fname, "%s%s07diff.jpg", eOutPutDir, base );
 	cv::imwrite( fname, diff );
 #endif
-	// пїЅOпїЅпїЅпїЅCпїЅXпїЅPпїЅ[пїЅпїЅпїЅЙ•ПЉпїЅпїЅпїЅпїЅпїЅiпїЅпїЅlпїЅпїЅпїЅМ‚пїЅпїЅЯЃj
+	// ѓOѓЊѓCѓXѓPЃ[ѓ‹‚Й•ПЉ·‚·‚йЃi“с’l‰»‚М‚Ѕ‚ЯЃj
 	start = GetProcTimeMiliSec();
 	gray = o311;
 //	cv::cvtColor( diff, gray, CV_RGB2GRAY );
 	RGB2Gray( diff, gray );
-	// 2пїЅlпїЅпїЅпїЅпїЅпїЅпїЅ
+	// 2’l‰»‚·‚й
 	bin = o312;
 	
 	cv::threshold( gray, bin, eBinThr, kBinMaxVal, cv::THRESH_BINARY );
@@ -395,7 +395,7 @@ int main( int argc, char *argv[] )
 	sprintf( fname, "%s%s08bin.jpg", eOutPutDir, base );
 	cv::imwrite( fname, bin );
 #endif
-	// пїЅпїЅпїЅпїЅпїЅtпїЅHпїЅпїЅпїЅWпїЅпїЅпїЅZпїЅiClosingпїЅjпїЅЙ‚пїЅпїЅО‚пїЅО‚пїЅЙ‚И‚пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЭ‚пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// ѓ‚ѓ‹ѓtѓHѓЌѓW‰‰ЋZЃiClosingЃj‚Й‚ж‚и‚О‚з‚О‚з‚Й‚И‚Б‚ЅЏ‘‚«Ќћ‚Э‚рЊ‹Ќ‡‚·‚й
 	bin_dil = o311;
 	cv::dilate( bin, bin_dil, cv::Mat(), cv::Point(-1,-1), eClosingIter );
 //	cv::imwrite( "dil.jpg", bin_dil );
@@ -403,15 +403,15 @@ int main( int argc, char *argv[] )
 	cv::erode( bin_dil, bin_erode, cv::Mat(), cv::Point(-1,-1), eClosingIter );
 //	cv::imwrite( "erode.jpg", bin_erode );
 	bin = bin_erode;
-	// пїЅAпїЅпїЅпїЅпїЅпїЅпїЅпїЅр’ЉЏoпїЅпїЅпїЅAпїЅКђП‚ЙЉпїЅГ‚пїЅпїЅДѓmпїЅCпїЅYпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// AЊ‹ђ¬•Є‚р’ЉЏo‚µЃA–КђП‚ЙЉо‚Г‚ў‚ДѓmѓCѓY‚рЏњ‹Ћ‚·‚й
 	start = GetProcTimeMiliSec();
 	clean = o311;
 	clean.setTo(0);
-	cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// пїЅAпїЅпїЅпїЅпїЅпїЅпїЅпїЅр’ЉЏoпїЅпїЅпїЅпїЅ
-	for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// пїЅAпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ`пїЅпїЅ
+	cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// AЊ‹ђ¬•Є‚р’ЉЏo‚·‚й
+	for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// AЊ‹ђ¬•Є‚р•`‰ж
 		mom = cv::moments(contours[_ci]);
-		d00 = mom.m00;	// пїЅКђП‚пїЅпїЅпїЅпїЅЯ‚пїЅ
-		if ( d00 < eMinAreaMain ) continue;	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅAпїЅпїЅпїЅпїЅпїЅпїЅпїЅНЏпїЅпїЅO
+		d00 = mom.m00;	// –КђП‚р‹Ѓ‚Я‚й
+		if ( d00 < eMinAreaMain ) continue;	// Џ¬‚і‚·‚¬‚йAЊ‹ђ¬•Є‚НЏњЉO
 		cv::drawContours(clean, contours, _ci, cWhite, cv::FILLED, kDrawContourLineType);
 	}
 	printf("Cleaning image: %d msec\n", GetProcTimeMiliSec() - start);
@@ -419,23 +419,23 @@ int main( int argc, char *argv[] )
 	sprintf( fname, "%s%s09clean.jpg", eOutPutDir, base );
 	cv::imwrite( fname, clean );
 #endif
-	// пїЅ}пїЅXпїЅNпїЅпїЅпїЅмђ¬пїЅпїЅпїЅпїЅ
+	// ѓ}ѓXѓN‚рЌмђ¬‚·‚й
 	start = GetProcTimeMiliSec();
 	small_mask = o331;
-	cv::cvtColor( clean, small_mask, cv::COLOR_GRAY2BGR );	// 3пїЅ`пїЅпїЅпїЅlпїЅпїЅпїЅЙ•ПЉпїЅпїЅпїЅпїЅпїЅ
+	cv::cvtColor( clean, small_mask, cv::COLOR_GRAY2BGR );	// 3ѓ`ѓѓѓlѓ‹‚Й•ПЉ·‚·‚й
 	mask = o631;
 	cv::resize( small_mask, mask, mask.size(), 0, 0, cv::INTER_NEAREST );
 	dil_mask = o632;
-	cv::dilate( mask, dil_mask, cv::Mat(), cv::Point(-1,-1), eDilMaskIter );	// пїЅ}пїЅXпїЅNпїЅпїЅdilateпїЅЕ‘пїЅпїЅз‚№пїЅпїЅ
+	cv::dilate( mask, dil_mask, cv::Mat(), cv::Point(-1,-1), eDilMaskIter );	// ѓ}ѓXѓN‚рdilate‚Е‘ѕ‚з‚№‚й
 	printf("Making mask: %d msec\n", GetProcTimeMiliSec() - start);
 //	cv::imwrite( "dil_mask.jpg", dil_mask );
-	// 600dpiпїЅпїЅannoпїЅпїЅпїЅмђ¬пїЅпїЅпїЅпїЅ
+	// 600dpi‚Мanno‚рЌмђ¬‚·‚й
 	start = GetProcTimeMiliSec();
 //	anno_trans_big = o631;
 //	SimilarTransformation( anno, anno_trans_big, &param );
 //	cv::imwrite( "anno_trans_big.jpg", anno_trans_big );
 	printf("Transforming: %d msec\n", GetProcTimeMiliSec() - start);
-	// пїЅ}пїЅXпїЅNпїЅпїЅpпїЅпїЅпїЅДЏпїЅпїЅпїЅпїЅпїЅпїЅЭ’пїЅпїЅoпїЅпїЅпїЅпїЅ
+	// ѓ}ѓXѓN‚р—p‚ў‚ДЏ‘‚«Ќћ‚Э’ЉЏo‚·‚й
 	start = GetProcTimeMiliSec();
 	nand = o633;
 //	MaskImage( anno_trans_big, dil_mask, nand );
@@ -451,7 +451,7 @@ int main( int argc, char *argv[] )
 }
 
 void MaskImage( cv::Mat img, cv::Mat mask, cv::Mat dst )
-// пїЅ}пїЅXпїЅNпїЅпїЅпїЅпїЅпїЅпїЅпїЅsпїЅпїЅпїЅiпїЅпїЅпїЅм‚ЄпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЯЋgпїЅpпїЅпїЅпїЅпїЅпїЅj
+// ѓ}ѓXѓNЏ€—ќ‚рЌs‚¤Ѓi“®Ќм‚Є‚Ё‚©‚µ‚ў‚Ѕ‚ЯЋg—p‚№‚ёЃj
 {
 	int i;
 	

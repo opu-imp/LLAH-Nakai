@@ -16,12 +16,12 @@ analysing cross-ratios or affine invariants of document image.
 
 int eNumCom1 = 8;	// nCm
 int eNumCom2 = 7;	// mC(f or f-1)
-int eGroup1Num;	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^n
-int eGroup2Num;	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^m
+int eGroup1Num;	// ƒpƒ‰ƒ[ƒ^n
+int eGroup2Num;	// ƒpƒ‰ƒ[ƒ^m
 int eGroup3Num;	// f or f-1
-int eDiscNum;	// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½
-int	eInvType;	// ï¿½sï¿½Ï—Ê‚Ìƒ^ï¿½Cï¿½v
-int	eIncludeCentre = 0;	// ï¿½ï¿½ï¿½Sï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½
+int eDiscNum;	// —£U‰»ƒŒƒxƒ‹
+int	eInvType;	// •s•Ï—Ê‚Ìƒ^ƒCƒv
+int	eIncludeCentre = 0;	// ’†S“_‚ğŠÜ‚Ş‚©
 double eDiscMin;
 double eDiscMax;
 
@@ -29,13 +29,13 @@ int com1[kMaxNumCom1][kMaxGroup2Num];
 int com2[kMaxNumCom2][kMaxGroup3Num];
 
 void SetCom1( int i, int j, int n )
-// com1ï¿½ï¿½iï¿½sjï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Dgetcombï¿½p
+// com1‚Ìisj—ñ‚Én‚ğ“ü‚ê‚éDgetcomb—p
 {
 	com1[i][j] = n;
 }
 
 void SetCom2( int i, int j, int n )
-// com2ï¿½ï¿½iï¿½sjï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Dgetcombï¿½p
+// com2‚Ìisj—ñ‚Én‚ğ“ü‚ê‚éDgetcomb—p
 {
 	com2[i][j] = n;
 }
@@ -120,8 +120,8 @@ int main( int argc, char *argv[] )
 			fprintf(stderr, "no feature points extracted\n");
 			return 1;
 		}
-		MakeNearsFromCentres( ps, num, &nears );	// ï¿½eï¿½_ï¿½É‚Â‚ï¿½ï¿½Äï¿½ï¿½kNearsï¿½Â‚Ì‹ß–Tï¿½_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ßCnearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
-		CalcCRAndAddHist( ps, num, nears, &hist );	// ï¿½ï¿½ï¿½ï¿½orï¿½Aï¿½tï¿½Bï¿½ï¿½ï¿½sï¿½Ï—Ê‚ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½Äƒqï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		MakeNearsFromCentres( ps, num, &nears );	// Še“_‚É‚Â‚¢‚ÄãˆÊkNearsŒÂ‚Ì‹ß–T“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ßCnears‚ÉŠi”[‚·‚é
+		CalcCRAndAddHist( ps, num, nears, &hist );	// •¡”äorƒAƒtƒBƒ“•s•Ï—Ê‚ğŒvZ‚µ‚ÄƒqƒXƒgƒOƒ‰ƒ€‚Ö
 		ReleaseCentres( ps );
 		ReleaseNears( nears, num );
 	}
@@ -132,7 +132,7 @@ int main( int argc, char *argv[] )
 }
 
 void SaveDisc( char *fname, strDisc *disc )
-// ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½Û‘ï¿½
+// —£U‰»ƒtƒ@ƒCƒ‹‚ğ•Û‘¶
 {
 	int i;
 	FILE *fp;
@@ -147,7 +147,7 @@ void SaveDisc( char *fname, strDisc *disc )
 }
 
 void Hist2Disc( strHist *hist, strDisc *disc, int disc_num )
-// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç—£ï¿½Uï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ì¬
+// ƒqƒXƒgƒOƒ‰ƒ€‚©‚ç—£U‰»ƒf[ƒ^‚ğì¬
 {
 	int i, j, total, sum;
 	
@@ -165,22 +165,22 @@ void Hist2Disc( strHist *hist, strDisc *disc, int disc_num )
 }
 	
 void CalcCRAndAddHist( cv::Point *ps, int num, int *nears[], strHist *hist )
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½Äƒqï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½
+// •¡”ä‚ğŒvZ‚µ‚ÄƒqƒXƒgƒOƒ‰ƒ€‚É“ü‚ê‚é
 {
 	int i=0, j, k, l, st, tmp, idx[10];
 	int idxcom1[kMaxGroup2Num], idxcom2[kMaxGroup3Num];
 	double cr;
 
-	// ï¿½gï¿½İï¿½ï¿½í‚¹ï¿½Ìì¬
+	// ‘g‚İ‡‚í‚¹‚Ìì¬
 	gencomb(eGroup1Num, eGroup2Num, SetCom1);
 	gencomb(eGroup2Num, eGroup3Num, SetCom2);
 
 	for ( i = 0; i < num; i++ ) {
 		CalcOrderCWN( i, ps, nears, idx, eGroup1Num );
-		for ( j = 0; j < eNumCom1; j++ ) {	// ï¿½enï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
+		for ( j = 0; j < eNumCom1; j++ ) {	// Šen“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
 			for ( k = 0; k < eGroup2Num; k++ )	idxcom1[k] = idx[com1[j][k]];
-			for ( st = 0; st < eGroup2Num; st++ ) {	// ï¿½eï¿½Jï¿½nï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
-                for ( k = 0; k < eNumCom2; k++ ) {	// ï¿½emï¿½_ï¿½Ì‘gï¿½İï¿½ï¿½í‚¹ï¿½É‚Â‚ï¿½ï¿½ï¿½
+			for ( st = 0; st < eGroup2Num; st++ ) {	// ŠeŠJn“_‚É‚Â‚¢‚Ä
+                for ( k = 0; k < eNumCom2; k++ ) {	// Šem“_‚Ì‘g‚İ‡‚í‚¹‚É‚Â‚¢‚Ä
                 	if ( eIncludeCentre ) {
 						idxcom2[0] = i;
 						for ( l = 0; l < eGroup3Num; l++ )	idxcom2[l+1] = idxcom1[com2[k][l]];	//
@@ -203,7 +203,7 @@ void CalcCRAndAddHist( cv::Point *ps, int num, int *nears[], strHist *hist )
 						default:
 							break;
 					}
-					AddDataHist( hist, cr );	// ï¿½qï¿½Xï¿½gï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½É’Ç‰ï¿½
+					AddDataHist( hist, cr );	// ƒqƒXƒgƒOƒ‰ƒ€‚É’Ç‰Á
 //					printf("%lf\n", cr);
 				}
 
@@ -216,7 +216,7 @@ void CalcCRAndAddHist( cv::Point *ps, int num, int *nears[], strHist *hist )
 }
 
 int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size )
-// ï¿½_ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
+// “_ƒf[ƒ^‚ğ“Ç‚İ‚Ş
 {
 	int num;
 	char line[1024];
@@ -238,7 +238,7 @@ int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size )
 }
 
 void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
-// ï¿½dï¿½Sï¿½ï¿½ï¿½ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// dS‚©‚ç‹ß–T\‘¢‚ğŒvZ‚·‚é
 {
 	int i, **nears;
 
@@ -254,13 +254,13 @@ void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
 }
 
 void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
-//	ï¿½Tï¿½Cï¿½Ynumï¿½Ì“_ï¿½zï¿½ï¿½psï¿½ï¿½nï¿½Ô–Ú‚Ì“_ï¿½ÆÅ‚ï¿½ï¿½ß‚ï¿½kNearsï¿½Â‚Ì“_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½nearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
+//	ƒTƒCƒYnum‚Ì“_”z—ñps‚Ìn”Ô–Ú‚Ì“_‚ÆÅ‚à‹ß‚¢kNearsŒÂ‚Ì“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğnears‚ÉŠi”[‚·‚é
 {
 	int i, j, k, min_idxs[kNears];
 	double dist, min_dists[kNears];
 	cv::Point p;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ‰Šú‰»
 	for ( i = 0; i < kNears; i++ ) {
 		min_idxs[i] = 0;
 		min_dists[i] = 10000000;
@@ -288,7 +288,7 @@ void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
 }
 
 int OutPutImage(cv::Mat img)
-// ï¿½æ‘œï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½É•Û‘ï¿½ï¿½ï¿½ï¿½ï¿½Dï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½Iï¿½É˜Aï¿½Ô‚É‚È‚ï¿½
+// ‰æ‘œ‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚éDƒtƒ@ƒCƒ‹–¼‚Í©“®“I‚É˜A”Ô‚É‚È‚é
 {
 	static int n = 0;
 	char filename[kFileNameLen];
@@ -298,7 +298,7 @@ int OutPutImage(cv::Mat img)
 }
 
 void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num )
-// ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½É‹ß–Tï¿½_ï¿½ï¿½zï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½_ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
+// Œv‰ñ‚è‚É‹ß–T“_‚ğ”z—ñ‚É“ü‚ê‚éi‚“_ƒo[ƒWƒ‡ƒ“j
 {
 	int i, j, tmp_i;
 	double angs[1024], tmp_a;
@@ -323,7 +323,7 @@ void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num )
 }
 
 long double GetPointsAngle(cv::Point p1, cv::Point p2)
-// p1ï¿½ï¿½ï¿½çŒ©ï¿½ï¿½p2ï¿½ÌŠpï¿½xï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½iï¿½ï¿½-3.14ï¿½ï¿½ï¿½ï¿½ï¿½3.14ï¿½j
+// p1‚©‚çŒ©‚½p2‚ÌŠp“x‚ğŒvZ‚·‚éi–ñ-3.14‚©‚ç–ñ3.14j
 {
 	return atan2(p2.y - p1.y, p2.x - p1.x);
 }

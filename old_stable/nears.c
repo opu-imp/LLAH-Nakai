@@ -8,7 +8,7 @@
 #include "nears.h"
 
 void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
-// ï¿½dï¿½Sï¿½ï¿½ï¿½ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// dS‚©‚ç‹ß–T\‘¢‚ğŒvZ‚·‚é
 {
 	int i, **nears;
 
@@ -24,13 +24,13 @@ void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
 }
 
 void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
-//	ï¿½Tï¿½Cï¿½Ynumï¿½Ì“_ï¿½zï¿½ï¿½psï¿½ï¿½nï¿½Ô–Ú‚Ì“_ï¿½ÆÅ‚ï¿½ï¿½ß‚ï¿½kNearsï¿½Â‚Ì“_ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½nearsï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½
+//	ƒTƒCƒYnum‚Ì“_”z—ñps‚Ìn”Ô–Ú‚Ì“_‚ÆÅ‚à‹ß‚¢kNearsŒÂ‚Ì“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğnears‚ÉŠi”[‚·‚é
 {
 	int i, j, k, min_idxs[kNears];
 	double dist, min_dists[kNears];
 	cv::Point p;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ‰Šú‰»
 	for ( i = 0; i < kNears; i++ ) {
 		min_idxs[i] = 0;
 		min_dists[i] = 10000000;
@@ -72,26 +72,26 @@ int ComparePointDist( const strPointDist *pd1, const strPointDist *pd2 )
 }
 
 void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, int ty, int kn, int ***nears0 )
-// ï¿½dï¿½Sï¿½ï¿½ï¿½ï¿½ß–Tï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½iï¿½Ìˆæ•ªï¿½ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½j
+// dS‚©‚ç‹ß–T\‘¢‚ğŒvZ‚·‚éi—Ìˆæ•ªŠ„ƒo[ƒWƒ‡ƒ“j
 {
 	int i, j, div_x, div_y, **div_pnum, ***div_ps, pi, divi, t0num, t1num, mnum, **nears;
 	double max_dist;
 	strDiv *div;
 	strPointDist *tmp0, *tmp1, *merge;
 
-	max_dist = sqrt( size->width * size->width + size->height * size->height );	// ï¿½Å‘å‹—ï¿½ï¿½
-	// nearsï¿½Ì—Ìˆï¿½ï¿½ï¿½mï¿½ï¿½
+	max_dist = sqrt( size->width * size->width + size->height * size->height );	// Å‘å‹——£
+	// nears‚Ì—Ìˆæ‚ğŠm•Û
 	nears = (int **)calloc(pnum, sizeof(int*));
 	*nears0 = nears;
 	for ( i = 0; i < pnum; i++ ) {
 		nears[i] = (int *)calloc(kn, sizeof(int));
 	}
 
-	div_pnum = (int **)calloc( tx, sizeof(int*) );	// ï¿½eï¿½Ìˆï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½
+	div_pnum = (int **)calloc( tx, sizeof(int*) );	// Še—Ìˆæ‚Ì“Á’¥“_”
 	for ( i = 0; i < tx; i++ ) {
 		div_pnum[i] = (int *)calloc( ty, sizeof(int) );
 	}
-	div_ps = (int ***)calloc( tx, sizeof(int*) );	// ï¿½eï¿½Ìˆï¿½Ì“ï¿½ï¿½ï¿½ï¿½_
+	div_ps = (int ***)calloc( tx, sizeof(int*) );	// Še—Ìˆæ‚Ì“Á’¥“_
 	for ( i = 0; i < tx; i++ ) {
 		div_ps[i] = (int **)calloc( ty, sizeof(int*) );
 		for ( j = 0; j < ty; j++ ) {
@@ -99,18 +99,18 @@ void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, i
 		}
 	}
 	
-	for ( i = 0; i < pnum; i++ ) {	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ì—Ìˆï¿½Ö‚Ì•ï¿½ï¿½ï¿½
+	for ( i = 0; i < pnum; i++ ) {	// “Á’¥“_‚Ì—Ìˆæ‚Ö‚Ì•ª—Ş
 		div_x = (int)(((double)ps[i].x/(double)size->width)*tx);
 		div_y = (int)(((double)ps[i].y/(double)size->height)*ty);
 		div_ps[div_x][div_y][div_pnum[div_x][div_y]++] = i;
 	}
 //	DrawDivPoints( ps, div_ps, div_pnum, tx, ty, size, "div_ps.bmp" );
 	div = (strDiv *)calloc( tx*ty, sizeof(strDiv) );
-	for ( pi = 0; pi < pnum; pi++ ) {	// ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½É‚Â‚ï¿½ï¿½ï¿½
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìˆï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	for ( pi = 0; pi < pnum; pi++ ) {	// Še“Á’¥“_‚É‚Â‚¢‚Ä
+		// ‘®‚·‚é—Ìˆæ‚ğ‹‚ß‚é
 		div_x = (int)(((double)ps[pi].x/(double)size->width)*tx);
 		div_y = (int)(((double)ps[pi].y/(double)size->height)*ty);
-		// ï¿½eï¿½Ìˆï¿½Æ‚ÌÅ’Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		// Še—Ìˆæ‚Æ‚ÌÅ’Z‹——£‚ğ‹‚ß‚é
 		for ( i = 0; i < tx; i++ ) {
 			for ( j = 0; j < ty; j++ ) {
 				divi = j*tx+i;
@@ -119,13 +119,13 @@ void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, i
 				div[divi].dist = CalcDivDist( ps[pi], size, tx, ty, i, j, div_x, div_y );
 			}
 		}
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éƒ\ï¿½[ï¿½g
+		// ‹——£‚Ì¬‚³‚¢‡‚Éƒ\[ƒg
 		qsort( div, tx*ty, sizeof(strDiv), (int (*)(const void*, const void *))CompareDiv );
-		// tmp0ï¿½ï¿½ï¿½ì¬ï¿½iï¿½_ï¿½~ï¿½[ï¿½j
+		// tmp0‚ğì¬iƒ_ƒ~[j
 		tmp0 = (strPointDist *)calloc( 1, sizeof(strPointDist) );
 		t0num = 0;
-		for ( divi = 0; divi < tx*ty; divi++ ) {	// ï¿½ß‚ï¿½ï¿½Ìˆæ‚©ï¿½çˆï¿½ï¿½
-			// ï¿½Ìˆï¿½diviï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½Æ‹ï¿½ï¿½ï¿½ï¿½ğ“¾‚ï¿½
+		for ( divi = 0; divi < tx*ty; divi++ ) {	// ‹ß‚¢—Ìˆæ‚©‚çˆ—
+			// —Ìˆædivi‚Ì“Á’¥“_‚Æ‹——£‚ğ“¾‚é
 			div_x = div[divi].xindex;
 			div_y = div[divi].yindex;
 			t1num = div_pnum[div_x][div_y];
@@ -135,26 +135,26 @@ void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, i
 				if ( tmp1[i].pindex == pi )	tmp1[i].dist = max_dist;
 				else	tmp1[i].dist = GetPointsDistance( ps[pi], ps[tmp1[i].pindex] );
 			}
-			// ï¿½ß‚ï¿½ï¿½ï¿½ï¿½Éƒ\ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½
+			// ‹ß‚¢‡‚Éƒ\[ƒg‚·‚é
 			qsort( tmp1, t1num, sizeof(strPointDist), (int (*)(const void *, const void *))ComparePointDist );
-			// ï¿½}ï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
+			// ƒ}[ƒW‚·‚é
 			MergePointDist( tmp0, t0num, tmp1, t1num, kn, &merge, &mnum );
-			// knï¿½Ê‚Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì—Ìˆï¿½Æ‚ÌÅï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½Iï¿½ï¿½ï¿½
+			// knˆÊ‚Ì‹——£‚ªŸ‚Ì—Ìˆæ‚Æ‚ÌÅ¬‹——£‚æ‚è‚à¬‚³‚¢‚È‚çI‚í‚è
 			if ( mnum >= kn ) {
 				if ( merge[kn-1].dist < div[divi+1].dist ) {
 					break;
 				}
 			}
-			// ï¿½ï¿½ï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½Îï¿½ï¿½Ì—Ìˆï¿½Ì“ï¿½ï¿½ï¿½ï¿½_ï¿½ğ“¾‚ÄŒJï¿½ï¿½Ô‚ï¿½
+			// ‚»‚¤‚Å‚È‚¯‚ê‚ÎŸ‚Ì—Ìˆæ‚Ì“Á’¥“_‚ğ“¾‚ÄŒJ‚è•Ô‚µ
 			free( tmp0 );
 			free( tmp1 );
 			tmp1 = NULL;
-			tmp0 = merge;	// mergeï¿½ï¿½tmp0ï¿½ï¿½
+			tmp0 = merge;	// merge‚ğtmp0‚É
 			t0num = mnum;
 		}
 		if ( mnum < kn ) {
 			fprintf( stderr, "%d nearest points not found\n", kn );
-			return;	// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ÎƒGï¿½ï¿½ï¿½[
+			return;	// “Á’¥“_”‚ª–‚½‚È‚¯‚ê‚ÎƒGƒ‰[
 		}
 		for ( i = 0; i < kn; i++ ) {
 			nears[pi][i] = merge[i].pindex;
@@ -163,7 +163,7 @@ void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, i
 		if ( tmp1 != NULL)	free( tmp1 );
 		if ( merge != tmp0 )	free( merge );
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ƒƒ‚ƒŠ‰ğ•ú
 	for ( i = 0; i < tx; i++ ) {
 		free( div_pnum[i] );
 	}
@@ -178,19 +178,19 @@ void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, i
 }
 
 double CalcDivDist( cv::Point pt1, cv::Size *size, int tx, int ty, int x, int y, int div_x, int div_y )
-// ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æ•ï¿½ï¿½ï¿½ï¿½Ìˆï¿½ÌÅ’Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
-// pt1: ï¿½ï¿½ï¿½ï¿½ï¿½_, size: ï¿½æ‘œï¿½ÌƒTï¿½Cï¿½Yï¿½Ö‚Ìƒ|ï¿½Cï¿½ï¿½ï¿½^, tx: xï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½, ty: yï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½, x&y: ï¿½Ìˆï¿½, div_x&div_y: ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ì‘ï¿½ï¿½ï¿½ï¿½ï¿½Ìˆï¿½
+// “Á’¥“_‚Æ•ªŠ„—Ìˆæ‚ÌÅ’Z‹——£‚ğ‹‚ß‚é
+// pt1: “Á’¥“_, size: ‰æ‘œ‚ÌƒTƒCƒY‚Ö‚Ìƒ|ƒCƒ“ƒ^, tx: x²‚Ì•ªŠ„”, ty: y²‚Ì•ªŠ„”, x&y: —Ìˆæ, div_x&div_y: “Á’¥“_‚Ì‘®‚·‚é—Ìˆæ
 {
 	int left, right, top, bottom;
 	cv::Point pt2;
 	
-	if ( x == div_x && y == div_y )	return 0.0L;	// ï¿½Ìˆï¿½ÉŠÜ‚Ü‚ï¿½ï¿½
-	// ï¿½lï¿½ï¿½ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	if ( x == div_x && y == div_y )	return 0.0L;	// —Ìˆæ‚ÉŠÜ‚Ü‚ê‚é
+	// l‹÷‚ÌÀ•W‚ğ‹‚ß‚é
 	left = (int)(((double)size->width/(double)tx)*x);
 	right = (int)(((double)size->width/(double)tx)*(x+1))-1;
 	top = (int)(((double)size->height/(double)ty)*y);
 	bottom = (int)(((double)size->height/(double)ty)*(y+1))-1;
-	// ï¿½Ìˆï¿½ÌÅ‹ß–Tï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	// —Ìˆæ‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é
 	if ( x < div_x )		pt2.x = right;
 	else if ( x > div_x )	pt2.x = left;
 	else					pt2.x = pt1.x;
@@ -209,20 +209,20 @@ void MergePointDist( strPointDist *tmp0, int t0num, strPointDist *tmp1, int t1nu
 	merge = (strPointDist *)calloc( kn, sizeof(strPointDist) );
 	
 	for ( i = 0, i0 = 0, i1 = 0; i < kn && ( i0 < t0num || i1 < t1num); i++ ) {
-		if ( i1 >= t1num ) {	// tmp1ï¿½ï¿½ï¿½Iï¿½[ï¿½oï¿½[
+		if ( i1 >= t1num ) {	// tmp1‚ªƒI[ƒo[
 			merge[i].pindex = tmp0[i0].pindex;
 			merge[i].dist = tmp0[i0].dist;
 			i0++;
-		} else if ( i0 >= t0num ) {	// tmp0ï¿½ï¿½ï¿½Iï¿½[ï¿½oï¿½[
+		} else if ( i0 >= t0num ) {	// tmp0‚ªƒI[ƒo[
 			merge[i].pindex = tmp1[i1].pindex;
 			merge[i].dist = tmp1[i1].dist;
 			i1++;
-		} else if ( tmp0[i0].dist <= tmp1[i1].dist ) {	// tmp0ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		} else if ( tmp0[i0].dist <= tmp1[i1].dist ) {	// tmp0‚Ì•û‚ª‹ß‚¢
 			merge[i].pindex = tmp0[i0].pindex;
 			merge[i].dist = tmp0[i0].dist;
 			i0++;
 		}
-		else {	// tmp1ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+		else {	// tmp1‚Ì•û‚ª‹ß‚¢
 			merge[i].pindex = tmp1[i1].pindex;
 			merge[i].dist = tmp1[i1].dist;
 			i1++;
