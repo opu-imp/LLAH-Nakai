@@ -5,11 +5,11 @@
 #define	kConnectHashImageThr	(240)
 #define	kImgMaxVal	(255)
 
-IplImage *GetConnectedImage( char *fname, int mode );
-int GetConnectedImageJp( IplImage *src, IplImage *dst );
-int AutoConnectTest( char *fname, CvSize *size );
-IplImage *GetConnectedImage2( const char *fname, int mode, int gaussian_parameter );
-IplImage *GetConnectedImageJp2( const char *fname, int mode );
+cv::Mat GetConnectedImage( char *fname, int mode );
+int GetConnectedImageJp( cv::Mat src, cv::Mat dst );
+int AutoConnectTest( char *fname, cv::Size *size );
+cv::Mat GetConnectedImage2( const char *fname, int mode, int gaussian_parameter );
+cv::Mat GetConnectedImageJp2( const char *fname, int mode );
 int VariousLangMaskSize( const char *fname );
 int VariousLangMaskSizeDualChar( const char *fname );
 int VariousLangMaskSizeDualWord( const char *fname );

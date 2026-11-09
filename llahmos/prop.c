@@ -7,8 +7,7 @@
 #else
 #include <glob.h>
 #endif
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "dirs.h"
@@ -25,7 +24,7 @@ int errfunc2( const char *epath, int eerrno )
 	return 1;
 }
 
-double CalcProp2( int doc_num, CvPoint **pss, double **areass, int *nums, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
+double CalcProp2( int doc_num, cv::Point **pss, double **areass, int *nums, strDisc *disc, strHList **hash, strHList2 **hash2, HENTRY *hash3 )
 // ”ä—á’è”‚ğ’²‚×‚é
 {
 	int i, j, max_doc, max_score;
@@ -79,9 +78,9 @@ double CalcProp( char *prop_path )
 #else
 	glob_t gt;
 #endif
-	CvPoint *ps = 0;
+	cv::Point *ps = 0;
 	FILE *fp_pn;
-	CvSize img_size;
+	cv::Size img_size;
 
 	if ( *prop_path == '\0' )	return 0.0;	// prop_path‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î0
 	// Še“o˜^‰æ‘œ‚Ì“Á’¥“_”‚Ì“Ç‚İ‚İ

@@ -1,5 +1,4 @@
-#include "cxcore.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 void ClusterTest( void )
 // KMeans2‚ÌƒeƒXƒg
@@ -8,66 +7,64 @@ void ClusterTest( void )
 	int a=0;
 
     #define MAX_CLUSTERS 5
-    CvScalar color_tab[MAX_CLUSTERS];
-    IplImage* img = cvCreateImage( cvSize( 500, 500 ), 8, 3 );
-    CvRNG rng = cvRNG(0xffffffff);
+    cv::Scalar color_tab[MAX_CLUSTERS];
+    cv::Mat  img = cv::Mat::zeros(cv::Size( 500, 500 ), CV_8UC3);
+    cv::RNG rng = cv::RNG(0xffffffff);
     
-    color_tab[0] = CV_RGB(255,0,0);
-    color_tab[1] = CV_RGB(0,255,0);
-    color_tab[2] = CV_RGB(100,100,255);
-    color_tab[3] = CV_RGB(255,0,255);
-    color_tab[4] = CV_RGB(255,255,0);
+    color_tab[0] = cv::Scalar(0,0,255);
+    color_tab[1] = cv::Scalar(0,255,0);
+    color_tab[2] = cv::Scalar(255,100,100);
+    color_tab[3] = cv::Scalar(255,0,255);
+    color_tab[4] = cv::Scalar(0,255,255);
 
-    cvNamedWindow( "clusters", 1 );
+    cv::namedWindow( "clusters", 1 );
 
     for(;;)
     {
-        int k, cluster_count = cvRandInt(&rng)%MAX_CLUSTERS + 1;
-        int i, sample_count = cvRandInt(&rng)%1000 + 1;
-        CvMat* points = cvCreateMat( sample_count, 1, CV_32FC2 );
-        CvMat* clusters = cvCreateMat( sample_count, 1, CV_32SC1 );
+        int k, cluster_count = cv_randint_NEEDS_FIX(&rng)%MAX_CLUSTERS + 1;
+        int i, sample_count = cv_randint_NEEDS_FIX(&rng)%1000 + 1;
+        cv::Mat points = cv::Mat(sample_count, 1, CV_32FC2 , cv::Scalar(0));
+        cv::Mat clusters = cv::Mat(sample_count, 1, CV_32SC1 , cv::Scalar(0));
 
         /* generate random sample from multigaussian distribution */
         for( k = 0; k < cluster_count; k++ )
         {
-            CvPoint center;
-            CvMat point_chunk;
-            center.x = cvRandInt(&rng)%img->width;
-            center.y = cvRandInt(&rng)%img->height;
-            cvGetRows( points, &point_chunk, k*sample_count/cluster_count,
+            cv::Point center;
+            cv::Mat point_chunk;
+            center.x = cv_randint_NEEDS_FIX(&rng)%img.cols;
+            center.y = cv_randint_NEEDS_FIX(&rng)%img.rows;
+            cv_getrows_NEEDS_FIX( points, &point_chunk, k*sample_count/cluster_count,
                        k == cluster_count - 1 ? sample_count : (k+1)*sample_count/cluster_count );
-            cvRandArr( &rng, &point_chunk, CV_RAND_NORMAL,
+            cv_randarr_NEEDS_FIX( &rng, &point_chunk, cv::RNG::NORMAL,
                        cvScalar(center.x,center.y,0,0),
-                       cvScalar(img->width/6, img->height/6,0,0) );
+                       cvScalar(img.cols/6, img.rows/6,0,0) );
         }
 
         /* shuffle samples */
         for( i = 0; i < sample_count/2; i++ )
         {
-            CvPoint2D32f* pt1 = (CvPoint2D32f*)points->data.fl + cvRandInt(&rng)%sample_count;
-            CvPoint2D32f* pt2 = (CvPoint2D32f*)points->data.fl + cvRandInt(&rng)%sample_count;
-            CvPoint2D32f temp;
-            CV_SWAP( *pt1, *pt2, temp );
+            cv::Point2f* pt1 = (cv::Point2f*)points->data.fl + cv_randint_NEEDS_FIX(&rng)%sample_count;
+            cv::Point2f* pt2 = (cv::Point2f*)points->data.fl + cv_randint_NEEDS_FIX(&rng)%sample_count;
+            cv::Point2f temp;
+            std::swap( *pt1, *pt2, temp );
         }
 
-        cvKMeans2( points, cluster_count, clusters,
-                   cvTermCriteria( CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 10, 1.0 ));
+        cv::kmeans( points, cluster_count, clusters,
+                   cv::TermCriteria( cv::TermCriteria::EPS+cv::TermCriteria::MAX_ITER, 10, 1.0 ));
 
-        cvZero( img );
+        img.setTo(cv::Scalar::all(0));
 
         for( i = 0; i < sample_count; i++ )
         {
-            CvPoint2D32f pt = ((CvPoint2D32f*)points->data.fl)[i];
+            cv::Point2f pt = ((cv::Point2f*)points->data.fl)[i];
             int cluster_idx = clusters->data.i[i];
-            cvCircle( img, cvPointFrom32f(pt), 2, color_tab[cluster_idx], CV_FILLED );
+            cv::circle( img, (cv::Point)(pt), 2, color_tab[cluster_idx], cv::FILLED );
         }
 
-        cvReleaseMat( &points );
-        cvReleaseMat( &clusters );
 
-        cvShowImage( "clusters", img );
+        cv::imshow( "clusters", img );
 
-        int key = cvWaitKey(0);
+        int key = cv::waitKey(0);
         if( key == 27 ) // 'ESC'
             break;
     }

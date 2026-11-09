@@ -3,10 +3,9 @@
 #include <ctype.h>
 #include <string.h>
 #include "def_general.h"
-//#include "cv.h"
-//#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "hash.h"
-//#include "dirs.h"
+#include "dirs.h"
 #include "hist.h"
 #include "block.h"
 #include "extern.h"
@@ -144,7 +143,7 @@ int AddHash( char *index, int num, unsigned short doc, unsigned short point )
 	hindex = HashFunc( index, num );
 	hp = (strHList *)malloc(sizeof(*hp));
 	hp->idx = (char *)calloc( eNumCom2, sizeof(char) );
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->next = hash[hindex];
 	hp->doc = doc;
 	hp->point = point;
@@ -174,7 +173,7 @@ void PrintHash( void )
 				for ( j = 0; j < eNumCom2; j++ ) printf("%02x", hp->idx[j]);
 				printf(", ");
 				hp = hp->next;
-			} while ( hp != NULL );
+			} while ( hp != NULL);
 		printf("\n");
 		}
 	}

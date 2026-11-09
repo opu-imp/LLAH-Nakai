@@ -37,12 +37,12 @@
 #define	kAcrPath	"/home/nakai/src/acr2/acr2"
 #endif
 
-#define	cWhite	CV_RGB( 255,255,255 )
-#define	cBlack	CV_RGB( 0,0,0 )
-#define	cRed	CV_RGB( 255,0,0 )
-#define	cGreen	CV_RGB( 0,255,0 )
-#define	cBlue	CV_RGB( 0,0,255 )
-#define	cRandom	CV_RGB( rand()%256, rand()%256, rand()%256 )
+#define	cWhite	cv::Scalar(255,255,255)
+#define	cBlack	cv::Scalar(0,0,0)
+#define	cRed	cv::Scalar(0,0,255)
+#define	cGreen	cv::Scalar(0,255,0)
+#define	cBlue	cv::Scalar(255,0,0)
+#define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
 // ëSëÃÇÃÉÇÅ[Éh
 #define	RETRIEVE_MODE	(0)
@@ -95,35 +95,56 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-int FirstPoint(CvPoint *ps, int num);
-int NextLine(int pt, CvPoint *ps, int num, int *nears[], int visited[]);
-int RightPoint(int pt, CvPoint *ps, int num, int nears[]);
-int LeftPoint(int pt, CvPoint *ps, int num, int nears[], int visited[]);
-int DownPoint(int pt, CvPoint *ps, int num, int nears[]);
-int IsOnRight( CvPoint *p1, CvPoint *p2 );
-int IsOnLeft( CvPoint *p1, CvPoint *p2 );
-int IsOnDown( CvPoint *p1, CvPoint *p2 );
-void Calc1NNDiscriptor(CvPoint *ps, int num, int *nears[], char disc[]);
+int FirstPoint(cv::Point *ps, int num);
+int NextLine(int pt, cv::Point *ps, int num, int *nears[], int visited[]);
+int RightPoint(int pt, cv::Point *ps, int num, int nears[]);
+int LeftPoint(int pt, cv::Point *ps, int num, int nears[], int visited[]);
+int DownPoint(int pt, cv::Point *ps, int num, int nears[]);
+int IsOnRight( cv::Point *p1, cv::Point *p2 );
+int IsOnLeft( cv::Point *p1, cv::Point *p2 );
+int IsOnDown( cv::Point *p1, cv::Point *p2 );
+void Calc1NNDiscriptor(cv::Point *ps, int num, int *nears[], char disc[]);
 int IsConnected1NN(int p1, int p2, int *nears[]);
-int IsConnectedWord(CvPoint p1, CvPoint p2, double *dist);
-//double GetPointsDistance(CvPoint p1, CvPoint p2);
-//long double GetPointsAngle(CvPoint p1, CvPoint p2);
-void CalcCRDiscriptorLine(CvPoint *ps, int num, int *nears[]);
-int FirstFirstRightPointCR(int pt, CvPoint *ps, int *nears[]);
-int FirstRightPointCR(int pt, CvPoint *ps, int *nears[], double ang0);
-int RightPointCR(int pt, int pt0, CvPoint *ps, int nears[], long double ang0 );
-int NextLineCR(int pt, CvPoint *ps, int *nears[], double ang0);
-double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 );
+int IsConnectedWord(cv::Point p1, cv::Point p2, double *dist);
+//double GetPointsDistance(cv::Point p1, cv::Point p2);
+//long double GetPointsAngle(cv::Point p1, cv::Point p2);
+void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[]);
+int FirstFirstRightPointCR(int pt, cv::Point *ps, int *nears[]);
+int FirstRightPointCR(int pt, cv::Point *ps, int *nears[], double ang0);
+int RightPointCR(int pt, int pt0, cv::Point *ps, int nears[], long double ang0 );
+int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0);
+double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
 void JInvariantTest(void);
-double CalcJI( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 );
-int CalcCentres(CvPoint **ps, CvSeq *contours, CvSize *size, double **areas0);
-int OutPutImage(IplImage *img);
-int MakeCentresFromImage(CvPoint **ps, IplImage *, CvSize *size, double **areas);
-void ReleaseCentres( CvPoint *ps );
+double CalcJI( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 );
+#ifndef FIRST_TOP_LEVEL_CONTOUR_DEFINED
+#define FIRST_TOP_LEVEL_CONTOUR_DEFINED
+// Index of the first top-level contour (parent == -1). Iterating
+//   for ( ci = FirstTopLevelContour( h ); ci >= 0; ci = h[ci][0] )
+// visits the same contours as the OpenCV 1.x/2.x  first_contour->h_next  chain.
+inline int FirstTopLevelContour( const std::vector<cv::Vec4i> &hierarchy )
+{
+	for ( size_t k = 0; k < hierarchy.size(); k++ )	if ( hierarchy[k][3] < 0 )	return (int)k;
+	return -1;
+}
+
+// cvFindContours (OpenCV 1.x/2.x) cleared the 1-pixel image border before
+// tracing, so components touching the border lost their edge pixels.
+// cv::findContours (OpenCV >= 3.2) pads the image instead. Call this right
+// before cv::findContours to get the same contours as the original code
+// (which also modified the image in place).
+inline void ClearImageBorder( cv::Mat img )
+{
+	cv::rectangle( img, cv::Rect( 0, 0, img.cols, img.rows ), cv::Scalar::all( 0 ), 1 );
+}
+#endif
+int CalcCentres(cv::Point **ps, std::vector<std::vector<cv::Point>> &contours, std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0);
+int OutPutImage(cv::Mat img);
+int MakeCentresFromImage(cv::Point **ps, cv::Mat , cv::Size *size, double **areas);
+void ReleaseCentres( cv::Point *ps );
 void ReleaseNears( int **nears, int num );
 void OutPutResult( int *s, int t, int disp, char *fname );
 void OutPutResultSv( int *s, int t, int disp, char *result );
-int ScreenPointsWithNears( CvPoint *ps, int num, int **nears );
+int ScreenPointsWithNears( cv::Point *ps, int num, int **nears );
 void DisplayPs( void );
 void CreatePointFile( char *in_fname, char *out_fname, int mode );
 int RetrieveUSBCamServer( void );

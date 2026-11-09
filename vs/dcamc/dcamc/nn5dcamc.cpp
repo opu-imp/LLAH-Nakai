@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
@@ -33,7 +32,7 @@ void SetCom2( int i, int j, int n )
 	com2[i][j] = n;
 }
 
-void ConstructHashSub( CvPoint *ps, int num )
+void ConstructHashSub( cv::Point *ps, int num )
 // ハッシュを構築する（名前はサブだけどメイン）
 {
 	int **nears = NULL;
@@ -46,7 +45,7 @@ void ConstructHashSub( CvPoint *ps, int num )
 	ConstructHashSubSub( ps, num, nears, 0, &disc );
 }
 
-void ConstructHashSubSub(CvPoint *ps, int num, int *nears[], int n, strDisc *disc)
+void ConstructHashSubSub(cv::Point *ps, int num, int *nears[], int n, strDisc *disc)
 // ハッシュを構築する（名前はサブのサブだけどサブ）
 {
 	char *hindex;
@@ -99,7 +98,7 @@ void ConstructHashSubSub(CvPoint *ps, int num, int *nears[], int n, strDisc *dis
 	free( idxcom2 );
 }
 
-int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, int *pcor )
+int RetrieveNN5(cv::Point *ps, int num, int *nears[], cv::Size size, int *score, int *pcor )
 // ハッシュから検索する
 {
 	int i, j;
@@ -140,7 +139,7 @@ int RetrieveNN5(CvPoint *ps, int num, int *nears[], CvSize size, int *score, int
 	return 0;
 }
 
-void CalcScore3(CvPoint *ps, int num, int *nears[], int *score, strDisc *disc)
+void CalcScore3(cv::Point *ps, int num, int *nears[], int *score, strDisc *disc)
 // 各文書の得点を計算その3
 {
 	char *hindex;
@@ -233,12 +232,12 @@ void VoteDirectlyByHL( strHList *hl, int *score, char *idx, int p )
 	}
 }
 
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
 //	サイズnumの点配列psのn番目の点と最も近いkNears個の点のインデックスをnearsに格納する
 {
 	int i, j, k, min_idxs[kNears];
 	double dist, min_dists[kNears];
-	CvPoint p;
+	cv::Point p;
 
 	// 初期化
 	for ( i = 0; i < kNears; i++ ) {
@@ -267,7 +266,7 @@ void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
 	}
 }
 
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
 // 重心から近傍構造を計算する
 {
 	int i, **nears;
@@ -283,7 +282,7 @@ void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
 	}
 }
 
-void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
+void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num )
 // 時計回りに近傍点を配列に入れる（ｎ点バージョン）
 {
 	int i, j, tmp_i;
@@ -310,7 +309,7 @@ void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
 	free(angs);
 }
 
-void CalcInterPoint( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint *p1234 )
+void CalcInterPoint( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point *p1234 )
 // 点p1とp2の通る直線，点p3とp4の通る直線の2直線の交点を求める
 {
 	double x1, x2, x3, x4, y1, y2, y3, y4, a1, a2, b1, b2;
@@ -333,10 +332,10 @@ void CalcInterPoint( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint *p1
 	p1234->y = (int)(-(a1*(b1-b2))/(a1-a2) + b1);
 }
 
-double CalcCR5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
+double CalcCR5( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
 // 平面上の5点で複比を計算する
 {
-	CvPoint p1325, p1425;
+	cv::Point p1325, p1425;
 
 	CalcInterPoint( p1, p3, p2, p5, &p1325 );
 	CalcInterPoint( p1, p4, p2, p5, &p1425 );
@@ -344,7 +343,7 @@ double CalcCR5( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
 	return CalcCR(p2, p1325, p1425, p5);
 }
 
-double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
+double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
 // 複比を計算する
 {
 	double d13, d23, d14, d24;

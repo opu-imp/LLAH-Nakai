@@ -16,12 +16,12 @@
 
 #define	kLittleVal	(0.000001L)	/* CalcCR用 */
 
-#define	cWhite	CV_RGB( 255,255,255 )
-#define	cBlack	CV_RGB( 0,0,0 )
-#define	cRed	CV_RGB( 255,0,0 )
-#define	cGreen	CV_RGB( 0,255,0 )
-#define	cBlue	CV_RGB( 0,0,255 )
-#define	cRandom	CV_RGB( rand()%256, rand()%256, rand()%256 )
+#define	cWhite	cv::Scalar(255,255,255)
+#define	cBlack	cv::Scalar(0,0,0)
+#define	cRed	cv::Scalar(0,0,255)
+#define	cGreen	cv::Scalar(0,255,0)
+#define	cBlue	cv::Scalar(255,0,0)
+#define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
 // 全体のモード
 #define	RETRIEVE_MODE	(0)

@@ -4,8 +4,7 @@ analysing cross-ratios or affine invariants of document image.
 *****************************************************************/
 
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "def_general.h"
 #include "dirs.h"
 #include "hash.h"
@@ -21,13 +20,13 @@ analysing cross-ratios or affine invariants of document image.
 
 
 //int main( int argc, char *argv[] )
-int MakeDiscFile( int doc_num, CvPoint **pss, int *nums, strDisc *disc )
+int MakeDiscFile( int doc_num, cv::Point **pss, int *nums, strDisc *disc )
 // 離散化ファイルを作成する．acr2の組み込み版
 {
 //	int disc_num, num, **nears = 0, dnmin, dnmax, step, argi;
 //	char fname[1024];
-//	CvPoint *ps;
-//	CvSize img_size;
+//	cv::Point *ps;
+//	cv::Size img_size;
 	int i, ret, **nears = NULL;
 	char disc_fname[kMaxPathLen];
 	strHist hist;

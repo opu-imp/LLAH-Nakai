@@ -29,7 +29,7 @@ int InitSockSvTCP( u_short port, char *server_name )
 	}
 	/* サーバのＩＰアドレスを取得 */
 	sv_ip = gethostbyname( server_name );
-	if ( sv_ip == NULL ) {
+	if (sv_ip == NULL) {
 		perror("sv:gethostbyname");
 		close( sid1 );
 		return -1;
@@ -118,7 +118,7 @@ int InitSockClUDP( u_short port, char *server_name, struct sockaddr_in *sv_addr 
 	sv_addr->sin_port = htons( port );
 	/* サーバのＩＰアドレスを取得 */
 	sv_ip = gethostbyname( server_name );
-	if ( sv_ip == NULL ) {
+	if (sv_ip == NULL) {
 		perror("sv:gethostbyname");
 		close( sid1 );
 		return -1;

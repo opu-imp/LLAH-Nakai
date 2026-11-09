@@ -2,13 +2,12 @@
 
 #include <stdio.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "dirs.h"
 #include "nears.h"
 
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
 // 重心から近傍構造を計算する
 {
 	int i, **nears;
@@ -24,12 +23,12 @@ void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
 	}
 }
 
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
 //	サイズnumの点配列psのn番目の点と最も近いkNears個の点のインデックスをnearsに格納する
 {
 	int i, j, k, min_idxs[kNears];
 	double dist, min_dists[kNears];
-	CvPoint p;
+	cv::Point p;
 
 	// 初期化
 	for ( i = 0; i < kNears; i++ ) {
@@ -72,7 +71,7 @@ int ComparePointDist( const strPointDist *pd1, const strPointDist *pd2 )
 	else	return 0;
 }
 
-void MakeNearsFromCentresDiv( CvPoint *ps, int pnum, CvSize *size, int tx, int ty, int kn, int ***nears0 )
+void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, int ty, int kn, int ***nears0 )
 // 重心から近傍構造を計算する（領域分割バージョン）
 {
 	int i, j, div_x, div_y, **div_pnum, ***div_ps, pi, divi, t0num, t1num, mnum, **nears;
@@ -161,7 +160,7 @@ void MakeNearsFromCentresDiv( CvPoint *ps, int pnum, CvSize *size, int tx, int t
 			nears[pi][i] = merge[i].pindex;
 		}
 		free( tmp0 );
-		if ( tmp1 != NULL )	free( tmp1 );
+		if ( tmp1 != NULL)	free( tmp1 );
 		if ( merge != tmp0 )	free( merge );
 	}
 	// メモリ解放
@@ -178,12 +177,12 @@ void MakeNearsFromCentresDiv( CvPoint *ps, int pnum, CvSize *size, int tx, int t
 	free( div_ps );
 }
 
-double CalcDivDist( CvPoint pt1, CvSize *size, int tx, int ty, int x, int y, int div_x, int div_y )
+double CalcDivDist( cv::Point pt1, cv::Size *size, int tx, int ty, int x, int y, int div_x, int div_y )
 // 特徴点と分割領域の最短距離を求める
 // pt1: 特徴点, size: 画像のサイズへのポインタ, tx: x軸の分割数, ty: y軸の分割数, x&y: 領域, div_x&div_y: 特徴点の属する領域
 {
 	int left, right, top, bottom;
-	CvPoint pt2;
+	cv::Point pt2;
 	
 	if ( x == div_x && y == div_y )	return 0.0L;	// 領域に含まれる
 	// 四隅の座標を求める

@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 #include "dirs.h"
 #include "proj4p.h"
 #include "projrecov.h"
@@ -75,7 +74,7 @@ int IsNearParam( strProjParam *param1, strProjParam *param2 )
 	else	return 0;
 }
 
-void CalcProjParamTop( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, strProjParam *param, int mode, int method )
+void CalcProjParamTop( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param, int mode, int method )
 // ps->corpsへの射影変換パラメータを求める(mode==1なら逆）
 {
 	int i, j, randpi[4];
@@ -107,7 +106,7 @@ void CalcProjParamTop( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, s
 	}
 }
 
-int GetAppropriateParamRANSAC( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, strProjParam *param, int mode )
+int GetAppropriateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param, int mode )
 // RANSACによって射影変換パラメータを求める
 {
 	int i, j, randpi[4], score, max_score = -1, max_param = -1;
@@ -149,7 +148,7 @@ int GetAppropriateParamRANSAC( CvPoint *ps, CvPoint *corps, int cor[][2], int co
 	return 1;
 }
 
-int EvaluateParamRANSAC( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, strProjParam *param, int mode )
+int EvaluateParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param, int mode )
 // RANSACでのパラメータの評価
 {
 	int i, score = 0;
@@ -178,7 +177,7 @@ int EvaluateParamRANSAC( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num,
 	return score;
 }
 
-void GetRefinedParamRANSAC( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, strProjParam *param_src, strProjParam *param_dst, int mode )
+void GetRefinedParamRANSAC( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, strProjParam *param_src, strProjParam *param_dst, int mode )
 // より精度の高いパラメータを求める
 {
 	int i, j, randpi[4], *support, sup_num = 0;
@@ -244,21 +243,20 @@ void GetRefinedParamRANSAC( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_n
 	free( support );
 }
 
-void RecovPTSub( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, CvSize size, IplImage *src )
+void RecovPTSub( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num, cv::Size size, cv::Mat src )
 // 射影変換補正サブ
 {
 	int i, j, randpi[4];
 //	double a1s[kTryParamRand], a2s[kTryParamRand], a3s[kTryParamRand], b1s[kTryParamRand], b2s[kTryParamRand], b3s[kTryParamRand], c1s[kTryParamRand], c2s[kTryParamRand];
 	strPoint strp1[4], strp2[4], pp1, pp2;
 	strProjParam param, paramarr[kTryParamRand];
-	IplImage *img;
+	cv::Mat img;
 
-//	src = cvLoadImage( img_fname, 0 );
+//	src = cv::imread(img_fname, cv::IMREAD_GRAYSCALE);
 #if 0
-	img = cvLoadImage( img_fname, 0 );
-	src = cvCreateImage( cvSize(img->width*9, img->height*9), 8, 1 );
-	cvResize( img, src, CV_INTER_CUBIC );
-	cvReleaseImage( &img );
+	img = cv::imread(img_fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
+	src = cv::Mat::zeros(cv::Size(img.cols*9, img.rows*9), CV_8UC1);
+	cv::resize(img, src, src.size(), 0, 0, cv::INTER_CUBIC);
 #endif
 	srand(clock());
 
@@ -278,16 +276,16 @@ void RecovPTSub( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num, CvSize 
 	// 適切なパラメータを計算する
 	GetAppropriateParam( paramarr, &param );
 
-	img = cvCreateImage( size, 8, 1 );
+	img = cv::Mat::zeros(size, CV_8UC1);
 	for ( j = 0; j < size.height; j++ ) {
 		for ( i = 0; i < size.width; i++ ) {
 			pp1.x = i;
 			pp1.y = j;
 			ProjTrans( &pp1, &pp2, &param );
-			if ( pp2.x >= src->width || pp2.y >= src->height || pp2.x < 0 || pp2.y < 0 )
-				img->imageData[j*img->widthStep+i] = 0;
+			if ( pp2.x >= src.cols || pp2.y >= src.rows || pp2.x < 0 || pp2.y < 0 )
+				img.data[j*(int)img.step[0]+i] = 0;
 			else
-				img->imageData[j*img->widthStep+i] = src->imageData[pp2.y*src->widthStep+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
+				img.data[j*(int)img.step[0]+i] = src.data[pp2.y*(int)src.step[0]+pp2.x];
 		}
 	}
 	OutPutImage(img);
@@ -350,14 +348,14 @@ void GetAppropriateParam( strProjParam *paramarr, strProjParam *param )
 void RPTMain( char *fname1, char *fname2 )
 // テストのメイン
 {
-	IplImage *img1, *img2;
-	CvPoint p1[4], p2[4];
+	cv::Mat img1, img2;
+	cv::Point p1[4], p2[4];
 
 	if ( strcmp(fname1, "0104.bmp") || strcmp(fname2, "IMG_0214.bmp") ) {
 		return;
 	}
-	img1 = cvLoadImage( fname1, 0 );
-	img2 = cvLoadImage( fname2, 0 );
+	img1 = cv::imread(fname1, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
+	img2 = cv::imread(fname2, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
 
 /*	p1[0].x = 748;
 	p1[0].y = 1540;
@@ -397,14 +395,14 @@ void RPTMain( char *fname1, char *fname2 )
 	RecoverPTTest( img1, img2, p1, p2 );
 }
 
-void RecoverPTTest( IplImage *img1, IplImage *img2, CvPoint *p1, CvPoint *p2 )
+void RecoverPTTest( cv::Mat img1, cv::Mat img2, cv::Point *p1, cv::Point *p2 )
 // 射影変換補正のテスト
 {
 	int i, j;
 	strPoint strp1[4], strp2[4], pp1, pp2;
 	strProjParam param;
-	CvSize size1;
-	IplImage *recov;
+	cv::Size size1;
+	cv::Mat recov;
 
 	for ( i = 0; i < 4; i++ ) {
 		strp1[i].x = p1[i].x;
@@ -414,15 +412,15 @@ void RecoverPTTest( IplImage *img1, IplImage *img2, CvPoint *p1, CvPoint *p2 )
 	}
 
 	CalcProjParam( strp1, strp2, &param );
-	size1.width = img1->width;
-	size1.height = img1->height;
-	recov = cvCreateImage( size1, 8, 1 );
+	size1.width = img1.cols;
+	size1.height = img1.rows;
+	recov = cv::Mat::zeros(size1, CV_8UC1);
 	for ( j = 0; j < size1.height; j++ ) {
 		for ( i = 0; i < size1.width; i++ ) {
 			pp1.x = i;
 			pp1.y = j;
 			ProjTrans( &pp1, &pp2, &param );
-			recov->imageData[j*img1->widthStep+i] = img2->imageData[pp2.y*img2->widthStep+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
+			recov.data[j*(int)img1.step[0]+i] = img2.data[pp2.y*(int)img2.step[0]+pp2.x]; // imageDataの幅はwidthStepで定義されていることに注意
 		}
 	}
 	OutPutImage( recov );
@@ -535,7 +533,7 @@ void MeanParam( double data[kTryParamRand][8], double *mean, int n, double err0,
 	} // while
 }
 
-double GetPPVar( CvPoint *ps, CvPoint *corps, int cor[][2], int cor_num )
+double GetPPVar( cv::Point *ps, cv::Point *corps, int cor[][2], int cor_num )
 // 射影変換パラメータの分散を求める
 {
 	int i, j, randpi[4];

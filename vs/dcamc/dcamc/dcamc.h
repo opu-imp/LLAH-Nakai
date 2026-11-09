@@ -18,9 +18,9 @@
 #define	kMaxPointNum	5000
 //#define	kMaxPointNumServer	(2500)	/* サーバ側での最大特徴点数 */
 #define	kMaxPointNumServer	(5000)	/* サーバ側での最大特徴点数 */
-#define	kSendBuffSize	(sizeof(CvSize) + sizeof(int) + sizeof(CvPoint) * kMaxPointNumServer)	/* 送信時のバッファのサイズ */
-#define	kSendBuffSizeAreas	(sizeof(CvSize) + sizeof(int) + (sizeof(CvPoint) + sizeof(unsigned short)) * kMaxPointNumServer)	/* 送信時のバッファのサイズ（面積も送信バージョン） */
-#define	kRecvBuffSize	(kMaxDocNameLen + sizeof(strProjParam) + sizeof(CvSize))
+#define	kSendBuffSize	(sizeof(cv::Size) + sizeof(int) + sizeof(cv::Point) * kMaxPointNumServer)	/* 送信時のバッファのサイズ */
+#define	kSendBuffSizeAreas	(sizeof(cv::Size) + sizeof(int) + (sizeof(cv::Point) + sizeof(unsigned short)) * kMaxPointNumServer)	/* 送信時のバッファのサイズ（面積も送信バージョン） */
+#define	kRecvBuffSize	(kMaxDocNameLen + sizeof(strProjParam) + sizeof(cv::Size))
 
 //#define PORT_NO	12345
 //#define	kPort	12345
@@ -86,21 +86,21 @@
 #define	kMaxParamValNum	(8)	/* 変換（相似orアフィン）パラメータの最大数 */
 
 
-IplImage *LoadThumb( char *fname );
-void DrawThumb( char *doc_name, char *doc_name_prev, IplImage **thumb0, IplImage **thumb_draw0, strProjParam param, strProjParam zero_param, CvSize cap_size, CvSize res_size );
-void DrawCor2( CvPoint corps[][2], int corpsnum, IplImage *img_cap, char *doc_name );
-int GotoSnapshotMode( strDirectShowCap *dsc, unsigned char *img_buff, long buff_size, IplImage *img_cap, IplImage *thumb );
-int GotoPasteMode( IplImage *img_cap, IplImage *thumb, CvPoint *p1, CvPoint *p2 );
+cv::Mat LoadThumb( char *fname );
+void DrawThumb( char *doc_name, char *doc_name_prev, cv::Mat *thumb0, cv::Mat *thumb_draw0, strProjParam param, strProjParam zero_param, cv::Size cap_size, cv::Size res_size );
+void DrawCor2( cv::Point corps[][2], int corpsnum, cv::Mat img_cap, char *doc_name );
+int GotoSnapshotMode( strDirectShowCap *dsc, unsigned char *img_buff, long buff_size, cv::Mat img_cap, cv::Mat thumb );
+int GotoPasteMode( cv::Mat img_cap, cv::Mat thumb, cv::Point *p1, cv::Point *p2 );
 void OnMouseThumb( int event, int x, int y, int flags, void *param );
-int SaveAR( char *doc_name, IplImage *img_cap, CvSize size, CvPoint *p1, CvPoint *p2 );
-void DrawPoints2( CvPoint *ps, int num, CvSize img_size );
-void DrawParam( IplImage *img_cap, IplImage *thumb, strProjParam param, strProjParam zero_param );
+int SaveAR( char *doc_name, cv::Mat img_cap, cv::Size size, cv::Point *p1, cv::Point *p2 );
+void DrawPoints2( cv::Point *ps, int num, cv::Size img_size );
+void DrawParam( cv::Mat img_cap, cv::Mat thumb, strProjParam param, strProjParam zero_param );
 int CaptureMovie( char *movfile );
 int DecomposeMovie( char *mov_file );
-void Buff2ImageData( unsigned char *buff, IplImage *img );
+void Buff2ImageData( unsigned char *buff, cv::Mat img );
 void ConvMovie( void );
-IplImage *DrawPointsOverlap( CvPoint *ps, int num, CvSize *img_size, IplImage *img );
-IplImage *LoadFlagImage( char *doc_name );
-void MakeDispImage( IplImage *img_disp, IplImage *disp_cap, IplImage *disp_con, CvPoint *disp_ps, int disp_num );
-IplImage *GetFlagImage( char *doc_name );
+cv::Mat DrawPointsOverlap( cv::Point *ps, int num, cv::Size *img_size, cv::Mat img );
+cv::Mat LoadFlagImage( char *doc_name );
+void MakeDispImage( cv::Mat img_disp, cv::Mat disp_cap, cv::Mat disp_con, cv::Point *disp_ps, int disp_num );
+cv::Mat GetFlagImage( char *doc_name );
 int RetrieveDualHash( void );

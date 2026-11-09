@@ -1,79 +1,78 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
 #include "annex_diff.h"
 
-void GetDiffImage0( IplImage *diff, IplImage *anno, IplImage *orig, int mode )
+void GetDiffImage0( cv::Mat diff, cv::Mat anno, cv::Mat orig, int mode )
 // 差分画像を得る
 {
 	int i, j, k;
 	signed int diffval;
 
-	for ( j = 0; j < diff->height; j++ ) {
-		for ( i = 0; i < diff->width; i++ ) {
+	for ( j = 0; j < diff.rows; j++ ) {
+		for ( i = 0; i < diff.cols; i++ ) {
 			for ( k = 0; k < 3; k++ ) {
-				diffval = (int)(255 - (unsigned char)(anno->imageData[j*anno->widthStep+i*3+k])) - (255 - (unsigned char)(orig->imageData[j*orig->widthStep+i*3+k]));
-				if ( diffval >= 0 )	diff->imageData[j*diff->widthStep+i*3+k] = (char)(0x00ff & diffval);
-				else	diff->imageData[j*diff->widthStep+i*3+k] = 0;
+				diffval = (int)(255 - (unsigned char)(anno.data[j*(int)anno.step[0]+i*3+k])) - (255 - (unsigned char)(orig.data[j*(int)orig.step[0]+i*3+k]));
+				if ( diffval >= 0 )	diff.data[j*(int)diff.step[0]+i*3+k] = (char)(0x00ff & diffval);
+				else	diff.data[j*(int)diff.step[0]+i*3+k] = 0;
 			}
 		}
 	}
 }
 
-void GetDiffImage( IplImage *diff, IplImage *anno, IplImage *orig, int mode )
+void GetDiffImage( cv::Mat diff, cv::Mat anno, cv::Mat orig, int mode )
 // 差分画像を得る
 {
 	unsigned char anno_pix[3], orig_pix[3];
 	double diff_dbl, dist, min_dist;
 	int i, j, k, nx, ny, min_nx, min_ny;
 	signed int diffval;
-	IplImage *anno_lab, *orig_lab;
-	IplImage *ori_img;
-//	CvScalar color_tab[eDiffNear*2+1][eDiffNear*2+1];
+	cv::Mat anno_lab, orig_lab;
+	cv::Mat ori_img;
+//	cv::Scalar color_tab[eDiffNear*2+1][eDiffNear*2+1];
 
 	// 方向画像用の色テーブル
 //	for ( j = 0; j <= eDiffNear * 2; j++ ) {
 //		for ( i = 0; i <= eDiffNear * 2; i++ ) {
-//			color_tab[i][j] = CV_RGB( (int)(255.0L / (double)(eDiffNear*2) * (double)i), 0/*(int)(255.0L / (double)(eDiffNear*2) * (double)j)*/, 0/*(int)(255.0L / (double)(eDiffNear*2) * ((double)(eDiffNear*4-i-j)/2.0L))*/ );
+//			color_tab[i][j] = cv::Scalar(0/*(int,0/*(int)(255.0L / (double)(eDiffNear*2) * (double)j)*/,(int)(255.0L / (double)(eDiffNear*2) * (double)i))(255.0L / (double)(eDiffNear*2) * ((double)(eDiffNear*4-i-j)/2.0L))*/ );
 //		}
 //	}
-//	ori_img = cvCreateImage( cvGetSize( orig ), IPL_DEPTH_8U, 3 );
+//	ori_img = cv::Mat::zeros(orig.size(), CV_8UC3);
 	// CIE L*a*b*の画像を作成
-	anno_lab = cvCreateImage( cvGetSize( anno ), IPL_DEPTH_8U, 3 );
-	orig_lab = cvCreateImage( cvGetSize( orig ), IPL_DEPTH_8U, 3 );
-	cvCvtColor( anno, anno_lab, CV_BGR2Lab );
-	cvCvtColor( orig, orig_lab, CV_BGR2Lab );
+	anno_lab = cv::Mat::zeros(anno.size(), CV_8UC3);
+	orig_lab = cv::Mat::zeros(orig.size(), CV_8UC3);
+	cv::cvtColor( anno, anno_lab, cv::COLOR_BGR2Lab );
+	cv::cvtColor( orig, orig_lab, cv::COLOR_BGR2Lab );
 	
 //	anno = anno_lab;
 //	orig = orig_lab;
 
-	for ( j = 0; j < diff->height; j++ ) {
-		for ( i = 0; i < diff->width; i++ ) {
+	for ( j = 0; j < diff.rows; j++ ) {
+		for ( i = 0; i < diff.cols; i++ ) {
 			for ( k = 0; k < 3; k++ ) {	// 画素値の取得
-				anno_pix[k] = (unsigned char)anno->imageData[j*anno->widthStep+i*3+k];
+				anno_pix[k] = (unsigned char)anno.data[j*(int)anno.step[0]+i*3+k];
 			}
 			min_dist = kMaxColorDist;
 			min_nx = -eDiffNear;
 			min_ny = -eDiffNear;
 			// eDiffNearの範囲で最も近いものを探す
 			for ( ny = -eDiffNear; ny <= eDiffNear; ny++ ) {
-				if ( j + ny < 0 || j + ny >= orig->height )	continue;
+				if ( j + ny < 0 || j + ny >= orig.rows )	continue;
 				for ( nx = -eDiffNear; nx <= eDiffNear; nx++ ) {
-					if ( i + nx < 0 || i + nx >= orig->width )	continue;	// 範囲を超えたらスキップ
-//					dist = CalcColorDist( anno_pix, (unsigned char *)&(orig->imageData[(j+ny)*orig->widthStep+(i+nx)*3]) );
+					if ( i + nx < 0 || i + nx >= orig.cols )	continue;	// 範囲を超えたらスキップ
+//					dist = CalcColorDist( anno_pix, (unsigned char *)&(orig.data[(j+ny)*(int)orig.step[0]+(i+nx)*3]) );
 //					dist = 0;
-					dist = CalcColorDist( (unsigned char *)&anno_lab->imageData[j*anno_lab->widthStep+i*3], (unsigned char *)&orig_lab->imageData[j*orig_lab->widthStep+i*3] );	// labでの距離を求める
+					dist = CalcColorDist( (unsigned char *)&anno_lab.data[j*(int)anno_lab.step[0]+i*3], (unsigned char *)&orig_lab.data[j*(int)orig_lab.step[0]+i*3] );	// labでの距離を求める
 					for ( k = 0; k < 3; k++ ) {	// RGBでの距離を加える
-						diff_dbl = anno_pix[k] - (unsigned char)orig->imageData[(j+ny)*orig->widthStep+(i+nx)*3+k];
+						diff_dbl = anno_pix[k] - (unsigned char)orig.data[(j+ny)*(int)orig.step[0]+(i+nx)*3+k];
 						dist += diff_dbl * diff_dbl;
 					}
 					if ( dist < min_dist /*|| dist == min_dist && nx*nx+ny*ny < min_nx*min_nx+min_ny*min_ny*/) {
 						for ( k = 0; k < 3; k++ ) {
-							orig_pix[k] = (unsigned char)orig->imageData[(j+ny)*orig->widthStep+(i+nx)*3+k];
+							orig_pix[k] = (unsigned char)orig.data[(j+ny)*(int)orig.step[0]+(i+nx)*3+k];
 						}
 						min_dist = dist;
 						min_nx = nx;
@@ -86,29 +85,29 @@ void GetDiffImage( IplImage *diff, IplImage *anno, IplImage *orig, int mode )
 			// 差分を求める
 			if ( min_dist > eDiffLeaveThr ) {	// 差が十分に大きければ差分を取らずにannoをそのまま残す
 				for ( k = 0; k < 3; k++ ) {
-					diff->imageData[j*diff->widthStep+i*3+k] = (unsigned char)(0x00ff & (255 - anno_pix[k]));
+					diff.data[j*(int)diff.step[0]+i*3+k] = (unsigned char)(0x00ff & (255 - anno_pix[k]));
 				}
 			}
 			else if ( min_dist < eDiffEraseThr ) {	// 差が十分に小さければ0とする
 				for ( k = 0; k < 3; k++ ) {
-					diff->imageData[j*diff->widthStep+i*3+k] = 0;
+					diff.data[j*(int)diff.step[0]+i*3+k] = 0;
 				}
 			}
 			else {	// そうでなければ差分を取る（負になってしまう場合は0とする）
 				for ( k = 0; k < 3; k++ ) {
 					diffval = (int)(255 - anno_pix[k]) - (255 - orig_pix[k]);
-					if ( diffval >= 0 )	diff->imageData[j*diff->widthStep+i*3+k] = (unsigned char)(0x00ff & diffval);
-					else	diff->imageData[j*diff->widthStep+i*3+k] = 0;
+					if ( diffval >= 0 )	diff.data[j*(int)diff.step[0]+i*3+k] = (unsigned char)(0x00ff & diffval);
+					else	diff.data[j*(int)diff.step[0]+i*3+k] = 0;
 				}
 				// 方向画像の描画
 //				for ( k = 0; k < 3; k++ ) {
-//					ori_img->imageData[ori_img->widthStep*j+i*3+k] = (unsigned char)(color_tab[min_nx+eDiffNear][min_ny+eDiffNear].val[k]);
+//					ori_img.data[(int)ori_img.step[0]*j+i*3+k] = (unsigned char)(color_tab[min_nx+eDiffNear][min_ny+eDiffNear].val[k]);
 //				}
 			}
 		}
 	}
-//	cvSaveImage( "ori.bmp", ori_img );
-//	cvReleaseImage( &ori_img );
+//	cv::imwrite( "ori.bmp", ori_img );
+//
 }
 
 double CalcColorDist( unsigned char *c1, unsigned char *c2 )

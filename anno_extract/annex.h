@@ -4,12 +4,12 @@
 
 //#define	CHK_COR
 
-#define	cWhite	CV_RGB( 255,255,255 )
-#define	cBlack	CV_RGB( 0,0,0 )
-#define	cRed	CV_RGB( 255,0,0 )
-#define	cGreen	CV_RGB( 0,255,0 )
-#define	cBlue	CV_RGB( 0,0,255 )
-#define	cRandom	CV_RGB( rand()%256, rand()%256, rand()%256 )
+#define	cWhite	cv::Scalar(255,255,255)
+#define	cBlack	cv::Scalar(0,0,0)
+#define	cRed	cv::Scalar(0,0,255)
+#define	cGreen	cv::Scalar(0,255,0)
+#define	cBlue	cv::Scalar(255,0,0)
+#define	cRandom	cv::Scalar( rand()%256, rand()%256, rand()%256 )
 
 #define	kOrigNum	(3)	/* origÇÃî‘çÜ */
 #define	kAnnoNum	(3)	/* annoÇÃî‘çÜ */
@@ -69,4 +69,4 @@
 
 int FindFromDefaultDir( char *fname, char *init_fn, char *out_fn );
 int InitAnnex( int argc, char *argv[], int *clcptr );
-void MaskImage( IplImage *img, IplImage *mask, IplImage *dst );
+void MaskImage( cv::Mat img, cv::Mat mask, cv::Mat dst );

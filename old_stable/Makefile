@@ -1,10 +1,10 @@
 # debug
-CXX = g++ -Wall -O2 -g -DLINUX
+CXX = g++ -Wall -O2 -g -DLINUX -std=c++17
 # release
-#CXX = g++ -Wall -O2 -DLINUX
+#CXX = g++ -Wall -O2 -DLINUX -std=c++17
 
-CXXFLAGS = `pkg-config --cflags opencv`
-LDFLAGS = `pkg-config --libs opencv`
+CXXFLAGS = `pkg-config --cflags opencv4`
+LDFLAGS = `pkg-config --libs opencv4`
 
 PACKAGE = llahdoc
 

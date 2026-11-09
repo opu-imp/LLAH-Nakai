@@ -1,5 +1,5 @@
-#define	WIN
-//#define	LINUX
+//#define	WIN
+#define	LINUX
 //#define	RESO_LIMIT
 // DLL
 #ifdef	WIN	// åªç›ÇÕWINî≈ÇÃÇ›

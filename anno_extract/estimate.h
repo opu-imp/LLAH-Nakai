@@ -8,10 +8,10 @@
 
 typedef int keytype;
 
-void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type );
-int EstimateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type );
+void EstimateParam( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type );
+int EstimateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type );
 void GetNumRand( int num, int max, int *arr );
 void GetAppropriateParam( double **paramarr, double *param, int type );
 void MeanParam( double **data, double *mean, int n, int trpnum, double err0, int threshold);
 void simplesort(double *d, keytype *a, int first, int last);
-int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type );
+int EvaluateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type );

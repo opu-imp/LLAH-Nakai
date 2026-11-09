@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-#include <cv.h>			// OpneCV
-#include <highgui.h>	// OpenCV
+#include <opencv2/opencv.hpp>			// OpneCV
+// #include <highgui.h> // now in opencv2/opencv.hpp	// OpenCV
 #include <windows.h>
 #include <mmsystem.h>
 #include <dshow.h>
@@ -17,22 +17,22 @@
 
 cFpTuneReg::cFpTuneReg( char *fname, int def_gparam1, int def_adp_block, int def_adp_sub, int def_gparam2, int def_thr )
 {
-	CvSize size;
+	cv::Size size;
 
-	if ( (img = cvLoadImage(fname, 0)) == NULL ) {
+	if ( ( img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION) ).empty() ) {
 		fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 		return;
 	}
-	size.width = img->width;
-	size.height = img->height;
-	smt1 = cvCreateImage( size, 8, 1 );
-	bin1 = cvCreateImage( size, 8, 1 );
-	smt2 = cvCreateImage( size, 8, 1 );
-	bin2 = cvCreateImage( size, 8, 1 );
-	inv = cvCreateImage( size, 8, 1 );
-	pt  = cvCreateImage( size, 8, 1 );
-	overlap = cvCreateImage( size, 8, 1 );
-	cor = cvCreateImage( size, 8, 1 );
+	size.width = img.cols;
+	size.height = img.rows;
+	smt1 = cv::Mat::zeros(size, CV_8UC1);
+	bin1 = cv::Mat::zeros(size, CV_8UC1);
+	smt2 = cv::Mat::zeros(size, CV_8UC1);
+	bin2 = cv::Mat::zeros(size, CV_8UC1);
+	inv = cv::Mat::zeros(size, CV_8UC1);
+	pt  = cv::Mat::zeros(size, CV_8UC1);
+	overlap = cv::Mat::zeros(size, CV_8UC1);
+	cor = cv::Mat::zeros(size, CV_8UC1);
 
 	gparam1 = def_gparam1;
 	adp_block = def_adp_block;
@@ -47,57 +47,49 @@ cFpTuneReg::cFpTuneReg( char *fname, int def_gparam1, int def_adp_block, int def
 }
 
 cFpTuneReg::~cFpTuneReg(void)
-{
-	cvReleaseImage( &smt1 );
-	cvReleaseImage( &bin1 );
-	cvReleaseImage( &smt2 );
-	cvReleaseImage( &bin2 );
-	cvReleaseImage( &inv );
-	cvReleaseImage( &pt );
-	cvReleaseImage( &overlap );
-	cvReleaseImage( &cor );
+{ // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory)
 	if ( pfs != NULL )	free( pfs );
 }
 
 int cFpTuneReg::Extract( void )
 {
 	int i, num;
-	CvPoint point;
-	CvSize size;
+	cv::Point point;
+	cv::Size size;
 
 	// ガウシアン（一回目）
-	cvSmooth( img, smt1, CV_GAUSSIAN, gparam1*2+1, 0, 0 );
+	cv::GaussianBlur(img, smt1, cv::Size(gparam1*2+1, gparam1*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化（一回目）
-//	cvThreshold( smt1, bin1, thr1, 255, CV_THRESH_BINARY );
-	cvAdaptiveThreshold( smt1, bin1, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_ADAPTIVE_THRESH_MEAN_C, adp_block*2+1, adp_sub );
+//	cv::threshold( smt1, bin1, thr1, 255, cv::THRESH_BINARY );
+	cv::adaptiveThreshold( smt1, bin1, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, adp_block*2+1, adp_sub );
 	// ガウシアン（二回目）
-	cvSmooth( bin1, smt2, CV_GAUSSIAN, gparam2*2+1, 0, 0 );
+	cv::GaussianBlur(bin1, smt2, cv::Size(gparam2*2+1, gparam2*2+1), 0, 0, cv::BORDER_REPLICATE);
 	// 二値化（二回目）
-	cvThreshold( smt2, bin2, thr, 255, CV_THRESH_BINARY );
+	cv::threshold( smt2, bin2, thr, 255, cv::THRESH_BINARY );
 	// 反転（特徴点抽出のため）
-	cvNot( bin2, inv );
+	cv::bitwise_not( bin2, inv );
 	// 連結画像からの特徴点抽出
 	if ( pfs != NULL )	free( pfs );
 	num = MakeFloatCentresFromImage( &pfs, inv, &size, NULL );
 	// 特徴点の描画
-	cvSet( pt, CV_RGB( 255, 255, 255 ), NULL );
-	cvCopy( img, overlap, 0 );
+	pt.setTo( CV_RGB( 255, 255, 255 ) );
+	img.copyTo( overlap );
 	for ( i = 0; i < num; i++ ) {
 		point.x = (int)pfs[i].x;
 		point.y = (int)pfs[i].y;
-		cvCircle( pt, point, kTuneRegPtRadius, CV_RGB( 255, 0, 0 ), -1, CV_AA, 0 );
-		cvCircle( overlap, point, kTuneRegPtRadius, CV_RGB( 255, 0, 0 ), -1, CV_AA, 0 );
+		cv::circle( pt, point, kTuneRegPtRadius, CV_RGB( 255, 0, 0 ), -1, cv::LINE_AA, 0 );
+		cv::circle( overlap, point, kTuneRegPtRadius, CV_RGB( 255, 0, 0 ), -1, cv::LINE_AA, 0 );
 	}
 
 	return 1;
 }
 
-int cFpTuneReg::DrawCor( int pcor[][2], CvPoint2D32f *corpfs, CvPoint cororig )
+int cFpTuneReg::DrawCor( int pcor[][2], cv::Point2f *corpfs, cv::Point cororig )
 // 対応関係を描画
 {
-	CvPoint p1, p2;
+	cv::Point p1, p2;
 
-	cvCopy( img, cor, 0 );
+	img.copyTo( cor );
 
 	if ( pfs == NULL || corpfs == NULL )	return 0;
 	p1.x = (int)pfs[0].x;
@@ -105,7 +97,7 @@ int cFpTuneReg::DrawCor( int pcor[][2], CvPoint2D32f *corpfs, CvPoint cororig )
 	p2.x = cororig.x + (int)corpfs[0].x;
 	p2.y = cororig.y + (int)corpfs[0].y;
 
-	cvLine( cor, p1, p2, CV_RGB( 0, 0, 0 ), 2, CV_AA, 0 );
+	cv::line( cor, p1, p2, CV_RGB( 0, 0, 0 ), 2, cv::LINE_AA, 0 );
 
 	return 1;
 }

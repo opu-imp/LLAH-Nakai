@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cxcore.lib cv.lib highgui.lib ws2_32.lib strmiids.lib winmm.lib"
+				AdditionalDependencies="opencv_world4130d.lib ws2_32.lib strmiids.lib winmm.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cxcore.lib cv.lib highgui.lib ws2_32.lib strmiids.lib winmm.lib"
+				AdditionalDependencies="opencv_world4130.lib ws2_32.lib strmiids.lib winmm.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"
 				SubSystem="1"

@@ -4,8 +4,7 @@ analysing cross-ratios or affine invariants of document image.
 *****************************************************************/
 
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "cvtest.h"
 #include "hash.h"
 #include "hist.h"
@@ -51,7 +50,7 @@ int CalcnCr( int n, int r )
 	return (int)(num / den);
 }
 
-void ReleaseCentres( CvPoint *ps )
+void ReleaseCentres( cv::Point *ps )
 {
 	free( ps );
 }
@@ -69,8 +68,8 @@ int main( int argc, char *argv[] )
 {
 	int disc_num, num, **nears = 0, dnmin, dnmax, step, argi;
 	char fname[1024];
-	CvPoint *ps;
-	CvSize img_size;
+	cv::Point *ps;
+	cv::Size img_size;
 	strHist hist;
 	strDisc disc;
 	
@@ -129,6 +128,7 @@ int main( int argc, char *argv[] )
 	Hist2Disc( &hist, &disc, eDiscNum );
 	SaveDisc( fname, &disc );
 //	OutPutHist(&hist, 1000, 1000);
+	return 0;
 }
 
 void SaveDisc( char *fname, strDisc *disc )
@@ -164,7 +164,7 @@ void Hist2Disc( strHist *hist, strDisc *disc, int disc_num )
 	}
 }
 	
-void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist )
+void CalcCRAndAddHist( cv::Point *ps, int num, int *nears[], strHist *hist )
 // 複比を計算してヒストグラムに入れる
 {
 	int i=0, j, k, l, st, tmp, idx[10];
@@ -215,18 +215,18 @@ void CalcCRAndAddHist( CvPoint *ps, int num, int *nears[], strHist *hist )
 	}
 }
 
-int LoadPointFile( char *fname, CvPoint **ps0, CvSize *size )
+int LoadPointFile( char *fname, cv::Point **ps0, cv::Size *size )
 // 点データを読み込む
 {
 	int num;
 	char line[1024];
 	FILE *fp;
-	CvPoint *ps;
+	cv::Point *ps;
 	
 	if ( (fp = fopen(fname, "r")) == NULL )	return 0;
 	fgets(line, 1024, fp);
 	sscanf(line, "%d,%d", &(size->width), &(size->height));
-	ps = (CvPoint *)calloc(kMaxPointNum, sizeof(CvPoint));
+	ps = (cv::Point *)calloc(kMaxPointNum, sizeof(cv::Point));
 	*ps0 = ps;
 	num = 0;
 	while ( fgets(line, 1024, fp) != NULL && num < kMaxPointNum ) {
@@ -237,7 +237,7 @@ int LoadPointFile( char *fname, CvPoint **ps0, CvSize *size )
 	return num;
 }
 
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 )
 // 重心から近傍構造を計算する
 {
 	int i, **nears;
@@ -253,12 +253,12 @@ void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 )
 	}
 }
 
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] )
 //	サイズnumの点配列psのn番目の点と最も近いkNears個の点のインデックスをnearsに格納する
 {
 	int i, j, k, min_idxs[kNears];
 	double dist, min_dists[kNears];
-	CvPoint p;
+	cv::Point p;
 
 	// 初期化
 	for ( i = 0; i < kNears; i++ ) {
@@ -287,17 +287,17 @@ void NearestPoint( int n, CvPoint *ps, int num, int nears[] )
 	}
 }
 
-int OutPutImage(IplImage *img)
+int OutPutImage(cv::Mat img)
 // 画像をファイルに保存する．ファイル名は自動的に連番になる
 {
 	static int n = 0;
 	char filename[kFileNameLen];
 
 	sprintf(filename, "output%02d.bmp", n++);
-	return cvSaveImage(filename, img);
+	return cv::imwrite(filename, img);
 }
 
-void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
+void CalcOrderCWN( int pt, cv::Point *ps, int *nears[], int idx[], int num )
 // 時計回りに近傍点を配列に入れる（ｎ点バージョン）
 {
 	int i, j, tmp_i;
@@ -322,7 +322,7 @@ void CalcOrderCWN( int pt, CvPoint *ps, int *nears[], int idx[], int num )
 	}
 }
 
-long double GetPointsAngle(CvPoint p1, CvPoint p2)
+long double GetPointsAngle(cv::Point p1, cv::Point p2)
 // p1から見たp2の角度を計算する（約-3.14から約3.14）
 {
 	return atan2(p2.y - p1.y, p2.x - p1.x);

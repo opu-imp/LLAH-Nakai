@@ -1,12 +1,12 @@
 #define	MERGE_HOR	(0)
 #define	MERGE_VER	(1)
 
-int SetPix( IplImage *img, int x, int y, char *val );
-int GetPix( IplImage *img, int x, int y, char *val );
-int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge );
-int MergeImage3( IplImage *img1, IplImage *img2, IplImage *img3, IplImage *merge );
-int MergeImage4( IplImage *img1, IplImage *img2, IplImage *img3, IplImage *img4, IplImage *merge );
-void DrawPolygon( IplImage *img, CvPoint *ps, int pnum, CvScalar color, int thickness, int line_type, int shift );
-void PutImage( IplImage *src, IplImage *dst, CvPoint origin );
-void CopyImageData( IplImage *src, IplImage *dst );
-int CropImage( IplImage *src, IplImage *dst, CvPoint pos );
+int SetPix( cv::Mat img, int x, int y, char *val );
+int GetPix( cv::Mat img, int x, int y, char *val );
+int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge );
+int MergeImage3( cv::Mat img1, cv::Mat img2, cv::Mat img3, cv::Mat merge );
+int MergeImage4( cv::Mat img1, cv::Mat img2, cv::Mat img3, cv::Mat img4, cv::Mat merge );
+void DrawPolygon( cv::Mat img, cv::Point *ps, int pnum, cv::Scalar color, int thickness, int line_type, int shift );
+void PutImage( cv::Mat src, cv::Mat dst, cv::Point origin );
+void CopyImageData( cv::Mat src, cv::Mat dst );
+int CropImage( cv::Mat src, cv::Mat dst, cv::Point pos );

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
+// #include <highgui.h> // now in opencv2/opencv.hpp
 #include "hist.h"
 #include "dirs.h"
 
@@ -53,33 +53,33 @@ void OutPutHist( strHist *hist, int width, int height )
 // ヒストグラムを描画してファイルに出力する
 {
 	int i;
-	CvPoint p1, p2;
+	cv::Point p1, p2;
 
-	IplImage *img = cvCreateImage( cvSize(width, height), 8, 1);
-	cvZero(img);
+	cv::Mat img = cv::Mat::zeros(cv::Size(width, height), CV_8UC1);
+	img.setTo(cv::Scalar::all(0));
 
 	for ( i = 0; i < hist->size; i++ ) {
 		p1.x = (int)(((double)width / (double)hist->size)*(double)i);
 		p1.y = (int)((double)height - ((double)height/(double)hist->max_freq)*(double)hist->bin[i]);
 		p2.x = (int)(((double)width / (double)hist->size)*((double)i+1));
 		p2.y = height;
-		cvRectangle( img, p1, p2, cWhite, CV_FILLED, 8, 0 );
+		cv::rectangle( img, p1, p2, cWhite, cv::FILLED, 8, 0 );
 	}
 	OutPutImage( img );
 }
 
-void DrawHist( IplImage *img, strHist *hist )
+void DrawHist( cv::Mat img, strHist *hist )
 // ヒストグラムを描画する
 {
 	int i;
-	CvPoint p1, p2;
+	cv::Point p1, p2;
 	int width, height;
 	double max_freq;
 
-	cvZero(img);
+	img.setTo(cv::Scalar::all(0));
 
-	width = img->width;
-	height = img->height;
+	width = img.cols;
+	height = img.rows;
 	max_freq = ( hist->max_freq == 0 ) ? 1 : hist->max_freq;
 
 	for ( i = 0; i < hist->size; i++ ) {
@@ -87,7 +87,7 @@ void DrawHist( IplImage *img, strHist *hist )
 		p1.y = (int)((double)height - ((double)height/max_freq)*(double)hist->bin[i]);
 		p2.x = (int)(((double)width / (double)hist->size)*((double)i+1));
 		p2.y = height;
-		cvRectangle( img, p1, p2, cWhite, CV_FILLED, 8, 0 );
+		cv::rectangle( img, p1, p2, cWhite, cv::FILLED, 8, 0 );
 	}
 }
 
@@ -104,53 +104,44 @@ void DisplayHistNum(strHist *hist)
 
 void HistTest( void )
 {
-    IplImage* src;
-    if( (src = cvLoadImage("img_0001.jpg", 1))!= 0)
+    cv::Mat src = cv::imread("img_0001.jpg", cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+    if( !src.empty() )
     {
-        IplImage* h_plane = cvCreateImage( cvGetSize(src), 8, 1 );
-        IplImage* s_plane = cvCreateImage( cvGetSize(src), 8, 1 );
-        IplImage* v_plane = cvCreateImage( cvGetSize(src), 8, 1 );
-        IplImage* planes[] = { h_plane, s_plane };
-        IplImage* hsv = cvCreateImage( cvGetSize(src), 8, 3 );
+        cv::Mat hsv;
         int h_bins = 30, s_bins = 32;
         int hist_size[] = {h_bins, s_bins};
-        float h_ranges[] = { 0, 180 }; /* hue varies from 0 (~0°red) to 180 (~360°red again) */
-        float s_ranges[] = { 0, 255 }; /* saturation varies from 0 (black-gray-white) to 255 (pure spectrum color) */
-        float* ranges[] = { h_ranges, s_ranges };
+        float h_ranges[] = { 0, 180 };
+        float s_ranges[] = { 0, 255 };
+        const float* ranges[] = { h_ranges, s_ranges };
+        int channels[] = {0, 1};
         int scale = 10;
-        IplImage* hist_img = cvCreateImage( cvSize(h_bins*scale,s_bins*scale), 8, 3 );
-        CvHistogram* hist;
-        float max_value = 0;
-        int h, s;
+        cv::Mat hist_img = cv::Mat::zeros(cv::Size(h_bins*scale, s_bins*scale), CV_8UC3);
+        cv::Mat hist;
+        double max_value = 0;
 
-        cvCvtColor( src, hsv, CV_BGR2HSV );
-        cvCvtPixToPlane( hsv, h_plane, s_plane, v_plane, 0 );
-        hist = cvCreateHist( 2, hist_size, CV_HIST_ARRAY, ranges, 1 );
-        cvCalcHist( planes, hist, 0, 0 );
-        cvGetMinMaxHistValue( hist, 0, &max_value, 0, 0 );
-        cvZero( hist_img );
+        cv::cvtColor( src, hsv, cv::COLOR_BGR2HSV );
+        cv::calcHist( &hsv, 1, channels, cv::Mat(), hist, 2, hist_size, ranges, true, false );
+        cv::minMaxLoc( hist, 0, &max_value, 0, 0 );
 
-        for( h = 0; h < h_bins; h++ )
+        for( int h = 0; h < h_bins; h++ )
         {
-            for( s = 0; s < s_bins; s++ )
+            for( int s = 0; s < s_bins; s++ )
             {
-                float bin_val = cvQueryHistValue_2D( hist, h, s );
-                int intensity = cvRound(bin_val*255/max_value);
-                cvRectangle( hist_img, cvPoint( h*scale, s*scale ),
-                             cvPoint( (h+1)*scale - 1, (s+1)*scale - 1),
-                             CV_RGB(intensity,intensity,intensity), /* graw a grayscale histogram.
-                                                                       if you have idea how to do it
-                                                                       nicer let us know */
-                             1, CV_FILLED, 0 );
+                float bin_val = hist.at<float>(h, s);
+                int intensity = cvRound(bin_val * 255 / max_value);
+                cv::rectangle( hist_img, cv::Point( h*scale, s*scale ),
+                             cv::Point( (h+1)*scale - 1, (s+1)*scale - 1),
+                             cv::Scalar(intensity,intensity,intensity),
+                             cv::FILLED, cv::LINE_8, 0 );
             }
         }
 
-        cvNamedWindow( "Source", 1 );
-        cvShowImage( "Source", src );
+        cv::namedWindow( "Source", 1 );
+        cv::imshow( "Source", src );
 
-        cvNamedWindow( "H-S Histogram", 1 );
-        cvShowImage( "H-S Histogram", hist_img );
+        cv::namedWindow( "H-S Histogram", 1 );
+        cv::imshow( "H-S Histogram", hist_img );
 
-        cvWaitKey(0);
+        cv::waitKey(0);
     }
 }

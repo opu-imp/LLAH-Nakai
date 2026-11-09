@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
@@ -16,36 +16,36 @@
 #include "proctime.h"
 #include "nimg.h"
 
-void OutputCor( IplImage *anno, IplImage *orig, CvPoint **clpsa, CvPoint **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo );
-void OutputCorCl( CvPoint **clpsa, CvPoint **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[kMaxClusters][kMaxPointNum] );
+void OutputCor( cv::Mat anno, cv::Mat orig, cv::Point **clpsa, cv::Point **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo );
+void OutputCorCl( cv::Point **clpsa, cv::Point **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[kMaxClusters][kMaxPointNum] );
 
-int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *param )
+int TransformAnno( cv::Mat anno, cv::Mat orig, int cluster_count, double *param )
 // annoをorigに変換する相似変換パラメータを求める
 {
 	int i, j, numso[kMaxClusters], numsa[kMaxClusters], clcor[kMaxClusters], **nears, score[kMaxDocNum];
 	int pcors[kMaxClusters][kMaxPointNum], cor[kMaxPointNum*kMaxClusters][4], cor_num = 0;
 	int start, start_ret, ret_sum;
-	CvPoint *clpso[kMaxClusters], *clpsa[kMaxClusters];
+	cv::Point *clpso[kMaxClusters], *clpsa[kMaxClusters];
 	double avgso[kMaxClusters][3], avgsa[kMaxClusters][3];
 	char cmd[kMaxCmdLineLen], diro[kMaxPathLen], dira[kMaxPathLen], baseo[kFileNameLen], basea[kFileNameLen];
 	char pfno[kMaxPathLen], pfna[kMaxPathLen], fname[kMaxPathLen];
-	IplImage *cor_img;
-	CvSize sizeo, sizea;
-	CvPoint p1[3], p2[3];
+	cv::Mat cor_img;
+	cv::Size sizeo, sizea;
+	cv::Point p1[3], p2[3];
 //	strSimParam param;
 	
 	// 元画像と書き込み画像から特徴点を抽出（旧バージョン）
 /*	numo = MakeFeaturePointsFromColorImage( &pso, orig, FP_PDF );
 	numa = MakeFeaturePointsFromColorImage( &psa, anno, FP_SCAN );
-	OutPutPoints( pso, numo, cvGetSize(orig) );
-	OutPutPoints( psa, numa, cvGetSize(anno) );
+	OutPutPoints( pso, numo, orig.size() );
+	OutPutPoints( psa, numa, anno.size() );
 */
 
 	/************* 元画像と書き込み画像から特徴点を抽出 *************/
-//	sizeo = cvSize( orig->width * kClScale, orig->height * kClScale );
-//	sizea = cvSize( anno->width * kClScale, anno->height * kClScale );
-	sizeo = cvGetSize( orig );
-	sizea = cvGetSize( anno );
+//	sizeo = cv::Size( orig.cols * kClScale, orig.rows * kClScale );
+//	sizea = cv::Size( anno.cols * kClScale, anno.rows * kClScale );
+	sizeo = orig.size();
+	sizea = anno.size();
 	// 点ファイル名の作成
 	GetDir( eOrigFileName, kMaxPathLen, diro );
 	GetDir( eAnnoFileName, kMaxPathLen, dira );
@@ -113,16 +113,16 @@ int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *pa
 	printf("(Retrieval: %d msec)\n", ret_sum );
 	// 対応点の出力確認
 #ifdef	CL_OUTPUT_IMAGE
-	cor_img = cvCreateImage( cvSize( sizeo.width + sizea.width, (sizeo.height > sizea.height) ? sizeo.height : sizea.height ), 8, 1 );
+	cor_img = cv::Mat::zeros( cv::Size( sizeo.width + sizea.width, (sizeo.height > sizea.height) ? sizeo.height : sizea.height ), CV_8UC1 );
 	for ( i = 0; i < cluster_count; i++ ) {
 		sprintf( fname, "%s%s05cor%d.jpg", eOutPutDir, basea, i );
-		cvZero( cor_img );
+		cor_img.setTo(cv::Scalar::all(0));
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
-				cvLine( cor_img, clpsa[i][j], cvPoint( clpso[clcor[i]][pcors[i][j]].x + sizea.width, clpso[clcor[i]][pcors[i][j]].y ), cWhite, kDrawCorLineThick, CV_AA, 0 );
+				cv::line( cor_img, clpsa[i][j], cv::Point( clpso[clcor[i]][pcors[i][j]].x + sizea.width, clpso[clcor[i]][pcors[i][j]].y ), cWhite, kDrawCorLineThick, cv::LINE_AA, 0 );
 			}
 		}
-	cvSaveImage( fname, cor_img );
+	cv::imwrite( fname, cor_img );
 	}
 #endif
 #ifdef	OUTPUT_COR_IMAGE
@@ -300,104 +300,103 @@ void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], in
 #endif
 }
 						
-int MakeFeaturePointsFromColorImage( CvPoint **ps0, IplImage *img, int mode )
+int MakeFeaturePointsFromColorImage( cv::Point **ps0, cv::Mat img, int mode )
 // カラー画像imgからmodeで特徴点を抽出し、psに格納して点数を返す（現在は使用せず）
 {
 	int i;
-	IplImage *gray, *bin, *inv;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq *contours = 0, *con0;
-	CvMoments mom;
-	CvPoint *ps;
+	cv::Mat gray, bin, inv;
+    std::vector<std::vector<cv::Point>> contours;
+
+    std::vector<cv::Vec4i> hierarchy;
+	cv::Moments mom;
+	cv::Point *ps;
 
 	// 画像の作成
-	gray = cvCreateImage( cvGetSize( img ), IPL_DEPTH_8U, 1 );
-	bin = cvCreateImage( cvGetSize( img ), IPL_DEPTH_8U, 1 );
-	inv = cvCreateImage( cvGetSize( img ), IPL_DEPTH_8U, 1 );
+	gray = cv::Mat::zeros(img.size(), CV_8UC1);
+	bin = cv::Mat::zeros(img.size(), CV_8UC1);
+	inv = cv::Mat::zeros(img.size(), CV_8UC1);
 	// 開始位置を合わせる（ないと上下反転する）
-	gray->origin = img->origin;
-	bin->origin = img->origin;
-	inv->origin = img->origin;
+	// origin not needed in cv::Mat (always top-left)
+	// origin not needed in cv::Mat (always top-left)
+	// origin not needed in cv::Mat (always top-left)
 	// グレイスケールに変換
-	cvCvtColor( img, gray, CV_BGR2GRAY );
+	cv::cvtColor( img, gray, cv::COLOR_BGR2GRAY );
 	OutPutImage( gray );
 	// 適応二値化
-//	cvAdaptiveThreshold( gray, bin, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 401, 10 );
-	cvThreshold( gray, bin, 128, 255, CV_THRESH_BINARY );
-	cvNot( bin, inv );
+//	cv::adaptiveThreshold( gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 401, 10 );
+	cv::threshold( gray, bin, 128, 255, cv::THRESH_BINARY );
+	cv::bitwise_not( bin, inv );
 	OutPutImage( inv );
 	// 連結成分の重心を計算
-	cvFindContours( inv, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0) );	// 連結成分を抽出する
+	ClearImageBorder( inv );
+	cv::findContours(inv, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 	// まず数を数える
-    for( i = 0, con0 = contours; con0 != 0 ; con0 = con0->h_next )
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
-//		CvPoint p;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+//		cv::Point p;
+		mom = cv::moments(contours[ci]);
+		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// 小さすぎる連結成分は除外
 		i++;
     }
     // 確保する
-    ps = (CvPoint *)calloc( i, sizeof( CvPoint ) );
+    ps = (cv::Point *)calloc( i, sizeof( cv::Point ) );
     *ps0 = ps;
-    for( i = 0, con0 = contours; con0 != 0 ; con0 = con0->h_next )
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] )
     {
 		double d00;
-//		CvPoint p;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+//		cv::Point p;
+		mom = cv::moments(contours[ci]);
+		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// 小さすぎる連結成分は除外
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
-//		cvCircle( point, p, 3, CV_RGB(255, 255, 255), -1, 1, 0 );
+		ps[i].x = (int)(mom.m10 / d00);
+		ps[i].y = (int)(mom.m01 / d00);
+//		cv::circle( point, p, 3, cv::Scalar(255,255,255), -1, 1, 0 );
 		i++;
     }
-    
-    cvReleaseMemStorage( &storage );
-    cvReleaseImage( &gray );
-    cvReleaseImage( &bin );
-    cvReleaseImage( &inv );
+
+
     
 	return i;
 }
-int OutPutPoints( char *fname, CvPoint *ps, int num, CvSize size )
+int OutPutPoints( char *fname, cv::Point *ps, int num, cv::Size size )
 // 特徴点を出力する
 {
 	int i, ret;
-	IplImage *img;
+	cv::Mat img;
 	
-	img = cvCreateImage( size, IPL_DEPTH_8U, 1 );
-	cvZero( img );
+	img = cv::Mat::zeros(size, CV_8UC1);
+	img.setTo(cv::Scalar::all(0));
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( img, ps[i], 25, cWhite, -1, CV_AA, 0 );
+		cv::circle( img, ps[i], 25, cWhite, -1, cv::LINE_AA, 0 );
 	}
 //	ret = OutPutImage( img );
-	ret = cvSaveImage( fname, img );
-	cvReleaseImage( &img );
+	ret = cv::imwrite( fname, img );
 	
 	return ret;
 }
 
-int OutPutImage( IplImage *img )
+int OutPutImage( cv::Mat img )
 // 画像をファイルに保存する．ファイル名は自動的に連番になる
 {
 	static int n = 0;
 	char filename[kFileNameLen];
 
 	sprintf(filename, "output%02d.bmp", n++);
-	return cvSaveImage(filename, img);
+	return cv::imwrite(filename, img);
 }
 
 #ifdef	COR_PRESET_MODE
-int TransformAnnoPreset( IplImage *anno, IplImage *orig, IplImage *anno2 )
+int TransformAnnoPreset( cv::Mat anno, cv::Mat orig, cv::Mat anno2 )
 // annoをorigに合わせ、anno2に出力する。
 // 返り値：正常終了なら1、異常終了（対応していない）なら0
 // 対応点が予め与えられている場合。現在は使用不可能
 {
 	strSimParam param;
-	CvPoint p11, p12, p21, p22;
+	cv::Point p11, p12, p21, p22;
 	
 /* 必要？わからん	
 	param.theta = 0.2;
@@ -480,31 +479,30 @@ int IsExist( char *fname )
 	return 1;
 }
 
-void OutputCor( IplImage *anno, IplImage *orig, CvPoint **clpsa, CvPoint **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo )
+void OutputCor( cv::Mat anno, cv::Mat orig, cv::Point **clpsa, cv::Point **clpso, int *clcor, int pcors[kMaxClusters][kMaxPointNum], int cluster_count, int *numsa, char *basea, char *baseo )
 // 対応関係を描画
 {
 	int i, j;
 	char mergefn[kMaxPathLen];
-	IplImage *img;
+	cv::Mat img;
 	
 	// 画像を作成
-	img = cvCreateImage( cvSize( anno->width + orig->width, (anno->height > orig->height) ? anno->height : orig->height ), 8, 3 );
+	img = cv::Mat::zeros( cv::Size( anno.cols + orig.cols, (anno.rows > orig.rows) ? anno.rows : orig.rows ), CV_8UC3 );
 	// 並べて描画
 	MergeImage( anno, orig, MERGE_HOR, img );
 	// 枠を描画
-	cvRectangle( img, cvPoint( 0, 0 ), cvPoint( anno->width, anno->height ), cBlack, 20, CV_AA, 0 );
-	cvRectangle( img, cvPoint( anno->width, 0 ), cvPoint( anno->width + orig->width, orig->height ), cBlack, 20, CV_AA, 0 );
+	cv::rectangle( img, cv::Point( 0, 0 ), cv::Point( anno.cols, anno.rows ), cBlack, 20, cv::LINE_AA, 0 );
+	cv::rectangle( img, cv::Point( anno.cols, 0 ), cv::Point( anno.cols + orig.cols, orig.rows ), cBlack, 20, cv::LINE_AA, 0 );
 	// 対応関係を描画
 	for ( i = 0; i < cluster_count; i++ ) {
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
-				cvLine( img, clpsa[i][j], cvPoint( clpso[clcor[i]][pcors[i][j]].x + anno->width, clpso[clcor[i]][pcors[i][j]].y ), cRed, kDrawCorLineThick, CV_AA, 0 );
+				cv::line( img, clpsa[i][j], cv::Point( clpso[clcor[i]][pcors[i][j]].x + anno.cols, clpso[clcor[i]][pcors[i][j]].y ), cRed, kDrawCorLineThick, cv::LINE_AA, 0 );
 			}
 		}
 	}
 	sprintf( mergefn, "%s%sacor.jpg", eOutPutDir, basea );
-	cvSaveImage( mergefn, img );
-	cvReleaseImage( &img );
+	cv::imwrite( mergefn, img );
 }
 
 #if 0
@@ -514,34 +512,34 @@ void OutputCor( IplImage *anno, IplImage *orig, CvPoint **clpsa, CvPoint **clpso
 
 #define	max(a,b)	(( a > b ) ? a : b)
 
-int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge )
+int MergeImage( cv::Mat img1, cv::Mat img2, int mode, cv::Mat merge )
 // img1とimg2をmode(MERGE_HOR:左右，MERGE_VER:上下)で並べた画像をmergeに格納する
 {
 	int i, j, mw, mh, orig_x = 0, orig_y = 0;
 	char val[3];
 
-	mw = merge->width;
-	mh = merge->height;
+	mw = merge.cols;
+	mh = merge.rows;
 	if ( mode == MERGE_HOR ) {	// 左右に並べるモードで，
-		if ( mw > (img1->width + img2->width) )	// 左右に並べた長さより幅が大きいとき
-			orig_x = (int)((double)(mw - (img1->width+img2->width)) / 2.0L);	// 余白の半分をorig_xにする
-		if ( mh > max(img1->height, img2->height) )	// 大きいほうの高さより高さが大きいとき
-			orig_y = (int)((double)(mh - max(img1->height, img2->height)) / 2.0L);
+		if ( mw > (img1.cols + img2.cols) )	// 左右に並べた長さより幅が大きいとき
+			orig_x = (int)((double)(mw - (img1.cols+img2.cols)) / 2.0L);	// 余白の半分をorig_xにする
+		if ( mh > max(img1.rows, img2.rows) )	// 大きいほうの高さより高さが大きいとき
+			orig_y = (int)((double)(mh - max(img1.rows, img2.rows)) / 2.0L);
 	} else if ( mode == MERGE_VER ) {	// 上下に並べるモードで，
-		if ( mw > max(img1->width, img2->width) )	// 大きいほうの幅よりも全体の幅が大きいとき
-			orig_x = (int)((double)(mw - max(img1->width, img2->width)) / 2.0L);
-		if ( mh > (img1->height + img2->height) )	// 上下に並べた長さより全体の長さが大きいとき
-			orig_y = (int)((double)(mh - (img1->height+img2->height)) / 2.0L);
+		if ( mw > max(img1.cols, img2.cols) )	// 大きいほうの幅よりも全体の幅が大きいとき
+			orig_x = (int)((double)(mw - max(img1.cols, img2.cols)) / 2.0L);
+		if ( mh > (img1.rows + img2.rows) )	// 上下に並べた長さより全体の長さが大きいとき
+			orig_y = (int)((double)(mh - (img1.rows+img2.rows)) / 2.0L);
 	}
 
 	for ( j = 0; j < mh; j++ ) {
 		for ( i = 0; i < mw; i++ ) {
 //			printf("%d, %d\n", i, j);
 			memset( val, 0, 3 );
-			if ( mode == MERGE_HOR && i >= img1->width )	// 左右配置で画像1の幅を越える
-				GetPix( img2, i - img1->width, j, val );
-			else if ( mode == MERGE_VER && j >= img1->height )	// 上下配置で画像1の高さを超える
-				GetPix( img2, i, j - img1->height, val );
+			if ( mode == MERGE_HOR && i >= img1.cols )	// 左右配置で画像1の幅を越える
+				GetPix( img2, i - img1.cols, j, val );
+			else if ( mode == MERGE_VER && j >= img1.rows )	// 上下配置で画像1の高さを超える
+				GetPix( img2, i, j - img1.rows, val );
 			else
 				GetPix( img1, i, j, val );
 
@@ -552,48 +550,46 @@ int MergeImage( IplImage *img1, IplImage *img2, int mode, IplImage *merge )
 }
 #endif
 
-void OutputCorCl( CvPoint **clpsa, CvPoint **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[][10000] )
+void OutputCorCl( cv::Point **clpsa, cv::Point **clpso, int *numsa, int *numso, char *basea, char *baseo, int cluster_count, int *clcor, int pcors[][10000] )
 // クラスタごとに対応点を描画
 {
 	int i, j;
 	char climgafn[kMaxPathLen], climgofn[kMaxPathLen], mergefn[kMaxPathLen];
-	IplImage *climga, *climgo, *merge, *sml_merge;
-	CvPoint pta, pto;
+	cv::Mat climga, climgo, merge, sml_merge;
+	cv::Point pta, pto;
 
 	for ( i = 0; i < cluster_count; i++ ) {
 		sprintf( climgafn, "%s%s03con%d.jpg", eOutPutDir, basea, i );
 		sprintf( climgofn, "%s%s03con%d.jpg", eOutPutDir, baseo, clcor[i] );
 		puts( climgafn );
 		puts( climgofn );
-		climga = cvLoadImage( climgafn, 1 );
-		climgo = cvLoadImage( climgofn, 1 );
-		if ( climga == NULL || climgo == NULL )	{
+		climga = cv::imread(climgafn, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+		climgo = cv::imread(climgofn, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+		if (climga.empty() || climgo.empty())	{
 			fprintf( stderr, "%s or %s cannot open\n", climgafn, climgofn );
 			return;
 		}
-		merge = cvCreateImage( cvSize( climga->width + climgo->width, (climga->height > climgo->height) ? climga->height : climgo->height ), IPL_DEPTH_8U, 3 );
-		sml_merge = cvCreateImage( cvSize( (int)(merge->width * 0.5), (int)(merge->height * 0.5) ), IPL_DEPTH_8U, 3 );
+		merge = cv::Mat::zeros( cv::Size( climga.cols + climgo.cols, (climga.rows > climgo.rows) ? climga.rows : climgo.rows ), CV_8UC3 );
+		sml_merge = cv::Mat::zeros( cv::Size( (int)(merge.cols * 0.5), (int)(merge.rows * 0.5) ), CV_8UC3 );
 		sprintf( mergefn, "%s%sclcor%d.jpg", eOutPutDir, basea, i );
 		MergeImage( climga, climgo, MERGE_HOR, merge );
 		for ( j = 0; j < numsa[i]; j++ ) {
-			cvCircle( merge, cvPoint( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale)), 4, CV_RGB(255,0,0), -1, CV_AA, 0 );
+			cv::circle( merge, cv::Point( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale)), 4, cv::Scalar(0,0,255), -1, cv::LINE_AA, 0 );
 		}
 		for ( j = 0; j < numso[clcor[i]]; j++ ) {
-			cvCircle( merge, cvPoint( climga->width + (int)(clpso[clcor[i]][j].x * eClScale), (int)(clpso[clcor[i]][j].y * eClScale)), 4, CV_RGB(255,0,0), -1, CV_AA, 0 );
+			cv::circle( merge, cv::Point( climga.cols + (int)(clpso[clcor[i]][j].x * eClScale), (int)(clpso[clcor[i]][j].y * eClScale)), 4, cv::Scalar(0,0,255), -1, cv::LINE_AA, 0 );
 		}
 		for ( j = 0; j < numsa[i]; j++ ) {
 			if ( pcors[i][j] >= 0 ) {
-				pta = cvPoint( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale) );
-				pto = cvPoint( climga->width + (int)(clpso[clcor[i]][pcors[i][j]].x * eClScale), (int)(clpso[clcor[i]][pcors[i][j]].y * eClScale) );
-				cvLine( merge, pta, pto, CV_RGB(255,255,0), 4, CV_AA, 0 );
+				pta = cv::Point( (int)(clpsa[i][j].x * eClScale), (int)(clpsa[i][j].y * eClScale) );
+				pto = cv::Point( climga.cols + (int)(clpso[clcor[i]][pcors[i][j]].x * eClScale), (int)(clpso[clcor[i]][pcors[i][j]].y * eClScale) );
+				cv::line( merge, pta, pto, cv::Scalar(0,255,255), 4, cv::LINE_AA, 0 );
 			}
 		}
-		cvResize( merge, sml_merge, CV_INTER_NN );
-		cvSaveImage( mergefn, sml_merge );
+		cv::resize( merge, sml_merge, sml_merge.size(), 0, 0, cv::INTER_NEAREST );
+		cv::imwrite( mergefn, sml_merge );
 
-		cvReleaseImage( &sml_merge );
-		cvReleaseImage( &merge );
-		cvReleaseImage( &climga );
-		cvReleaseImage( &climgo );
+
+
 	}
 }

@@ -10,8 +10,7 @@
 #include <mmsystem.h>
 #endif
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "dirs.h"
@@ -42,12 +41,12 @@ int main( int argc, char *argv[] )
 {
 	int i, argi, ret, num, *reg_nums, **nears = 0, *score, ret_time, res;
 	int pcor[kMaxPointNum][2], pcornum = 0;
-	CvPoint *ps = 0, **reg_pss;
-	CvSize img_size, *reg_sizes;
+	cv::Point *ps = 0, **reg_pss;
+	cv::Size img_size, *reg_sizes;
 	double *areas = NULL, **reg_areass;
 	char **dbcors;
 	strProjParam param, param_rev;
-	IplImage *img, *img1, *img2, *mos;
+	cv::Mat img, img1, img2, mos;
 	strDisc disc;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
@@ -57,15 +56,15 @@ int main( int argc, char *argv[] )
 	if ( ( argi = AnalyzeArgAndSetExtern2( argc, argv ) ) < 0 )	return 1;
 	eDbDocs = 1;
 	// メモリの確保
-	reg_pss = (CvPoint **)calloc( eDbDocs, sizeof(CvPoint *) );
+	reg_pss = (cv::Point **)calloc( eDbDocs, sizeof(cv::Point *) );
 	reg_areass = (double **)calloc( eDbDocs, sizeof(double *) );
-	reg_sizes = (CvSize *)calloc( eDbDocs, sizeof(CvSize) );
+	reg_sizes = (cv::Size *)calloc( eDbDocs, sizeof(cv::Size) );
 	reg_nums = (int *)calloc( eDbDocs, sizeof(int) );
 	dbcors = (char **)calloc( eDbDocs, sizeof(char *) );
 	dbcors[0] = (char *)calloc( kMaxPathLen, sizeof(char) );
 
 	// 画像1から特徴点を抽出
-	img1 = cvLoadImage( argv[argi], 1 );
+	img1 = cv::imread(argv[argi], cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	fprintf( stderr, "%s\n", argv[argi] );
 	strcpy( dbcors[0], argv[argi] );	// 元画像ファイル名を保存
 	start = GetProcTimeMiliSec();
@@ -74,7 +73,6 @@ int main( int argc, char *argv[] )
 	reg_nums[0] = MakeCentresFromImage( &(reg_pss[0]), img, &(reg_sizes[0]), &(reg_areass[0]) );	// 特徴点を抽出
 	end = GetProcTimeMiliSec();
 	printf("Feature point extraction 1: %d ms\n", end - start);
-	cvReleaseImage( &img );	// 画像を解放
 	// 離散化ファイルの作成
 	fprintf( stderr, "Making %s...\n", eDiscFileName );
 	ret = MakeDiscFile( min( eDocNumForMakeDisc, eDbDocs ), reg_pss, reg_nums, &disc );
@@ -90,14 +88,13 @@ int main( int argc, char *argv[] )
 
 	// 画像2から特徴点を抽出
 	argi++;
-	img2 = cvLoadImage( argv[argi], 1 );
+	img2 = cv::imread(argv[argi], cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
 	start = GetProcTimeMiliSec();
 	if ( eIsJp )	img = GetConnectedImageJp2( argv[argi], RETRIEVE_MODE );	// 結像画像を作成
 	else			img = GetConnectedImage2( argv[argi], RETRIEVE_MODE );	// 結像画像を作成
 	num = MakeCentresFromImage( &ps, img, &img_size, &areas );	// 特徴点を抽出
 	end = GetProcTimeMiliSec();
 	printf("Feature point extraction 2: %d ms\n", end - start);
-	cvReleaseImage( &img );	// 画像を解放
 	// 近傍構造を計算
 	start = GetProcTimeMiliSec();
 	MakeNearsFromCentres( ps, num, &nears );
@@ -129,44 +126,44 @@ int main( int argc, char *argv[] )
 	return 0;
 }
 
-IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strProjParam param_rev )
+cv::Mat MosaicImages( cv::Mat img1, cv::Mat img2, strProjParam param, strProjParam param_rev )
 // 2枚の画像を射影変換パラメータに基づいて合成する
 {
 	int i, j, k, x_min, y_min, x_max, y_max, x_exp, y_exp;
 	int flag1, flag2;
 	unsigned char val1[3], val2[3], val3[3];
-	IplImage *mos;
-	CvSize size_mos, size1, size2;
+	cv::Mat mos;
+	cv::Size size_mos, size1, size2;
 	strPoint img1_pt, img2_pt, src[4], dst[4];
 
-	size1.width = img1->width;
-	size1.height = img1->height;
-	size2.width = img2->width;
-	size2.height = img2->height;
+	size1.width = img1.cols;
+	size1.height = img1.rows;
+	size2.width = img2.cols;
+	size2.height = img2.rows;
 
-//	mos = cvCreateImage( size1, IPL_DEPTH_8U, 3 );
+//	mos = cv::Mat::zeros(size1, CV_8UC3);
 
-/*	for ( j = 0; j < mos->height; j++ ) {
-		for ( i = 0; i < mos->width; i++ ) {
+/*	for ( j = 0; j < mos.rows; j++ ) {
+		for ( i = 0; i < mos.cols; i++ ) {
 			GetPix( img1, i, j, val );
 			SetPix( mos, i, j, val );
 		}
 	}*/
 	src[0].x = 0;
 	src[0].y = 0;
-	src[1].x = img2->width;
+	src[1].x = img2.cols;
 	src[1].y = 0;
-	src[2].x = img2->width;
-	src[2].y = img2->height;
+	src[2].x = img2.cols;
+	src[2].y = img2.rows;
 	src[3].x = 0;
-	src[3].y = img2->height;
+	src[3].y = img2.rows;
 	for ( i = 0; i < 4; i++ ) {
 		ProjTrans( src + i, dst + i, &param_rev );
 	}
 	x_min = 0;
 	y_min = 0;
-	x_max = img1->width;
-	y_max = img1->height;
+	x_max = img1.cols;
+	y_max = img1.rows;
 	for ( i = 0; i < 4; i++ ) {
 		if ( dst[i].x < x_min )	x_min = dst[i].x;
 		if ( dst[i].y < y_min ) y_min = dst[i].y;
@@ -179,8 +176,8 @@ IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strP
 	if ( y_min < 0 )	y_exp = abs( y_min );
 	size_mos.width = x_exp + x_max;
 	size_mos.height = y_exp + y_max;
-	mos = cvCreateImage( size_mos, IPL_DEPTH_8U, 3 );
-	cvZero( mos );
+	mos = cv::Mat::zeros(size_mos, CV_8UC3);
+	mos.setTo(cv::Scalar::all(0));
 	for ( j = 0; j < size_mos.height; j++ ) {
 		for ( i = 0; i < size_mos.width; i++ ) {
 			img1_pt.x = i - x_exp;
@@ -194,7 +191,7 @@ IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strP
 			else if ( flag2 )		SetPixU( mos, i, j, val2 );
 		}
 	}
-//	for ( i = 0; i < 4; i++ )	cvLine( mos, cvPoint( x_exp + dst[i].x, y_exp + dst[i].y ), cvPoint( x_exp + dst[(i+1)%4].x, y_exp + dst[(i+1)%4].y ), cRed, 4, CV_AA, 0 );
+//	for ( i = 0; i < 4; i++ )	cv::line( mos, cv::Point( x_exp + dst[i].x, y_exp + dst[i].y ), cv::Point( x_exp + dst[(i+1)%4].x, y_exp + dst[(i+1)%4].y ), cRed, 4, cv::LINE_AA, 0 );
 
 	return mos;
 }

@@ -10,8 +10,8 @@
 
 typedef struct _strAR {	// 拡張現実情報の構造体
 	char type;	// 種別
-	CvPoint e[2];	// 端点
-	IplImage *img;	// 画像
+	cv::Point e[2];	// 端点
+	cv::Mat img;	// 画像
 } strAR;
 
-void DrawAR( IplImage *img_cap, char *doc_name, strProjParam param );
+void DrawAR( cv::Mat img_cap, char *doc_name, strProjParam param );

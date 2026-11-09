@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <cv.h>			// OpneCV
-#include <highgui.h>	// OpenCV
+#include <opencv2/opencv.hpp>			// OpneCV
+// #include <highgui.h> // now in opencv2/opencv.hpp	// OpenCV
 #include <windows.h>
 #include <mmsystem.h>
 #include <dshow.h>
@@ -40,13 +40,13 @@ strHarrisRegParam gHarrisRegParam = {
 	kDefaultHarrisParamKReg
 };
 
-void TrackCallbackHarrisCap( int param )
+void TrackCallbackHarrisCap( int param, void * )
 // キャプチャ画像のトラックバーのコールバック関数
 {
 	return;
 }
 
-void TrackCallbackHarrisReg( int param )
+void TrackCallbackHarrisReg( int param, void * )
 // 登録画像のトラックバーのコールバック関数
 {
 	return;
@@ -90,9 +90,9 @@ int DetectHarrisCam( char *fname, int mode )
 	int key, paused = -1;
 	long buff_size;
 	unsigned char *img_buff;
-	IplImage *img_cap, *img_fp, *img_show, *img_reg, *img_reg_res, *img_reg_fp, *img_reg_smt, *img_reg_show;
-	CvPoint *ps = NULL, *ps0 = NULL, *regps = NULL;
-	CvPoint *frps[kMaxFramePoints];	/* FRame PointS : 複数フレームの特徴点集合 */
+	cv::Mat img_cap, img_fp, img_show, img_reg, img_reg_res, img_reg_fp, img_reg_smt, img_reg_show;
+	cv::Point *ps = NULL, *ps0 = NULL, *regps = NULL;
+	cv::Point *frps[kMaxFramePoints];	/* FRame PointS : 複数フレームの特徴点集合 */
 	int frnum[kMaxFramePoints];	/* FRame NUMbers : frpsの特徴点数 */
 	int **frcors[kMaxFramePoints];	/* FRame CORrespondenceS : 対応関係の集合の集合 */
 	int *reffrps[kMaxFramePoints];	/* REFined FRame PointS : 厳選された特徴点集合（の集合） */
@@ -101,11 +101,11 @@ int DetectHarrisCam( char *fname, int mode )
 	int ref_score[kMaxPointNum];	/* 特徴点選別の際のスコア */
 	strProjParam frparam[kMaxFramePoints];	/* FRame PARAMeters : 過去のフレームの特徴点を現在のフレームに合わせるためのパラメータ */
 	strProjParam zero_param;
-	CvPoint currefps[kMaxPointNum];	/* CURrent REFined PointS : reffrpsを統合し，現在のフレームの特徴点として用いるもの */
+	cv::Point currefps[kMaxPointNum];	/* CURrent REFined PointS : reffrpsを統合し，現在のフレームの特徴点として用いるもの */
 	int currefnum;	/* currefpsの特徴点数 */
 	int used[kMaxFramePoints][kMaxPointNum];	/* currefpsにおいてフレームの点が使用されたか否か */
 	int i, j, k, num = 0, num0 = NULL, regnum = 0, **nears = NULL, score[kMaxDocNum], pcor[kMaxPointNum];
-	CvSize img_size, img_show_size, img_reg_size, img_reg_show_size;
+	cv::Size img_size, img_show_size, img_reg_size, img_reg_show_size;
 	strDirectShowCap dsc;
 	TIME_COUNT start, end;
 	strPoint pt, ptd;
@@ -140,46 +140,46 @@ int DetectHarrisCam( char *fname, int mode )
 	InitDirectShowCap( eCamConfNum, &dsc, &(img_size.width), &(img_size.height) );	// USBカメラを初期化
 	buff_size = img_size.width * img_size.height * 3;
 	img_buff = (unsigned char *)malloc( buff_size );	// 画像のバッファを確保
-	img_cap = cvCreateImage( img_size, IPL_DEPTH_8U, 3 );	// 画像を作成
-	img_fp = cvCreateImage( img_size, IPL_DEPTH_8U, 3 );	// 画像を作成
-	img_show_size = cvSize( (int)(img_size.width * kHarrisShowCamMag), (int)(img_size.height * kHarrisShowCamMag) );
-	img_show = cvCreateImage( img_show_size, IPL_DEPTH_8U, 3 );	// 表示する縮小画像を作成
+	img_cap = cv::Mat::zeros(img_size, CV_8UC3);	// 画像を作成
+	img_fp = cv::Mat::zeros(img_size, CV_8UC3);	// 画像を作成
+	img_show_size = cv::Size( (int)(img_size.width * kHarrisShowCamMag), (int)(img_size.height * kHarrisShowCamMag) );
+	img_show = cv::Mat::zeros(img_show_size, CV_8UC3);	// 表示する縮小画像を作成
 	// 登録側の処理
-	img_reg = cvLoadImage( fname, 1 );
-	if ( img_reg == NULL )	return 0;
-	img_reg_size = cvSize( (int)(img_reg->width * kHarrisRegMag), (int)(img_reg->height * kHarrisRegMag) );
-	img_reg_res = cvCreateImage( img_reg_size, IPL_DEPTH_8U, 3 );
-	cvResize( img_reg, img_reg_res, CV_INTER_CUBIC );
-	img_reg_fp = cvCreateImage( img_reg_size, IPL_DEPTH_8U, 3 );
-	img_reg_smt = cvCreateImage( img_reg_size, IPL_DEPTH_8U, 3 );
-	img_reg_show_size = cvSize( (int)(img_reg_size.width * kHarrisShowRegMag), (int)(img_reg_size.height * kHarrisShowRegMag) );
-	img_reg_show = cvCreateImage( img_reg_show_size, IPL_DEPTH_8U, 3 );
+	img_reg = cv::imread( fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+	if ( img_reg.empty() )	return 0;
+	img_reg_size = cv::Size( (int)(img_reg.cols * kHarrisRegMag), (int)(img_reg.rows * kHarrisRegMag) );
+	img_reg_res = cv::Mat::zeros(img_reg_size, CV_8UC3);
+	cv::resize( img_reg, img_reg_res, img_reg_res.size(), 0, 0, cv::INTER_CUBIC );
+	img_reg_fp = cv::Mat::zeros(img_reg_size, CV_8UC3);
+	img_reg_smt = cv::Mat::zeros(img_reg_size, CV_8UC3);
+	img_reg_show_size = cv::Size( (int)(img_reg_size.width * kHarrisShowRegMag), (int)(img_reg_size.height * kHarrisShowRegMag) );
+	img_reg_show = cv::Mat::zeros(img_reg_show_size, CV_8UC3);
 
 
 // 特徴点抽出クラスを作成
 	StartDirectShowCap( &dsc );	// キャプチャを開始
-	cvNamedWindow( "Capture", CV_WINDOW_AUTOSIZE );	// ウィンドウを作成
-	cvNamedWindow( "CaptureParam", CV_WINDOW_AUTOSIZE );	// ウィンドウを作成
-	cvNamedWindow( "Registered", CV_WINDOW_AUTOSIZE );
-	cvNamedWindow( "RegisteredParam", CV_WINDOW_AUTOSIZE );
+	cv::namedWindow( "Capture", cv::WINDOW_AUTOSIZE );	// ウィンドウを作成
+	cv::namedWindow( "CaptureParam", cv::WINDOW_AUTOSIZE );	// ウィンドウを作成
+	cv::namedWindow( "Registered", cv::WINDOW_AUTOSIZE );
+	cv::namedWindow( "RegisteredParam", cv::WINDOW_AUTOSIZE );
 	if ( mode == DHC_HARRIS ) {
-		cvCreateTrackbar( "QualityLevel", "CaptureParam", &(gHarrisCamParam.QualityLevel), kQualityLevelMax, TrackCallbackHarrisCap );
-		cvCreateTrackbar( "MinDistance", "CaptureParam", &(gHarrisCamParam.MinDistance), kMinDistanceMax, TrackCallbackHarrisCap );
-		cvCreateTrackbar( "BlockSize", "CaptureParam", &(gHarrisCamParam.BlockSize), kBlockSizeMax, TrackCallbackHarrisCap );
-		cvCreateTrackbar( "UseHarris", "CaptureParam", &(gHarrisCamParam.UseHarris), kUseHarrisMax, TrackCallbackHarrisCap );
-		cvCreateTrackbar( "k", "CaptureParam", &(gHarrisCamParam.HarrisParamK), kHarrisParamKMax, TrackCallbackHarrisCap );
-		cvCreateTrackbar( "QualityLevel", "RegisteredParam", &(gHarrisRegParam.QualityLevelReg), kQualityLevelRegMax, TrackCallbackHarrisReg );
-		cvCreateTrackbar( "MinDistance", "RegisteredParam", &(gHarrisRegParam.MinDistanceReg), kMinDistanceRegMax, TrackCallbackHarrisReg );
-		cvCreateTrackbar( "BlockSize", "RegisteredParam", &(gHarrisRegParam.BlockSizeReg), kBlockSizeRegMax, TrackCallbackHarrisReg );
-		cvCreateTrackbar( "UseHarris", "RegisteredParam", &(gHarrisRegParam.UseHarrisReg), kUseHarrisRegMax, TrackCallbackHarrisReg );
-		cvCreateTrackbar( "k", "RegisteredParam", &(gHarrisRegParam.HarrisParamKReg), kHarrisParamKRegMax, TrackCallbackHarrisReg );
+		cv::createTrackbar( "QualityLevel", "CaptureParam", &(gHarrisCamParam.QualityLevel), kQualityLevelMax, TrackCallbackHarrisCap );
+		cv::createTrackbar( "MinDistance", "CaptureParam", &(gHarrisCamParam.MinDistance), kMinDistanceMax, TrackCallbackHarrisCap );
+		cv::createTrackbar( "BlockSize", "CaptureParam", &(gHarrisCamParam.BlockSize), kBlockSizeMax, TrackCallbackHarrisCap );
+		cv::createTrackbar( "UseHarris", "CaptureParam", &(gHarrisCamParam.UseHarris), kUseHarrisMax, TrackCallbackHarrisCap );
+		cv::createTrackbar( "k", "CaptureParam", &(gHarrisCamParam.HarrisParamK), kHarrisParamKMax, TrackCallbackHarrisCap );
+		cv::createTrackbar( "QualityLevel", "RegisteredParam", &(gHarrisRegParam.QualityLevelReg), kQualityLevelRegMax, TrackCallbackHarrisReg );
+		cv::createTrackbar( "MinDistance", "RegisteredParam", &(gHarrisRegParam.MinDistanceReg), kMinDistanceRegMax, TrackCallbackHarrisReg );
+		cv::createTrackbar( "BlockSize", "RegisteredParam", &(gHarrisRegParam.BlockSizeReg), kBlockSizeRegMax, TrackCallbackHarrisReg );
+		cv::createTrackbar( "UseHarris", "RegisteredParam", &(gHarrisRegParam.UseHarrisReg), kUseHarrisRegMax, TrackCallbackHarrisReg );
+		cv::createTrackbar( "k", "RegisteredParam", &(gHarrisRegParam.HarrisParamKReg), kHarrisParamKRegMax, TrackCallbackHarrisReg );
 	}
 
 	// ウィンドウを移動
-	cvMoveWindow( "Capture", 0, 30 );
-	cvMoveWindow( "CaptureParam", 2200, 0 );
-	cvMoveWindow( "Registered", 1280, 0 );
-	cvMoveWindow( "RegisteredParam", 2200, 400 );
+	cv::moveWindow( "Capture", 0, 30 );
+	cv::moveWindow( "CaptureParam", 2200, 0 );
+	cv::moveWindow( "Registered", 1280, 0 );
+	cv::moveWindow( "RegisteredParam", 2200, 400 );
 	/********** ループ処理 **********/
 	for ( int cntcnt=0; ;cntcnt++ ) {
 		if ( paused < 0 ) {	// ポーズされていない
@@ -274,26 +274,26 @@ int DetectHarrisCam( char *fname, int mode )
 			}
 			// 描画テスト4（currefpsの描画）
 			for ( i = 0; i < currefnum; i++ ) {
-				cvCircle( img_fp, currefps[i], 3, CV_RGB(0,255,0), -1, CV_AA, 0 );
+				cv::circle( img_fp, currefps[i], 3, CV_RGB(0,255,0), -1, cv::LINE_AA, 0 );
 			}
 			// 描画テスト3（reffrpsのみ描画）
 			/*
 			for ( i = 0; i < reffrnum[0]; i++ ) {
-				cvCircle( img_fp, frps[0][reffrps[0][i]], 3, CV_RGB(0,255,0), -1, CV_AA, 0 );
+				cv::circle( img_fp, frps[0][reffrps[0][i]], 3, CV_RGB(0,255,0), -1, cv::LINE_AA, 0 );
 			}*/
 			// 描画テスト2（特徴点のスコアに基づいて色をつける）
 			/*
 			for ( i = 0; i < frnum[0]; i++ ) {
-				cvCircle( img_fp, frps[0][i], 3, CV_RGB( (int)(255.0L-(double)ref_score[i]*(255.0L/(double)(kCompareFrames-1))), (int)((double)ref_score[i]*(255.0L/(double)(kCompareFrames-1))), 0), -1, CV_AA, 0 );
+				cv::circle( img_fp, frps[0][i], 3, CV_RGB( (int)(255.0L-(double)ref_score[i]*(255.0L/(double)(kCompareFrames-1))), (int)((double)ref_score[i]*(255.0L/(double)(kCompareFrames-1))), 0), -1, cv::LINE_AA, 0 );
 			}*/
 			// 描画テスト1（前のフレームおよび前々のフレームの対応点から線を引く）
 			/*
 			for ( i = 0; i < frnum[0]; i++ ) {
 				if ( frcors[0][0][i] >= 0 ) {
-					cvLine( img_fp, frps[0][i], frps[1][frcors[0][0][i]], CV_RGB(0,255,255), 2, CV_AA, 0 );
+					cv::line( img_fp, frps[0][i], frps[1][frcors[0][0][i]], CV_RGB(0,255,255), 2, cv::LINE_AA, 0 );
 				}
 				if ( frcors[0][1][i] >= 0 ) {
-					cvLine( img_fp, frps[0][i], frps[2][frcors[0][1][i]], CV_RGB(0,255,0), 2, CV_AA, 0 );
+					cv::line( img_fp, frps[0][i], frps[2][frcors[0][1][i]], CV_RGB(0,255,0), 2, cv::LINE_AA, 0 );
 				}
 			}*/
 			// テスト：前のフレームのみ使う
@@ -301,7 +301,7 @@ int DetectHarrisCam( char *fname, int mode )
 				FindCorPoint( frps[0], frnum[0], frps[1], frnum[1], pcor );
 				for ( i = 0; i < frnum[0]; i++ ) {
 					if ( pcor[i] >= 0 ) {
-						cvLine( img_fp, frps[0][i], frps[1][pcor[i]], CV_RGB( 0, 255, 255 ), 2, CV_AA, 0 );
+						cv::line( img_fp, frps[0][i], frps[1][pcor[i]], CV_RGB( 0, 255, 255 ), 2, cv::LINE_AA, 0 );
 					}
 				}
 			}*/
@@ -317,7 +317,7 @@ int DetectHarrisCam( char *fname, int mode )
 				FindCorPoint( ps, num, ps0, num0, pcor );
 				for ( i = 0; i < num; i++ ) {
 					if ( pcor[i] >= 0 ) {
-						cvLine( img_fp, ps[i], ps0[pcor[i]], CV_RGB( 0, 255, 255 ), 2, CV_AA, 0 );
+						cv::line( img_fp, ps[i], ps0[pcor[i]], CV_RGB( 0, 255, 255 ), 2, cv::LINE_AA, 0 );
 					}
 				}
 			}*/
@@ -328,14 +328,14 @@ int DetectHarrisCam( char *fname, int mode )
 				RetrieveNN5( ps, num, nears, img_size, score, pcor );
 				for ( i = 0; i < num; i++ ) {
 					if ( pcor[i] >= 0 ) {
-						cvLine( img_fp, ps[i], ps0[pcor[i]], CV_RGB( 0, 255, 255 ), 2, CV_AA, 0 );
+						cv::line( img_fp, ps[i], ps0[pcor[i]], CV_RGB( 0, 255, 255 ), 2, cv::LINE_AA, 0 );
 					}
 				}
 			} */
 			// 登録画像の処理
 			switch ( mode ) {
 				case DHC_HARRIS:
-					cvSmooth( img_reg_res, img_reg_smt, CV_GAUSSIAN, 5, 0, 0 );
+					cv::GaussianBlur(img_reg_res, img_reg_smt, cv::Size(5, 5), 0, 0, cv::BORDER_REPLICATE);
 					DetectGoodFeaturesReg( img_reg_smt, img_reg_fp, &regps, &regnum );
 					break;
 				case DHC_ENG:
@@ -346,13 +346,13 @@ int DetectHarrisCam( char *fname, int mode )
 					break;
 			}
 			// 表示
-			cvResize( img_fp, img_show, CV_INTER_CUBIC );
-			cvResize( img_reg_fp, img_reg_show, CV_INTER_CUBIC );
-			cvShowImage( "Capture", img_show );
-//			cvSaveImage( "harris.jpg", img_har );
-			cvShowImage( "Registered", img_reg_show );
+			cv::resize( img_fp, img_show, img_show.size(), 0, 0, cv::INTER_CUBIC );
+			cv::resize( img_reg_fp, img_reg_show, img_reg_show.size(), 0, 0, cv::INTER_CUBIC );
+			cv::imshow( "Capture", img_show );
+//			cv::imwrite( "harris.jpg", img_har );
+			cv::imshow( "Registered", img_reg_show );
 		}
-		key = cvWaitKey( 1 );	// ないとウィンドウが更新されない
+		key = cv::waitKey( 1 );	// ないとウィンドウが更新されない
 		if ( key >= 0 ) {
 			switch ( key ) {
 				case 'c':	// 対応点探索
@@ -362,20 +362,20 @@ int DetectHarrisCam( char *fname, int mode )
 					RetrieveNN5( currefps, currefnum, nears, img_size, score, pcor );
 					for ( i = 0; i < currefnum; i++ ) {
 						if ( pcor[i] >= 0 ) {
-							cvCircle( img_fp, currefps[i], 5, CV_RGB(255,255,0), -1, CV_AA, 0 );
-							cvCircle( img_reg_fp, regps[pcor[i]], 5, CV_RGB(255,255,0), CV_AA, 0 );
+							cv::circle( img_fp, currefps[i], 5, CV_RGB(255,255,0), -1, cv::LINE_AA, 0 );
+							cv::circle( img_reg_fp, regps[pcor[i]], 5, CV_RGB(255,255,0), cv::LINE_AA, 0 );
 						}
 					}
-					cvResize( img_fp, img_show, CV_INTER_CUBIC );
-					cvResize( img_reg_fp, img_reg_show, CV_INTER_CUBIC );
-					cvShowImage( "Capture", img_show );
-					cvShowImage( "Registered", img_reg_show );
-					for ( key = cvWaitKey(1); key < 0; key = cvWaitKey(1) );
+					cv::resize( img_fp, img_show, img_show.size(), 0, 0, cv::INTER_CUBIC );
+					cv::resize( img_reg_fp, img_reg_show, img_reg_show.size(), 0, 0, cv::INTER_CUBIC );
+					cv::imshow( "Capture", img_show );
+					cv::imshow( "Registered", img_reg_show );
+					for ( key = cv::waitKey(1); key < 0; key = cv::waitKey(1) );
 					ResumeDirectShowCap( &dsc );
 					break;
 				case 's':	// 保存
-					cvSaveImage( "cap_fp.bmp", img_fp );
-					cvSaveImage( "reg_fp.bmp", img_reg_fp );
+					cv::imwrite( "cap_fp.bmp", img_fp );
+					cv::imwrite( "reg_fp.bmp", img_reg_fp );
 					break;
 				case 'q':	// 終了
 					goto end_camharris;
@@ -384,7 +384,7 @@ int DetectHarrisCam( char *fname, int mode )
 
 	}
 end_camharris:
-	cvDestroyWindow( "Capture" );	// ウィンドウを破棄
+	cv::destroyWindow( "Capture" );	// ウィンドウを破棄
 	StopDirectShowCap( &dsc );	// キャプチャを終了
 	ReleaseDirectShowCap( &dsc );	// DirectShowの諸々をリリース
 	return 1;
@@ -396,10 +396,10 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 	int key, paused = -1;
 	long buff_size;
 	unsigned char *img_buff;
-	IplImage *img_cap, *img_fp, *img_reg, *img_reg_res, *img_reg_fp, *img_reg_smt;
-	IplImage *img_anno, *img_anno_res, *img_anno_fp, *img_anno_smt;
-	CvPoint *ps = NULL, *ps0 = NULL, *regps = NULL;
-	CvPoint *frps[kMaxFramePoints];	/* FRame PointS : 複数フレームの特徴点集合 */
+	cv::Mat img_cap, img_fp, img_reg, img_reg_res, img_reg_fp, img_reg_smt;
+	cv::Mat img_anno, img_anno_res, img_anno_fp, img_anno_smt;
+	cv::Point *ps = NULL, *ps0 = NULL, *regps = NULL;
+	cv::Point *frps[kMaxFramePoints];	/* FRame PointS : 複数フレームの特徴点集合 */
 	int frnum[kMaxFramePoints];	/* FRame NUMbers : frpsの特徴点数 */
 	int **frcors[kMaxFramePoints];	/* FRame CORrespondenceS : 対応関係の集合の集合 */
 	int *reffrps[kMaxFramePoints];	/* REFined FRame PointS : 厳選された特徴点集合（の集合） */
@@ -408,11 +408,11 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 	int ref_score[kMaxPointNum];	/* 特徴点選別の際のスコア */
 	strProjParam frparam[kMaxFramePoints];	/* FRame PARAMeters : 過去のフレームの特徴点を現在のフレームに合わせるためのパラメータ */
 	strProjParam zero_param;
-	CvPoint currefps[kMaxPointNum];	/* CURrent REFined PointS : reffrpsを統合し，現在のフレームの特徴点として用いるもの */
+	cv::Point currefps[kMaxPointNum];	/* CURrent REFined PointS : reffrpsを統合し，現在のフレームの特徴点として用いるもの */
 	int currefnum;	/* currefpsの特徴点数 */
 	int used[kMaxFramePoints][kMaxPointNum];	/* currefpsにおいてフレームの点が使用されたか否か */
 	int i, j, k, num = 0, num0 = NULL, regnum = 0, **nears = NULL, score[kMaxDocNum], pcor[kMaxPointNum];
-	CvSize img_size;
+	cv::Size img_size;
 	strDirectShowCap dsc;
 	TIME_COUNT start, end;
 	strPoint pt, ptd;
@@ -434,53 +434,53 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 		return 0;
 	}
 	// 登録側の処理
-	img_reg = cvLoadImage( fname, 1 );
-	if ( img_reg == NULL )	return 0;
-	img_reg_res = cvCreateImage( cvSize( (int)(img_reg->width * kHarrisTestMag), (int)(img_reg->height * kHarrisTestMag) ), IPL_DEPTH_8U, 3 );
-	cvResize( img_reg, img_reg_res, CV_INTER_CUBIC );
-	img_reg_fp = cvCreateImage( cvSize( img_reg_res->width, img_reg_res->height ), IPL_DEPTH_8U, 3 );
-	img_reg_smt = cvCreateImage( cvSize( img_reg_res->width, img_reg_res->height ), IPL_DEPTH_8U, 3 );
+	img_reg = cv::imread( fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+	if ( img_reg.empty() )	return 0;
+	img_reg_res = cv::Mat::zeros( cv::Size( (int)(img_reg.cols * kHarrisTestMag), (int)(img_reg.rows * kHarrisTestMag) ), CV_8UC3 );
+	cv::resize( img_reg, img_reg_res, img_reg_res.size(), 0, 0, cv::INTER_CUBIC );
+	img_reg_fp = cv::Mat::zeros(cv::Size( img_reg_res.cols, img_reg_res.rows ), CV_8UC3);
+	img_reg_smt = cv::Mat::zeros(cv::Size( img_reg_res.cols, img_reg_res.rows ), CV_8UC3);
 	// 書き込み側の処理
-	img_anno = cvLoadImage( fname_anno, 1 );
-	if ( img_anno == NULL )	return 0;
-	img_anno_res = cvCreateImage( cvSize( (int)(img_anno->width * kHarrisTestMag), (int)(img_anno->height * kHarrisTestMag) ), IPL_DEPTH_8U, 3 );
-	cvResize( img_anno, img_anno_res, CV_INTER_CUBIC );
-	img_anno_fp = cvCreateImage( cvSize( img_anno_res->width, img_anno_res->height ), IPL_DEPTH_8U, 3 );
-	img_anno_smt = cvCreateImage( cvSize( img_anno_res->width, img_anno_res->height ), IPL_DEPTH_8U, 3 );
+	img_anno = cv::imread( fname_anno, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+	if ( img_anno.empty() )	return 0;
+	img_anno_res = cv::Mat::zeros( cv::Size( (int)(img_anno.cols * kHarrisTestMag), (int)(img_anno.rows * kHarrisTestMag) ), CV_8UC3 );
+	cv::resize( img_anno, img_anno_res, img_anno_res.size(), 0, 0, cv::INTER_CUBIC );
+	img_anno_fp = cv::Mat::zeros(cv::Size( img_anno_res.cols, img_anno_res.rows ), CV_8UC3);
+	img_anno_smt = cv::Mat::zeros(cv::Size( img_anno_res.cols, img_anno_res.rows ), CV_8UC3);
 
-	img_size.width = img_anno->width;
-	img_size.height = img_anno->height;
+	img_size.width = img_anno.cols;
+	img_size.height = img_anno.rows;
 
 
 // 特徴点抽出クラスを作成
-	cvNamedWindow( "Capture", CV_WINDOW_AUTOSIZE );	// ウィンドウを作成
-	cvCreateTrackbar( "QualityLevel", "Capture", &(gHarrisCamParam.QualityLevel), kQualityLevelMax, TrackCallbackHarrisCap );
-	cvCreateTrackbar( "MinDistance", "Capture", &(gHarrisCamParam.MinDistance), kMinDistanceMax, TrackCallbackHarrisCap );
-	cvCreateTrackbar( "BlockSize", "Capture", &(gHarrisCamParam.BlockSize), kBlockSizeMax, TrackCallbackHarrisCap );
-	cvCreateTrackbar( "UseHarris", "Capture", &(gHarrisCamParam.UseHarris), kUseHarrisMax, TrackCallbackHarrisCap );
-	cvCreateTrackbar( "k", "Capture", &(gHarrisCamParam.HarrisParamK), kHarrisParamKMax, TrackCallbackHarrisCap );
+	cv::namedWindow( "Capture", cv::WINDOW_AUTOSIZE );	// ウィンドウを作成
+	cv::createTrackbar( "QualityLevel", "Capture", &(gHarrisCamParam.QualityLevel), kQualityLevelMax, TrackCallbackHarrisCap );
+	cv::createTrackbar( "MinDistance", "Capture", &(gHarrisCamParam.MinDistance), kMinDistanceMax, TrackCallbackHarrisCap );
+	cv::createTrackbar( "BlockSize", "Capture", &(gHarrisCamParam.BlockSize), kBlockSizeMax, TrackCallbackHarrisCap );
+	cv::createTrackbar( "UseHarris", "Capture", &(gHarrisCamParam.UseHarris), kUseHarrisMax, TrackCallbackHarrisCap );
+	cv::createTrackbar( "k", "Capture", &(gHarrisCamParam.HarrisParamK), kHarrisParamKMax, TrackCallbackHarrisCap );
 
-	cvNamedWindow( "Registered", CV_WINDOW_AUTOSIZE );
-	cvCreateTrackbar( "QualityLevel", "Registered", &(gHarrisRegParam.QualityLevelReg), kQualityLevelRegMax, TrackCallbackHarrisReg );
-	cvCreateTrackbar( "MinDistance", "Registered", &(gHarrisRegParam.MinDistanceReg), kMinDistanceRegMax, TrackCallbackHarrisReg );
-	cvCreateTrackbar( "BlockSize", "Registered", &(gHarrisRegParam.BlockSizeReg), kBlockSizeRegMax, TrackCallbackHarrisReg );
-	cvCreateTrackbar( "UseHarris", "Registered", &(gHarrisRegParam.UseHarrisReg), kUseHarrisRegMax, TrackCallbackHarrisReg );
-	cvCreateTrackbar( "k", "Registered", &(gHarrisRegParam.HarrisParamKReg), kHarrisParamKRegMax, TrackCallbackHarrisReg );
+	cv::namedWindow( "Registered", cv::WINDOW_AUTOSIZE );
+	cv::createTrackbar( "QualityLevel", "Registered", &(gHarrisRegParam.QualityLevelReg), kQualityLevelRegMax, TrackCallbackHarrisReg );
+	cv::createTrackbar( "MinDistance", "Registered", &(gHarrisRegParam.MinDistanceReg), kMinDistanceRegMax, TrackCallbackHarrisReg );
+	cv::createTrackbar( "BlockSize", "Registered", &(gHarrisRegParam.BlockSizeReg), kBlockSizeRegMax, TrackCallbackHarrisReg );
+	cv::createTrackbar( "UseHarris", "Registered", &(gHarrisRegParam.UseHarrisReg), kUseHarrisRegMax, TrackCallbackHarrisReg );
+	cv::createTrackbar( "k", "Registered", &(gHarrisRegParam.HarrisParamKReg), kHarrisParamKRegMax, TrackCallbackHarrisReg );
 	/********** ループ処理 **********/
 	for ( ; ; ) {
 		if ( paused < 0 ) {	// ポーズされていない
 			// 登録画像の処理
-//			cvSmooth( img_reg_res, img_reg_smt, CV_GAUSSIAN, 5, 0, 0 );
+//			cv::GaussianBlur(img_reg_res, img_reg_smt, cv::Size(5, 5), 0);
 			DetectGoodFeaturesReg( img_reg_res, img_reg_fp, &regps, &regnum );
 			// 書き込み画像の処理
-//			cvSmooth( img_anno_res, img_anno_smt, CV_GAUSSIAN, 5, 0, 0 );
+//			cv::GaussianBlur(img_anno_res, img_anno_smt, cv::Size(5, 5), 0);
 			DetectGoodFeatures( img_anno_res, img_anno_fp, &ps, &num );
 			// 表示
-			cvShowImage( "Capture", img_anno_fp );
-//			cvSaveImage( "harris.jpg", img_har );
-			cvShowImage( "Registered", img_reg_fp );
+			cv::imshow( "Capture", img_anno_fp );
+//			cv::imwrite( "harris.jpg", img_har );
+			cv::imshow( "Registered", img_reg_fp );
 		}
-		key = cvWaitKey( 1 );	// ないとウィンドウが更新されない
+		key = cv::waitKey( 1 );	// ないとウィンドウが更新されない
 		if ( key >= 0 ) {
 			switch ( key ) {
 				case 'c':	// 対応点探索
@@ -489,17 +489,17 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 					RetrieveNN5( ps, num, nears, img_size, score, pcor );
 					for ( i = 0; i < num; i++ ) {
 						if ( pcor[i] >= 0 ) {
-							cvCircle( img_anno_fp, ps[i], 5, CV_RGB(255,255,0), -1, CV_AA, 0 );
-							cvCircle( img_reg_fp, regps[pcor[i]], 5, CV_RGB(255,255,0), CV_AA, 0 );
+							cv::circle( img_anno_fp, ps[i], 5, CV_RGB(255,255,0), -1, cv::LINE_AA, 0 );
+							cv::circle( img_reg_fp, regps[pcor[i]], 5, CV_RGB(255,255,0), cv::LINE_AA, 0 );
 						}
 					}
-					cvShowImage( "Capture", img_anno_fp );
-					cvShowImage( "Registered", img_reg_fp );
-					for ( key = cvWaitKey(1); key < 0; key = cvWaitKey(1) );
+					cv::imshow( "Capture", img_anno_fp );
+					cv::imshow( "Registered", img_reg_fp );
+					for ( key = cv::waitKey(1); key < 0; key = cv::waitKey(1) );
 					break;
 				case 's':	// 保存
-					cvSaveImage( "cap_fp.bmp", img_anno_fp );
-					cvSaveImage( "reg_fp.bmp", img_reg_fp );
+					cv::imwrite( "cap_fp.bmp", img_anno_fp );
+					cv::imwrite( "reg_fp.bmp", img_reg_fp );
 					break;
 				case 'q':	// 終了
 					goto end_camharris;
@@ -508,71 +508,67 @@ int DetectHarrisTest( char *fname, char *fname_anno )
 
 	}
 end_camharris:
-	cvDestroyWindow( "Capture" );	// ウィンドウを破棄
+	cv::destroyWindow( "Capture" );	// ウィンドウを破棄
 	return 1;
 }
 
-void DetectHarris( IplImage *src, IplImage *dst )
+void DetectHarris( cv::Mat src, cv::Mat dst )
 // Harrisを適用する
 {
 	double minVal = 0.0, maxVal = 0.0, scale, shift, min = 0, max = 255;
-	IplImage *img_har, *img_gray, *img_out;
-	CvSize img_size;
+	cv::Mat img_har, img_gray, img_out;
+	cv::Size img_size;
 
-	img_size.width = src->width;
-	img_size.height = src->height;
+	img_size.width = src.cols;
+	img_size.height = src.rows;
 
-	img_gray = cvCreateImage( img_size, IPL_DEPTH_8S, 1 );	// 画像を作成
-	img_har = cvCreateImage( img_size, IPL_DEPTH_32F, 1 );	// 画像を作成
-	img_out = cvCreateImage( img_size, IPL_DEPTH_8U, 1 );	// 画像を作成
+	img_gray = cv::Mat::zeros(img_size, CV_8SC1);	// 画像を作成
+	img_har = cv::Mat::zeros(img_size, CV_32FC1);	// 画像を作成
+	img_out = cv::Mat::zeros(img_size, CV_8UC1);	// 画像を作成
 
 	// Harrisを適用
-	cvCvtColor( src, img_gray, CV_RGB2GRAY );	// グレイスケールに変換
-	cvCornerHarris( img_gray, img_har, 3, 5, 0.04 );	// Harrisを適用
-	cvMinMaxLoc( img_har, &minVal, &maxVal, NULL, NULL, 0 );
+	cv::cvtColor( src, img_gray, cv::COLOR_RGB2GRAY );	// グレイスケールに変換
+	cv::cornerHarris( img_gray, img_har, 3, 5, 0.04 );	// Harrisを適用
+	cv::minMaxLoc( img_har, &minVal, &maxVal );
 	scale = (max - min)/(maxVal - minVal);
 	shift = -minVal * scale + min;
-	cvConvertScale( img_har, img_out, scale, shift );
-	cvCvtColor( img_out, dst, CV_GRAY2RGB );
-
-	cvReleaseImage( &img_gray );
-	cvReleaseImage( &img_har );
-	cvReleaseImage( &img_out );
+	cv::convertScaleAbs( img_har, img_out, scale, shift );
+	cv::cvtColor( img_out, dst, cv::COLOR_GRAY2RGB ); // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory)
 }
 //#define	CENTROID
 #define	SECOND_ORDER_MOMENT
 #define	kMaxNoiseArea	(10)
-int CalcCentresCH(CvPoint **ps0, CvSeq *contours, CvSize *size, double **areas0)
+int CalcCentresCH(cv::Point **ps0, const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
 // 重心を計算する
 // 06/01/12	面積の計算を追加
 {
 	int i, num;
-	CvSeq *con0;
-	CvMoments mom;
-	CvPoint *ps;
+	cv::Moments mom;
+	cv::Point *ps;
 
 
 	// 点の数をカウント（暫定）
-	for ( i = 0, con0 = contours; con0 != 0; con0 = con0->h_next, i++ );
+	i = 0;
+	for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ゴミ等で連結成分が多すぎるとき（本来は大きさを調べたりすべき）
 	// 点を入れる配列を確保（numの値は正確ではないが，大きめということで）
-	ps = (CvPoint *)calloc(num, sizeof(CvPoint));
+	ps = (cv::Point *)calloc(num, sizeof(cv::Point));
 	*ps0 = ps;
 	// 連結成分を描画・重心を計算
-    for( i = 0, con0 = contours; con0 != 0 && i < num ; con0 = con0->h_next )
-    {
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] ){
 		double d00;
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+		mom = cv::moments( contours[ci] );
+		d00 = mom.m00;
 		if ( d00 < kMaxNoiseArea ) continue;	// 小さすぎる連結成分は除外
 
 #ifdef	CENTROID
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
+		ps[i].x = (int)(mom.m10 / d00);
+		ps[i].y = (int)(mom.m01 / d00);
 #endif
 #ifdef	SECOND_ORDER_MOMENT
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00 + cvGetNormalizedCentralMoment( &mom, 2, 0 ) );
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00 + cvGetNormalizedCentralMoment( &mom, 0, 2 ) );
+		ps[i].x = (int)(mom.m10 / d00 + mom.nu20 );
+		ps[i].y = (int)(mom.m01 / d00 + mom.nu02 );
 #endif
 		i++;
     }
@@ -581,223 +577,221 @@ int CalcCentresCH(CvPoint **ps0, CvSeq *contours, CvSize *size, double **areas0)
 	return num;
 }
 
-int MakeCentresFromImageCH(CvPoint **ps, IplImage *img, CvSize *size, double **areas)
+int MakeCentresFromImageCH(cv::Point **ps, cv::Mat img, cv::Size *size, double **areas)
 // 画像のファイル名を与えて重心を計算し，重心の数を返す
 // 06/01/12	面積の計算を追加
 {
 	int num, ret;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq *contours = 0;
+    // CvMemStorage removed (not needed in OpenCV 4)
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Vec4i> hierarchy;
 
-	size->width = img->width;
-	size->height = img->height;
+	size->width = img.cols;
+	size->height = img.rows;
 	
-    ret = cvFindContours( img, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0) );	// 連結成分を抽出する
-	if ( ret <= 0 ) {	// 連結成分が見つからなかった
-		cvReleaseMemStorage( &storage );
+    ClearImageBorder( img );
+    cv::findContours( img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE ); ret = (int)contours.size();	// 連結成分を抽出する
+	if ( ret <= 0 ) {	// 連結成分が見つからなかった // cvReleaseMemStorage removed
 		return 0;
 	}
-	num = CalcCentresCH(ps, contours, size, areas);	// 各連結成分の重心を計算する
+	num = CalcCentresCH(ps, contours, hierarchy, size, areas);	// 各連結成分の重心を計算する
 
-	cvClearSeq( contours );
-	cvReleaseMemStorage( &storage );
 
 	return num;
 }
 
-void DetectEngDocPoints( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum )
+void DetectEngDocPoints( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 // 英文モードで特徴点を抽出する
 {
 	int i, num;
-	CvPoint *ps;
-	CvSize size;
-	IplImage *img_con;
+	cv::Point *ps;
+	cv::Size size;
+	cv::Mat img_con;
 
-	img_con = cvCreateImage( cvGetSize( src ), IPL_DEPTH_8U, 1 );
+	img_con = cv::Mat::zeros(src.size(), CV_8UC1);
 	GetConnectedImageCam( src, img_con, eCamGaussMaskSize );
-	size.width = img_con->width;
-	size.height = img_con->height;
+	size.width = img_con.cols;
+	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( dst, ps[i], 6, CV_RGB(255,255,255), -1, CV_AA, 0 );	// 黒白
-		cvCircle( dst, ps[i], 4, CV_RGB(0,0,0), -1, CV_AA, 0 );	// 黒白
-	}
-	cvReleaseImage( &img_con );
+		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
+		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
+	} // cvReleaseImage removed (cv::Mat auto-manages memory)
 	if ( num > 0 ) {	// 特徴点が1つでも抽出されたら
 		*pps = ps;
 		*pnum = num;
 	}
 }
 
-void DetectEngDocPointsReg( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum  )
+void DetectEngDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum  )
 // 英文モードで特徴点を抽出する（登録側）
 {
 	int i, num;
-	CvPoint *ps;
-	CvSize size;
-	IplImage *img_con;
+	cv::Point *ps;
+	cv::Size size;
+	cv::Mat img_con;
 
 	img_con = GetConnectedImageReg( src );
-	size.width = img_con->width;
-	size.height = img_con->height;
+	size.width = img_con.cols;
+	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( dst, ps[i], 6, CV_RGB(255,255,255), -1, CV_AA, 0 );	// 黒白
-		cvCircle( dst, ps[i], 4, CV_RGB(0,0,0), -1, CV_AA, 0 );	// 黒白
-	}
-	cvReleaseImage( &img_con );
+		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
+		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
+	} // cvReleaseImage removed (cv::Mat auto-manages memory)
 	if ( num > 0 ) {	// 特徴点が1つでも抽出されたら
 		*pps = ps;
 		*pnum = num;
 	}
 }
 
-void DetectJpDocPoints( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum )
+void DetectJpDocPoints( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 // 日本語モードで特徴点を抽出する
 {
 	int i, num;
-	CvPoint *ps;
-	CvSize size;
-	IplImage *img_con;
+	cv::Point *ps;
+	cv::Size size;
+	cv::Mat img_con;
 
 	img_con = GetConnectedImageCamJp( src );
-	size.width = img_con->width;
-	size.height = img_con->height;
+	size.width = img_con.cols;
+	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( dst, ps[i], 6, CV_RGB(255,255,255), -1, CV_AA, 0 );	// 黒白
-		cvCircle( dst, ps[i], 4, CV_RGB(0,0,0), -1, CV_AA, 0 );	// 黒白
-	}
-	cvReleaseImage( &img_con );
+		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
+		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
+	} // cvReleaseImage removed (cv::Mat auto-manages memory)
 	if ( num > 0 ) {	// 特徴点が1つでも抽出されたら
 		*pps = ps;
 		*pnum = num;
 	}
 }
 
-void DetectJpDocPointsReg( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum  )
+void DetectJpDocPointsReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum  )
 // 英文モードで特徴点を抽出する（登録側）
 {
 	int i, num;
-	CvPoint *ps;
-	CvSize size;
-	IplImage *img_con;
+	cv::Point *ps;
+	cv::Size size;
+	cv::Mat img_con;
 
 	img_con = GetConnectedImageRegJp( src );
-	size.width = img_con->width;
-	size.height = img_con->height;
+	size.width = img_con.cols;
+	size.height = img_con.rows;
 	num = MakeCentresFromImageCH( &ps, img_con, &size, NULL );
 	// 特徴点画像の描画
-	cvCopy( src, dst, 0 );
+	src.copyTo( dst );
 	for ( i = 0; i < num; i++ ) {
-		cvCircle( dst, ps[i], 6, CV_RGB(255,255,255), -1, CV_AA, 0 );	// 黒白
-		cvCircle( dst, ps[i], 4, CV_RGB(0,0,0), -1, CV_AA, 0 );	// 黒白
-	}
-	cvReleaseImage( &img_con );
+		cv::circle( dst, ps[i], 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
+		cv::circle( dst, ps[i], 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
+	} // cvReleaseImage removed (cv::Mat auto-manages memory)
 	if ( num > 0 ) {	// 特徴点が1つでも抽出されたら
 		*pps = ps;
 		*pnum = num;
 	}
 }
 
-void DetectGoodFeatures( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum )
+void DetectGoodFeatures( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum )
 // cvGoodFeaturesToTrackで特徴点を抽出する
 {
-	IplImage *img_gray, *img_eig, *img_temp;
-	CvSize img_size;
-	CvPoint pt, *ps;
-	CvPoint2D32f *corners = NULL;
+	cv::Mat img_gray, img_eig, img_temp;
+	cv::Size img_size;
+	cv::Point pt, *ps;
+	cv::Point2f *corners = NULL;
 	int i, cor_cnt, block_size;
 	double quality_level, min_distance, k;
 
-	img_size.width = src->width;
-	img_size.height = src->height;
+	img_size.width = src.cols;
+	img_size.height = src.rows;
 
-	img_gray = cvCreateImage( img_size, IPL_DEPTH_8U, 1 );
-	img_eig = cvCreateImage( img_size, IPL_DEPTH_32F, 1 );
-	img_temp = cvCreateImage( img_size, IPL_DEPTH_32F, 1 );
+	img_gray = cv::Mat::zeros(img_size, CV_8UC1);
+	img_eig = cv::Mat::zeros(img_size, CV_32FC1);
+	img_temp = cv::Mat::zeros(img_size, CV_32FC1);
 
-	corners = (CvPoint2D32f *)calloc( kMaxPointNum, sizeof(CvPoint2D32f) );
+	corners = (cv::Point2f *)calloc( kMaxPointNum, sizeof(cv::Point2f) );
 	cor_cnt = kMaxPointNum;
-	cvCvtColor( src, img_gray, CV_RGB2GRAY );
+	cv::cvtColor( src, img_gray, cv::COLOR_RGB2GRAY );
 	quality_level = 0.01 * (double)(gHarrisCamParam.QualityLevel + 1);
 	min_distance = (double)gHarrisCamParam.MinDistance;
 	block_size = gHarrisCamParam.BlockSize * 2 + 3;
 	k = 0.01 * (double)gHarrisCamParam.HarrisParamK;
-	cvGoodFeaturesToTrack( img_gray, img_eig, img_temp, corners, &cor_cnt, quality_level, min_distance, 0, block_size, gHarrisCamParam.UseHarris, k );
+	{
+		std::vector<cv::Point2f> corners_vec;
+		cv::goodFeaturesToTrack( img_gray, corners_vec, cor_cnt, quality_level, min_distance, cv::noArray(), block_size, gHarrisCamParam.UseHarris != 0, k );
+		cor_cnt = (int)corners_vec.size();
+		for ( int ci = 0; ci < cor_cnt; ci++ )	corners[ci] = corners_vec[ci];
+	}
 //	printf("cor_cnt : %d\n", cor_cnt);
-	ps = (CvPoint *)calloc( cor_cnt, sizeof(CvPoint) );
-//	cvZero( dst );
-	cvCopy( src, dst, 0 );
+	ps = (cv::Point *)calloc( cor_cnt, sizeof(cv::Point) );
+//	dst.setTo(cv::Scalar::all(0));
+	src.copyTo( dst );
 	for ( i = 0; i < cor_cnt; i++ ) {
 		pt.x = (int)corners[i].x;
 		pt.y = (int)corners[i].y;
-//		cvCircle( dst, pt, 2, CV_RGB(255,0,0), -1, 8, 0 );	// 赤
-		cvCircle( dst, pt, 6, CV_RGB(255,255,255), -1, CV_AA, 0 );	// 黒白
-		cvCircle( dst, pt, 4, CV_RGB(0,0,0), -1, CV_AA, 0 );	// 黒白
+//		cv::circle( dst, pt, 2, CV_RGB(255,0,0), -1, 8, 0 );	// 赤
+		cv::circle( dst, pt, 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
+		cv::circle( dst, pt, 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
 		ps[i] = pt;
-	}
-	cvReleaseImage( &img_gray );
-	cvReleaseImage( &img_eig );
-	cvReleaseImage( &img_temp );
+	} // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory)
 	free( corners );
 	*pps = ps;
 	*pnum = cor_cnt;
 }
 
-void DetectGoodFeaturesReg( IplImage *src, IplImage *dst, CvPoint **pps, int *pnum  )
+void DetectGoodFeaturesReg( cv::Mat src, cv::Mat dst, cv::Point **pps, int *pnum  )
 // cvGoodFeaturesToTrackで特徴点を抽出する（登録画像）
 {
-	IplImage *img_gray, *img_eig, *img_temp;
-	CvSize img_size;
-	CvPoint pt, *ps;
-	CvPoint2D32f *corners = NULL;
+	cv::Mat img_gray, img_eig, img_temp;
+	cv::Size img_size;
+	cv::Point pt, *ps;
+	cv::Point2f *corners = NULL;
 	int i, cor_cnt, block_size;
 	double quality_level, min_distance, k;
 
-	img_size.width = src->width;
-	img_size.height = src->height;
+	img_size.width = src.cols;
+	img_size.height = src.rows;
 
-	img_gray = cvCreateImage( img_size, IPL_DEPTH_8U, 1 );
-	img_eig = cvCreateImage( img_size, IPL_DEPTH_32F, 1 );
-	img_temp = cvCreateImage( img_size, IPL_DEPTH_32F, 1 );
+	img_gray = cv::Mat::zeros(img_size, CV_8UC1);
+	img_eig = cv::Mat::zeros(img_size, CV_32FC1);
+	img_temp = cv::Mat::zeros(img_size, CV_32FC1);
 
-	corners = (CvPoint2D32f *)calloc( 10240, sizeof(CvPoint2D32f) );
+	corners = (cv::Point2f *)calloc( 10240, sizeof(cv::Point2f) );
 	cor_cnt = 10240;
-	cvCvtColor( src, img_gray, CV_RGB2GRAY );
+	cv::cvtColor( src, img_gray, cv::COLOR_RGB2GRAY );
 	quality_level = 0.01 * (double)(gHarrisRegParam.QualityLevelReg + 1);
 	min_distance = (double)gHarrisRegParam.MinDistanceReg;
 	block_size = gHarrisRegParam.BlockSizeReg * 2 + 3;
 	k = 0.01 * (double)gHarrisRegParam.HarrisParamKReg;
-	cvGoodFeaturesToTrack( img_gray, img_eig, img_temp, corners, &cor_cnt, quality_level, min_distance, 0, block_size, gHarrisRegParam.UseHarrisReg, k );
+	{
+		std::vector<cv::Point2f> corners_vec;
+		cv::goodFeaturesToTrack( img_gray, corners_vec, cor_cnt, quality_level, min_distance, cv::noArray(), block_size, gHarrisRegParam.UseHarrisReg != 0, k );
+		cor_cnt = (int)corners_vec.size();
+		for ( int ci = 0; ci < cor_cnt; ci++ )	corners[ci] = corners_vec[ci];
+	}
 //	printf("cor_cnt : %d\n", cor_cnt);
-	ps = (CvPoint *)calloc( cor_cnt, sizeof(CvPoint) );
-//	cvZero( dst );
-	cvCopy( src, dst, 0 );
+	ps = (cv::Point *)calloc( cor_cnt, sizeof(cv::Point) );
+//	dst.setTo(cv::Scalar::all(0));
+	src.copyTo( dst );
 	for ( i = 0; i < cor_cnt; i++ ) {
 		pt.x = (int)corners[i].x;
 		pt.y = (int)corners[i].y;
-//		cvCircle( dst, pt, 2, CV_RGB(255,0,0), -1, 8, 0 );	// 赤
-		cvCircle( dst, pt, 6, CV_RGB(255,255,255), -1, CV_AA, 0 );	// 黒白
-		cvCircle( dst, pt, 4, CV_RGB(0,0,0), -1, CV_AA, 0 );	// 黒白
+//		cv::circle( dst, pt, 2, CV_RGB(255,0,0), -1, 8, 0 );	// 赤
+		cv::circle( dst, pt, 6, CV_RGB(255,255,255), -1, cv::LINE_AA, 0 );	// 黒白
+		cv::circle( dst, pt, 4, CV_RGB(0,0,0), -1, cv::LINE_AA, 0 );	// 黒白
 		ps[i] = pt;
-	}
-	cvReleaseImage( &img_gray );
-	cvReleaseImage( &img_eig );
-	cvReleaseImage( &img_temp );
+	} // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory) // cvReleaseImage removed (cv::Mat auto-manages memory)
 	free( corners );
 	*pps = ps;
 	*pnum = cor_cnt;
 }
 
-void FindCorPoint( CvPoint *ps, int num, CvPoint *corps, int cornum, int *pcor, strProjParam *param )
+void FindCorPoint( cv::Point *ps, int num, cv::Point *corps, int cornum, int *pcor, strProjParam *param )
 // フレーム間の対応点を見つける
 {
 	int i, j, pcornum = 0;

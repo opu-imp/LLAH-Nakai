@@ -5,8 +5,7 @@
 #include <time.h>
 #include <math.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "dirs.h"
@@ -746,37 +745,37 @@ int ReadIniFile( void )
 	for ( ; fgets( line, kMaxLineLen, fp ) != NULL;  ) {	// iniファイルを行ごとに処理
 //		puts( line );
 		tok = strtok( line, " =\t\n" );	// strtokで行を分解
-		if ( tok == NULL )	continue;	// トークンなし
+		if (tok == NULL)	continue;	// トークンなし
 		if ( *tok == '#' )	continue;	// 行頭が#ならコメントとみなす
 		if ( strcmp( tok, "TCPPort" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok != NULL )	eTCPPort = atoi(tok);
+			if ( tok != NULL)	eTCPPort = atoi(tok);
 		}
 		else if ( strcmp( tok, "Protocol" ) == 0 ) {	// Protocol
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok == NULL )	continue;	// トークンなし
+			if (tok == NULL)	continue;	// トークンなし
 			if ( strcmp( tok, "TCP" ) == 0 )	eProtocol = 1;
 			else if ( strcmp( tok, "UDP" ) == 0 )	eProtocol = 2;
 		}
 		else if ( strcmp( tok, "PointPort" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok != NULL )	ePointPort = atoi( tok );
+			if ( tok != NULL)	ePointPort = atoi( tok );
 		}
 		else if ( strcmp( tok, "ResultPort" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok != NULL )	eResultPort = atoi( tok );
+			if ( tok != NULL)	eResultPort = atoi( tok );
 		}
 		else if ( strcmp( tok, "ClientName" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok != NULL )	strcpy( eClientName, tok );
+			if ( tok != NULL)	strcpy( eClientName, tok );
 		}
 		else if ( strcmp( tok, "ServerName" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok != NULL )	strcpy( eServerName, tok );
+			if ( tok != NULL)	strcpy( eServerName, tok );
 		}
 		else if ( strcmp( tok, "DatabaseDir" ) == 0 ) {
 			tok = strtok( NULL, " =\t\n" );
-			if ( tok != NULL )	strcpy( eDirsDir, tok );
+			if ( tok != NULL)	strcpy( eDirsDir, tok );
 		}
 	}
 	fclose( fp );
@@ -864,7 +863,7 @@ int LoadConfig( const char *config_file_name, int *p_inv_type, int *p_group1_num
 	}
 	fgets_ret = fgets( line, kMaxLineLen, fp );	// 一行読み込み
 	// 読み込み失敗もしくはバージョン文字列と一致せず
-	if ( fgets_ret == NULL || !strcmp( line, kConfigVerStr ) ) {
+	if (fgets_ret == NULL || !strcmp( line, kConfigVerStr ) ) {
 		fprintf( stderr, "error: %s version error\n", config_file_name );
 		return 0;
 	}

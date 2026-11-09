@@ -1,1 +1,1 @@
-IplImage *MosaicImages( IplImage *img1, IplImage *img2, strProjParam param, strProjParam param_rev );
+cv::Mat MosaicImages( cv::Mat img1, cv::Mat img2, strProjParam param, strProjParam param_rev );

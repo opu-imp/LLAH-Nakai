@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 
 #include "dirs.h"
 #include "hist.h"
@@ -9,19 +9,19 @@
 
 void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, int corder );
 
-void CalcHoughLineCRHist(CvPoint *ps, int pt_num,  CvSize size)
+void CalcHoughLineCRHist(cv::Point *ps, int pt_num,  cv::Size size)
 // 点の集合をHough変換して直線を検出し，線上の点から複比を求めてヒストグラムを作成する
 {
 	int i, line_num;
-	IplImage *cent;
+	cv::Mat cent;
 	strLineForCR *lines = NULL;
 	strHist hist;
 
-	cent = cvCreateImage(size, 8, 1);
-	cvZero(cent);
+	cent = cv::Mat::zeros(size, CV_8UC1);
+	cent.setTo(cv::Scalar::all(0));
 
 	for ( i = 0; i < pt_num; i++ ) {
-		cvCircle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// 点の描画
+		cv::circle( cent, ps[i], 0, cWhite, -1, 1, 0 );	// 点の描画
 	}
 
 	line_num = CalcHoughLinesImg(cent, &lines);	// 画像からHough変換で直線を求める
@@ -35,7 +35,7 @@ void CalcHoughLineCRHist(CvPoint *ps, int pt_num,  CvSize size)
 	for ( i = 0; i < line_num; i++ ) {
 		printf("line%02d\n", i);
 		cur = lines[i].first;
-		while ( cur != NULL ) {
+		while ( cur != NULL) {
 			printf("%d %d\n", cur->pt.x, cur->pt.y );
 			cur = cur->next;
 		}
@@ -54,13 +54,13 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 {
 	int i, j, pt_num, p1, p2, p3, p4;
 	double cr = 0.0;
-	CvPoint pts[kLinePoints];
+	cv::Point pts[kLinePoints];
 	strPtList *cur;
 
 	for ( i = 0; i < line_num; i++ ) {
 		cur = lines[i].first;
 		j = 0;
-		while ( cur != NULL ) {	// 点をptsにコピー
+		while ( cur != NULL) {	// 点をptsにコピー
 			pts[j].x = cur->pt.x;
 			pts[j].y = cur->pt.y;
 			cur = cur->next;
@@ -109,7 +109,7 @@ void CalcHLHist( strHist *hist, strLineForCR *lines, int line_num, int ctype, in
 	}
 }
 
-void ResisterPointToLines( CvPoint pt, strLineForCR *lines, int line_num )
+void ResisterPointToLines( cv::Point pt, strLineForCR *lines, int line_num )
 // 点を近い直線に登録する
 {
 	int i;
@@ -121,7 +121,7 @@ void ResisterPointToLines( CvPoint pt, strLineForCR *lines, int line_num )
 	}
 }
 
-void AddPoint( CvPoint pt, strLineForCR *line )
+void AddPoint( cv::Point pt, strLineForCR *line )
 // 点を直線の点リストに追加する
 {
 	strPtList *newpl = (strPtList *)calloc(1, sizeof(strPtList));
@@ -130,19 +130,19 @@ void AddPoint( CvPoint pt, strLineForCR *line )
 	newpl->pt.x = pt.x;
 	newpl->pt.y = pt.y;
 	newpl->next = NULL;
-	if ( line->first == NULL ) {
+	if ( line->first == NULL) {
 		line->first = newpl;
 		return;
 	}
 	cur = line->first;
-	while ( cur->next != NULL )
+	while ( cur->next != NULL)
 		cur = cur->next;
 	cur->next = newpl;
 }
 
 
 
-int IsCloseToLine( CvPoint pt, strLineForCR *line )
+int IsCloseToLine( cv::Point pt, strLineForCR *line )
 // 点と直線が近いか判定する
 {
 	if ( fabs((pt.x * cos(line->theta) + pt.y * sin(line->theta)) - line->rho) < kCloseToLine )
@@ -162,38 +162,42 @@ int y2xrh(int y, float rho, float theta)
 	return (int)((rho - y * sin(theta))/cos(theta));
 }
 
-int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
+int CalcHoughLinesImg(cv::Mat dst, strLineForCR **line_cr)
 {
-//	IplImage* dst = cvLoadImage("htest.bmp", 0);
-    IplImage *color_dst;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    CvSeq* lines = 0;
+//	cv::Mat  dst = cv::imread("htest.bmp", cv::IMREAD_GRAYSCALE);
+    cv::Mat color_dst;
+    std::vector<std::vector<cv::Point>> contours;
+
+    std::vector<cv::Vec4i> hierarchy;
+    // lines_vec declared at HoughLines call site
+    // (CvSeq* lines removed)
     int i, w, h;
 
-//	dst1 = cvCreateImage( cvGetSize(dst), 8, 3 );
-	color_dst = cvCreateImage( cvGetSize(dst), 8, 1 );
-	cvZero(color_dst);
-	color_dst = cvCloneImage( dst );
-	w = color_dst->width;
-	h = color_dst->height;
+//	dst1 = cv::Mat::zeros(dst.size(), CV_8UC3);
+	color_dst = cv::Mat::zeros(dst.size(), CV_8UC1);
+	color_dst.setTo(cv::Scalar::all(0));
+	color_dst = dst.clone();
+	w = color_dst.cols;
+	h = color_dst.rows;
 
-//    cvCvtColor( dst, color_dst, CV_GRAY2BGR );
+//    cv::cvtColor( dst, color_dst, cv::COLOR_GRAY2BGR );
 
-	cvDilate(dst, color_dst, NULL, 5);
+	cv::dilate(dst, color_dst, cv::Mat(), cv::Point(-1,-1), 5);
 	OutPutImage(color_dst);
 
 //    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 2, CV_PI/180, /*150*/4, 0, 0 );
 //htest.bmp用    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 1, CV_PI/90, /*150*/3, 0, 0 );
-    lines = cvHoughLines2( dst, storage, CV_HOUGH_STANDARD, 8, CV_PI/180, /*150*/10, 0, 0 );
+    std::vector<cv::Vec2f> lines_vec;
+    cv::HoughLines(dst, lines_vec, 8, CV_PI/180, /*150*/10);
 
-	*line_cr = (strLineForCR *)calloc(lines->total, sizeof(strLineForCR));
+	*line_cr = (strLineForCR *)calloc((int)lines_vec.size(), sizeof(strLineForCR));
 
-    for( i = 0; i < lines->total; i++ )
+    for( i = 0; i < (int)lines_vec.size(); i++ )
     {
-        float* line = (float*)cvGetSeqElem(lines,i);
+        float* line = (float*)&lines_vec[i];
         float rho = line[0];
         float theta = line[1];
-		CvPoint pt[2];
+		cv::Point pt[2];
 		int xt, yt, count = 0;
 //        double a = cos(theta), b = sin(theta);
 
@@ -227,7 +231,7 @@ int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
 			pt[count].y = h;
 			count++;
 		}
-        cvLine( color_dst, pt[0], pt[1], cWhite, 4, 8, 0 );
+        cv::line( color_dst, pt[0], pt[1], cWhite, 4, 8, 0 );
 
 		//以下にあった直線を引くプログラムが見事に間違っていた．サンプルといえど信用できないな．
 	}
@@ -235,5 +239,5 @@ int CalcHoughLinesImg(IplImage *dst, strLineForCR **line_cr)
 //	OutPutImage(dst);
 	OutPutImage(color_dst);
 
-	return lines->total;
+	return (int)lines_vec.size();
 }

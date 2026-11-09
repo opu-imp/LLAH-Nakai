@@ -1,6 +1,6 @@
-CXX = g++ -Wall -O2 -g
-CXXFLAGS = `pkg-config --cflags opencv`
-LDFLAGS = `pkg-config --libs opencv`
+CXX = g++ -Wall -O2 -g -std=c++17
+CXXFLAGS = `pkg-config --cflags opencv4`
+LDFLAGS = `pkg-config --libs opencv4`
 
 PACKAGE = annex
 
@@ -11,7 +11,10 @@ HEADS = annex.h annex_st.h annex_diff.h transform.h clpoints.h def_general.h has
 OBJS = $(SRCS:.c=.o)
 FILES = Makefile $(HEADS) $(SRCS)
 
-all:	$(PACKAGE)
+all:	$(PACKAGE) acr2_build
+
+acr2_build:
+	$(MAKE) -C acr2
 
 $(PACKAGE):	$(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(PACKAGE) $(OBJS)
@@ -23,3 +26,4 @@ $(OBJS): $(HEADS) Makefile
 
 clean:	
 	rm -f $(OBJS)
+	$(MAKE) -C acr2 clean

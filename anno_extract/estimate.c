@@ -1,7 +1,6 @@
 #include <stdio.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "annex_st.h"
 #include "estimate.h"
 
@@ -13,13 +12,13 @@
 
 #define	kMaxParamValNum	(8)	/* 変換（相似orアフィン）パラメータの最大数 */
 
-int EstimateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type )
+int EstimateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type )
 // RANSACにより対応点から相似およびアフィン変換パラメータを推定する（annex用）
 {
 	int i, j, num_p, trpnum, randpi[4], cori, cla, clo, pa, po;
 	int score, max_score = -1, max_param = -1;
 	double **paramarr;
-	CvPoint strp1[4], strp2[4];
+	cv::Point strp1[4], strp2[4];
 	
 	if ( type == SIMILAR )		num_p = 2;
 	else if ( type == AFFINE )	num_p = 3;
@@ -65,13 +64,13 @@ int EstimateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor
 	return 1;
 }
 
-int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type )
+int EvaluateParamRANSAC( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type )
 // RANSACでのパラメータの評価
 {
 	int i, score = 0;
 	int cla, clo, pa, po;
 	double dist;
-	CvPoint p1, p2, p2h;
+	cv::Point p1, p2, p2h;
 	
 //	printf("\ndist\n");
 	for ( i = 0; i < cor_num; i++ ) {
@@ -96,14 +95,14 @@ int EvaluateParamRANSAC( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor
 	return score;
 }
 
-void EstimateParam( CvPoint **clpsa, CvPoint **clpso, int cor[][4], int cor_num, double *param, int type )
+void EstimateParam( cv::Point **clpsa, cv::Point **clpso, int cor[][4], int cor_num, double *param, int type )
 // 対応点から相似およびアフィン変換パラメータを推定する（annex用）
 {
 	int i, j, randpi[2], cori, cla, clo, pa, po, num_p, trpnum;
 	double **paramarr;
 //	strSimParam st_paramarr[kTryParamRand];
 //	strAffParam af_paramarr[kTryParamRand];
-	CvPoint strp1[3], strp2[3];
+	cv::Point strp1[3], strp2[3];
 	
 	if ( type == SIMILAR ) {
 		num_p = 2;

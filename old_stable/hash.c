@@ -3,10 +3,9 @@
 #include <ctype.h>
 #include <string.h>
 #include "def_general.h"
-//#include "cv.h"
-//#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "hash.h"
-//#include "dirs.h"
+#include "dirs.h"
 #include "hist.h"
 #include "block.h"
 #include "extern.h"
@@ -159,7 +158,7 @@ strHList **LoadHash( int num )
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return NULL;
 	hash = InitHash();
-	if ( hash == NULL )	return NULL;	// Šm•Û‚ÉŽ¸”s
+	if (hash == NULL)	return NULL;	// Šm•Û‚ÉŽ¸”s
 	while ( ReadBlock((unsigned char *)&index, sizeof(unsigned int)) != 0 ) {
 		ReadBlock((unsigned char *)&n, sizeof(unsigned int));
 		for ( i = 0; i < n; i++ ) {
@@ -192,7 +191,7 @@ strHList2 **LoadHash2( int num )
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return NULL;
 	hash2 = InitHash2();
-	if ( hash2 == NULL )	return NULL;	// Šm•Û‚ÉŽ¸”s
+	if (hash2 == NULL)	return NULL;	// Šm•Û‚ÉŽ¸”s
 	while ( ReadBlock((unsigned char *)&index, sizeof(unsigned int)) != 0 ) {
 		ReadBlock((unsigned char *)&n, sizeof(unsigned int));
 		for ( i = 0; i < n; i++ ) {
@@ -238,7 +237,7 @@ HENTRY *LoadHash3( int num )
 
 	if ( StartReadBlock(eHashFileName, kBlockSize) == 0 )	return NULL;
 	hash3 = InitHash3();
-	if ( hash3 == NULL )	return NULL;	// Šm•Û‚ÉŽ¸”s
+	if (hash3 == NULL)	return NULL;	// Šm•Û‚ÉŽ¸”s
 	while ( ReadBlock((unsigned char *)&index, sizeof(unsigned int)) != 0 ) {
 		ReadBlock( (unsigned char *)&he, sizeof(HENTRY) );
 		hash3[index] = he;
@@ -407,7 +406,7 @@ int AddHash( char *index, char *index_area, int num, unsigned short doc, unsigne
 	hp = (strHList *)malloc(sizeof(*hp));
 	if ( eUseArea )	hp->idx = (char *)calloc( eNumCom2 + eGroup2Num, sizeof(char) );
 	else			hp->idx = (char *)calloc( eNumCom2, sizeof(char) );
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->next = hash[hindex];
 	hp->doc = doc;
 	hp->point = point;
@@ -437,9 +436,9 @@ int AddHash2( char *index, char *index_area, int num, unsigned short doc, unsign
 	if ( eUseArea )	hindex = HashFuncArea( index, index_area, num );	// –ÊÏ“Á’¥—Ê‚Ì—˜—p
 	else			hindex = HashFunc( index, num );
 	hp = (strHList2 *)malloc(sizeof(*hp));
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->dat = MakeHList2Dat( doc, point, index, index_area );
-	if ( hp->dat == NULL )	return 0;
+	if ( hp->dat == NULL)	return 0;
 	hp->next = hash2[hindex];
 	hash2[hindex] = hp;
 	count++;
@@ -499,7 +498,7 @@ void PrintHash( strHList **hash )
 				for ( j = 0; j < eNumCom2; j++ ) printf("%02x", hp->idx[j]);
 				printf(", ");
 				hp = hp->next;
-			} while ( hp != NULL );
+			} while ( hp != NULL);
 		printf("\n");
 		}
 	}
@@ -530,7 +529,7 @@ void PrintHash2( strHList2 **hash2 )
 				}
 				printf(", ");
 				hp = hp->next;
-			} while ( hp != NULL );
+			} while ( hp != NULL);
 		printf("\n");
 		}
 	}
@@ -546,7 +545,7 @@ strHList **InitHash( void )
 
 	count = 0;
 	hash = (strHList **)malloc( sizeof(strHList *)*kHashSize );
-	if ( hash == NULL )	return NULL;
+	if (hash == NULL)	return NULL;
 	for ( i = 0; i < kHashSize; i++ )	hash[i] = NULL;
 	return hash;
 }
@@ -557,7 +556,7 @@ void ReleaseHash( strHList **hash )
 	int i;
 	strHList *hp, *next;
 
-	if ( hash == NULL )	return;
+	if (hash == NULL)	return;
 	for ( i = 0; i < kHashSize; i++ ) {
 		for ( hp = hash[i]; hp != NULL; hp = next ) {
 			next = hp->next;
@@ -576,7 +575,7 @@ strHList2 **InitHash2( void )
 
 	count = 0;
 	hash2 = (strHList2 **)malloc( sizeof(strHList2 *)*kHashSize );
-	if ( hash2 == NULL )	return NULL;
+	if (hash2 == NULL)	return NULL;
 	for ( i = 0; i < kHashSize; i++ )	hash2[i] = NULL;
 	return hash2;
 }
@@ -587,7 +586,7 @@ void ReleaseHash2( strHList2 **hash2 )
 	int i;
 	strHList2 *hp, *next;
 
-	if ( hash2 == NULL )	return;
+	if (hash2 == NULL)	return;
 	for ( i = 0; i < kHashSize; i++ ) {
 		for ( hp = hash2[i]; hp != NULL; hp = next ) {
 			next = hp->next;
@@ -604,9 +603,9 @@ HENTRY *InitHash3( void )
 	int i;
 	HENTRY *hash3 = NULL;
 
-	if ( hash3 != NULL )	free( hash3 );
+	if ( hash3 != NULL)	free( hash3 );
 	hash3 = (HENTRY *)calloc( kHashSize, sizeof(HENTRY) );
-	if ( hash3 == NULL )	return NULL;
+	if (hash3 == NULL)	return NULL;
 	for ( i = 0; i < kHashSize; i++ )	hash3[i] = kFreeEntry;
 
 	return hash3;
@@ -615,7 +614,7 @@ HENTRY *InitHash3( void )
 void ReleaseHash3( HENTRY *hash3 )
 // ƒnƒbƒVƒ…‚ð‰ð•ú3
 {
-	if ( hash3 != NULL )	free( hash3 );
+	if ( hash3 != NULL)	free( hash3 );
 	return;
 }
 
@@ -712,9 +711,9 @@ int AddHashArea( char *index, char *index_area, int num, unsigned short doc, uns
 
 	hindex = HashFuncArea( index, index_area, num );
 	hp = (strHList2 *)malloc(sizeof(*hp));
-	if ( hp == NULL )	return 0;
+	if (hp == NULL)	return 0;
 	hp->dat = MakeHList2Dat( doc, point, index, index_area );
-	if ( hp->dat == NULL )	return 0;
+	if ( hp->dat == NULL)	return 0;
 	hp->next = hash2[hindex];
 	hash2[hindex] = hp;
 	count++;

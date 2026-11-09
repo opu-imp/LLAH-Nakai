@@ -25,8 +25,8 @@
 #include <mmsystem.h>
 #endif
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 
 #include "disc.h"
 #include "dirs.h"
@@ -87,24 +87,24 @@
 
 #define	kMaxDocNameLen	(100)	/* 画像名の最大長 */
 
-#define	kRecvBuffSize	(sizeof(CvSize) + sizeof(int) + sizeof(CvPoint) * kMaxPointNum)	/* 受信時のバッファのサイズ */
-#define	kRecvBuffSizeAreas	(sizeof(CvSize) + sizeof(int) + (sizeof(CvPoint) + sizeof(unsigned short)) * kMaxPointNum)	/* 受信時のバッファのサイズ（面積も受信バージョン） */
-#define	kSendBuffSize	(kMaxDocNameLen + sizeof(strProjParam) + sizeof(CvSize))
+#define	kRecvBuffSize	(sizeof(cv::Size) + sizeof(int) + sizeof(cv::Point) * kMaxPointNum)	/* 受信時のバッファのサイズ */
+#define	kRecvBuffSizeAreas	(sizeof(cv::Size) + sizeof(int) + (sizeof(cv::Point) + sizeof(unsigned short)) * kMaxPointNum)	/* 受信時のバッファのサイズ（面積も受信バージョン） */
+#define	kSendBuffSize	(kMaxDocNameLen + sizeof(strProjParam) + sizeof(cv::Size))
 
 long allocated_hash = 0;
 
-int RecvPoints( SOCKET sid, CvPoint **ps0, CvSize *size )
+int RecvPoints( SOCKET sid, cv::Point **ps0, cv::Size *size )
 // 点データを受信
 {
 	int i, num = 0, ret, buff_cur;
 	char buff[kRecvBuffSize];
-	CvPoint *ps;
+	cv::Point *ps;
 	
 	// バッファに受信
 	ret = recv( sid, buff, kRecvBuffSize, RECV_FLAG );
 	if ( ret <= 0 )	return -1;	// 受信失敗
 	// バッファから画像サイズを得る
-	for ( i = 0, buff_cur = 0; i < sizeof(CvSize); i++, buff_cur++ ) {
+	for ( i = 0, buff_cur = 0; i < sizeof(cv::Size); i++, buff_cur++ ) {
 		((char *)size)[i] = buff[buff_cur];
 	}
 	// バッファから特徴点数を得る
@@ -112,23 +112,23 @@ int RecvPoints( SOCKET sid, CvPoint **ps0, CvSize *size )
 		((char *)&num)[i] = buff[buff_cur];
 	}
 	// 特徴点数が1以上ならメモリを確保
-	if ( num > 0 )	ps = (CvPoint *)calloc( num, sizeof(CvPoint) );
+	if ( num > 0 )	ps = (cv::Point *)calloc( num, sizeof(cv::Point) );
 	else	ps = NULL;
 	*ps0 = ps;
 	// バッファから特徴点データを得る
-	for ( i = 0; i < (int)(sizeof(CvPoint) * num); i++, buff_cur++ ) {
+	for ( i = 0; i < (int)(sizeof(cv::Point) * num); i++, buff_cur++ ) {
 		((char *)ps)[i] = buff[buff_cur];
 	}
 
 	return num;
 }
 
-int RecvPointsAreas( SOCKET sid, CvPoint **ps0, double **areas0, CvSize *size )
+int RecvPointsAreas( SOCKET sid, cv::Point **ps0, double **areas0, cv::Size *size )
 // 点データを受信
 {
 	int i, num = 0, ret, buff_cur;
 	char buff[kRecvBuffSizeAreas];
-	CvPoint *ps;
+	cv::Point *ps;
 	double *areas;
 	unsigned short areas_us[kMaxPointNum];
 	
@@ -136,7 +136,7 @@ int RecvPointsAreas( SOCKET sid, CvPoint **ps0, double **areas0, CvSize *size )
 	ret = recv( sid, buff, kRecvBuffSizeAreas, RECV_FLAG );
 	if ( ret <= 0 )	return -1;	// 受信失敗
 	// バッファから画像サイズを得る
-	for ( i = 0, buff_cur = 0; i < sizeof(CvSize); i++, buff_cur++ ) {
+	for ( i = 0, buff_cur = 0; i < sizeof(cv::Size); i++, buff_cur++ ) {
 		((char *)size)[i] = buff[buff_cur];
 	}
 	// バッファから特徴点数を得る
@@ -145,7 +145,7 @@ int RecvPointsAreas( SOCKET sid, CvPoint **ps0, double **areas0, CvSize *size )
 	}
 	// 特徴点数が1以上ならメモリを確保
 	if ( num > 0 )	{
-		ps = (CvPoint *)calloc( num, sizeof(CvPoint) );
+		ps = (cv::Point *)calloc( num, sizeof(cv::Point) );
 		areas = (double *)calloc( num, sizeof(double) );
 	}
 	else {
@@ -155,11 +155,11 @@ int RecvPointsAreas( SOCKET sid, CvPoint **ps0, double **areas0, CvSize *size )
 	*ps0 = ps;
 	*areas0 = areas;
 	// バッファから特徴点データを得る
-	for ( i = 0; i < (int)(sizeof(CvPoint) * num); i++, buff_cur++ ) {
+	for ( i = 0; i < (int)(sizeof(cv::Point) * num); i++, buff_cur++ ) {
 		((char *)ps)[i] = buff[buff_cur];
 	}
 	// バッファから面積データを得る
-	buff_cur = sizeof(CvSize) + sizeof(int) + sizeof(CvPoint) * kMaxPointNum;
+	buff_cur = sizeof(cv::Size) + sizeof(int) + sizeof(cv::Point) * kMaxPointNum;
 	for ( i = 0; i < (int)(sizeof(unsigned short) * num); i++, buff_cur++ ) {
 		((char *)areas_us)[i] = buff[buff_cur];
 	}
@@ -188,29 +188,29 @@ int SendFileNameList( SOCKET sid, int num, char **fname_list, int len )
 	return ret;
 }
 
-int SendResultCor( SOCKET sid, char *doc_name, int len, int doc, int pcor[][2], int pcornum, CvPoint *ps, CvPoint **psall, CvSize size, CvSize *sizeall )
+int SendResultCor( SOCKET sid, char *doc_name, int len, int doc, int pcor[][2], int pcornum, cv::Point *ps, cv::Point **psall, cv::Size size, cv::Size *sizeall )
 // 文書名と対応点を送信
 {
 	int i, ret;
-	CvPoint corps[kMaxPointNum][2];
+	cv::Point corps[kMaxPointNum][2];
 	
 	if ( send( sid, doc_name, len, SEND_FLAG ) < 0 )	return -1;	// 文書名を送信
-	if ( send( sid, &size, sizeof(CvSize), SEND_FLAG ) < 0 )	return -1;	// クエリ画像のサイズを送信
-	if ( send( sid, &(sizeall[doc]), sizeof(CvSize), SEND_FLAG ) < 0 )	return -1;	// 登録画像のサイズを送信
+	if ( send( sid, &size, sizeof(cv::Size), SEND_FLAG ) < 0 )	return -1;	// クエリ画像のサイズを送信
+	if ( send( sid, &(sizeall[doc]), sizeof(cv::Size), SEND_FLAG ) < 0 )	return -1;	// 登録画像のサイズを送信
 	if ( ret = send( sid, &pcornum, sizeof(int), SEND_FLAG ) < 0 )	return -1;	// 対応の数を送信
 	for ( i = 0; i < pcornum; i++ ) {
 //		printf("%d(%d,%d), %d(%d,%d)\n", pcor[i][0], ps[pcor[i][0]].x, ps[pcor[i][0]].y, pcor[i][1], psall[doc][pcor[i][1]].x, psall[doc][pcor[i][1]].y);
-//		ret = send( sid, &(ps[pcor[i][0]]), sizeof(CvPoint), SEND_FLAG );	// クエリ側特徴点を送信
-//		ret = send( sid, &(psall[doc][pcor[i][1]]), sizeof(CvPoint), SEND_FLAG );	// 登録側特徴点を送信
+//		ret = send( sid, &(ps[pcor[i][0]]), sizeof(cv::Point), SEND_FLAG );	// クエリ側特徴点を送信
+//		ret = send( sid, &(psall[doc][pcor[i][1]]), sizeof(cv::Point), SEND_FLAG );	// 登録側特徴点を送信
 		corps[i][0] = ps[pcor[i][0]];
 		corps[i][1] = psall[doc][pcor[i][1]];
 	}
 	
-	if ( pcornum > 0 )	ret = send( sid, corps, sizeof(CvPoint)*2*pcornum, SEND_FLAG );
+	if ( pcornum > 0 )	ret = send( sid, corps, sizeof(cv::Point)*2*pcornum, SEND_FLAG );
 	return ret;
 }
 
-int SendResultParam( SOCKET sid, char *doc_name, int len, strProjParam *param, CvSize *img_size, struct sockaddr_in *addr, int ptc )
+int SendResultParam( SOCKET sid, char *doc_name, int len, strProjParam *param, cv::Size *img_size, struct sockaddr_in *addr, int ptc )
 // 文書名と射影変換パラメータを送信
 {
 	int ret;
@@ -218,7 +218,7 @@ int SendResultParam( SOCKET sid, char *doc_name, int len, strProjParam *param, C
 
 	memcpy( buff, doc_name, kMaxDocNameLen );
 	memcpy( buff + kMaxDocNameLen, param, sizeof(strProjParam) );
-	memcpy( buff + kMaxDocNameLen + sizeof(strProjParam), img_size, sizeof(CvSize) );
+	memcpy( buff + kMaxDocNameLen + sizeof(strProjParam), img_size, sizeof(cv::Size) );
 
 	if ( ptc == kTCP ) {
 		ret = send( sid, buff, kSendBuffSize, SEND_FLAG );
@@ -265,10 +265,10 @@ int main( int argc, char** argv )
 	int num, **nears = 0, argi = 1, res = 0, emode = RETRIEVE_MODE, rmode = NOT_RECOVER_MODE, \
 	fmode = CONNECTED_MODE, pmode = NOT_PREPARED_MODE;
 	int *score;
-	CvPoint *ps = 0;
-	CvSize img_size;
+	cv::Point *ps = 0;
+	cv::Size img_size;
 	int start, end = 0, start_con, end_con, start_fp, end_fp, start_hl, end_hl, start_nears, end_nears;
-	IplImage *img;
+	cv::Mat img;
 	strDisc disc, disc1, disc2;
 	char fname[kMaxPathLen];
 	FILE *fp;
@@ -276,8 +276,8 @@ int main( int argc, char** argv )
 	// 公開に向けて改変
 	// 09/01/06 デュアルハッシュに向けて改変
 	int ret;
-	CvPoint **reg_pss = NULL, **reg_pss1 = NULL, **reg_pss2 = NULL;
-	CvSize *reg_sizes = NULL, *reg_sizes1 = NULL, *reg_sizes2 = NULL;
+	cv::Point **reg_pss = NULL, **reg_pss1 = NULL, **reg_pss2 = NULL;
+	cv::Size *reg_sizes = NULL, *reg_sizes1 = NULL, *reg_sizes2 = NULL;
 	int *reg_nums = NULL, *reg_nums1 = NULL, *reg_nums2 = NULL;
 	char **dbcors = NULL, **dbcors1 = NULL, **dbcors2 = NULL;
 	// 実験モード用
@@ -341,10 +341,9 @@ int main( int argc, char** argv )
 					if ( eIsJp ) 	img = GetConnectedImageJp2( argv[argi], eEntireMode );
 					else			img = GetConnectedImage2( argv[argi], eEntireMode, eHashGaussMaskSize );
 #endif
-					if ( img == NULL )	continue;
+					if (img.empty())	continue;
 					// 特徴点を抽出
 					num = MakeCentresFromImage( &ps, img, &img_size, &areas );
-					cvReleaseImage( &img );
 				}
 				// 近傍構造を計算
 				MakeNearsFromCentres( ps, num, &nears );
@@ -560,14 +559,15 @@ retrieve:
 			// 結合画像の作成（用意されているか囲み領域ならロード，そうでなければ計算）
 			start_con = GetProcTimeMiliSec();
 			if ( pmode == PREPARED_MODE || fmode == ENCLOSED_MODE ) {	// 結合画像が用意されているか，囲まれた領域を特徴点にするなら
-				if ( (img = cvLoadImage(fname, 0)) == NULL ) {
+				img = cv::imread(fname, cv::IMREAD_GRAYSCALE | cv::IMREAD_IGNORE_ORIENTATION);
+	if (img.empty()) {
 					fprintf(stderr, "画像ファイル%sが開けません\n", fname);
 					return 1;
 				}
 				if ( pmode == PREPARED_MODE && rmode == RECOVER_MODE )	argi++;	// 結合画像が容易済みで，別途元画像から射影変換の補正をしたいなら
 			}
 			else if ( fmode != USEPF_MODE && !IsTxt(fname) && !IsDat(fname) ) {
-				if ( (img = GetConnectedImage( fname, emode )) == NULL ) {	// 結合画像を作成
+				if ( (img = GetConnectedImage( fname, emode )).empty() ) {	// 結合画像を作成
 					fprintf(stderr, "%sから結合画像を作成するのに失敗しました\n", fname);
 					return 1;
 				}
@@ -607,10 +607,9 @@ retrieve:
 				res = RetrieveNN5( ps, num, nears, img_size, score );	// 検索のみ
 			}
 			// いろいろと解放
-			if ( ps != NULL && num > 0 )
+			if (ps != NULL && num > 0 )
 				ReleaseCentres( ps );	// psの解放
 			ReleaseNears( nears, num );	// nearsの解放
-			if ( fmode != USEPF_MODE && !IsDat( fname ) && !IsTxt( fname ))	cvReleaseImage( &img );
 			printf("%d\n", score[0]);
 			// 計算時間の表示
 			OutPutResult( score, end-start, 5, fname );
@@ -629,8 +628,8 @@ retrieve:
 		int pcor[kMaxPointNum][2], pcornum = 0, *numall;
 //		int ptc, pt_port, res_port;
 		char doc_name[kMaxDocNameLen] = "";
-		CvPoint **psall;
-		CvSize *sizeall;
+		cv::Point **psall;
+		cv::Size *sizeall;
 		strProjParam param, zero_param;
 		struct sockaddr_in addr;
 		
@@ -733,7 +732,7 @@ start_nego:
 //				printf("%lf %lf %lf %lf %lf %lf %lf %lf\n", param.a1, param.a2, param.a3, param.b1, param.b2, param.b3, param.c1, param.c2 );			// いろいろと解放
 				end = GetProcTimeMicroSec();
 //				printf("param_est : %d micoro sec\n", end - start );
-				if ( ps != NULL && num > 0 )
+				if (ps != NULL && num > 0 )
 					ReleaseCentres( ps );	// psの解放
 				ReleaseNears( nears, num );	// nearsの解放
 				// 計算時間の表示
@@ -842,7 +841,7 @@ start_nego:
 
 		for ( ; argi < argc; argi++ ) {	// すべての引数について
 			printf("%s\t", argv[argi]);
-			if ( (img = GetConnectedImage( argv[argi], RETRIEVE_MODE )) == NULL ) {	// 結合画像を作成
+			if ( (img = GetConnectedImage( argv[argi], RETRIEVE_MODE )).empty() ) {	// 結合画像を作成
 				fprintf(stderr, "%sから結合画像を作成するのに失敗しました\n", argv[argi]);
 				return 1;
 			}
@@ -850,7 +849,6 @@ start_nego:
 			printf("%d\n", num);
 			// いろいろと解放
 			ReleaseCentres( ps );	// psの解放
-			cvReleaseImage( &img );
 		}
 		
 		return 0;
@@ -869,23 +867,23 @@ check_hash:
 
 }
 
-void DrawPoint( IplImage *img, CvPoint p, CvScalar color )
+void DrawPoint( cv::Mat img, cv::Point p, cv::Scalar color )
 // imgのpにcolorで点を打つ
 {
 #ifdef DRAW_BY_NUM
 	static n = 0;
 	char tmp[10];
-	CvFont font;
+	// CvFont removed in OpenCV 4.x
 	sprintf(tmp, "%d", n++);
-	cvInitFont( &font, 7, 1.0, 1.0, 0.1, 0, 1);
-    cvPutText( img, tmp, p, &font, color);
+	// cvInitFont removed - use cv::putText directly
+    cv::putText(img, tmp, p, cv::FONT_HERSHEY_PLAIN, 1.0, color);
 #endif
 #ifndef DRAW_BY_NUM
-	cvCircle( img, p, 5, color, -1, 1, 0 );
+	cv::circle( img, p, 5, color, -1, 1, 0 );
 #endif
 }
 
-void CalcCRDiscriptorLine(CvPoint *ps, int num, int *nears[])
+void CalcCRDiscriptorLine(cv::Point *ps, int num, int *nears[])
 // 複比の方法でディスクリプタを計算する
 {
 	int pt, pt0, ptd0, next/*, nlc, nl,*/, count = 0, cent[4];
@@ -912,14 +910,14 @@ void CalcCRDiscriptorLine(CvPoint *ps, int num, int *nears[])
 	cent[count++] = pt;
 #ifdef DRAW_PIC
 	DrawPoint( out_img, ps[pt], cWhite);
-	cvLine( out_img, ps[ptd0], ps[pt], cWhite, 4, CV_AA, 0);
+	cv::line( out_img, ps[ptd0], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
 	ptd0 = pt;
 	while ( (pt = RightPointCR(pt, pt0, ps, nears[pt], ang)) >= 0 ) {	//	右へトレース
 		//	何かの処理
 #ifdef DRAW_PIC
 		DrawPoint( out_img, ps[pt], cWhite);
-		cvLine( out_img, ps[ptd0], ps[pt], cWhite, 4, CV_AA, 0);
+		cv::line( out_img, ps[ptd0], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
 		ang = GetPointsAngle(ps[pt0], ps[pt]);	// 角度を更新
 //		nl = NextLineCR(pt, ps, nears, ang);
@@ -958,7 +956,7 @@ void CalcCRDiscriptorLine(CvPoint *ps, int num, int *nears[])
 			}
 #ifdef DRAW_PIC
 			DrawPoint( out_img, ps[pt], cWhite);
-			cvLine( out_img, ps[ptd0], ps[pt], cWhite, 4, CV_AA, 0);
+			cv::line( out_img, ps[ptd0], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
 			ang = GetPointsAngle(ps[pt0], ps[pt]);	//　角度を更新
 //			nl = NextLineCR(pt, ps, nears, ang);
@@ -972,7 +970,7 @@ void CalcCRDiscriptorLine(CvPoint *ps, int num, int *nears[])
 	}
 }
 
-double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
+double CalcCR( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
 // 複比を計算する
 {
 	double d13, d23, d14, d24;
@@ -986,7 +984,7 @@ double CalcCR( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
 	return ( (d13/ d23) / ( d14 / d24 ) );
 }
 
-double CalcJI( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
+double CalcJI( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
 // j-invariantを計算する
 {
 	double tau;
@@ -995,7 +993,7 @@ double CalcJI( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
 	return pow(tau*tau - tau + 1, 3) / (tau*tau*(tau-1)*(tau-1));
 }
 
-int FirstFirstRightPointCR(int pt, CvPoint *ps, int *nears[])
+int FirstFirstRightPointCR(int pt, cv::Point *ps, int *nears[])
 // CRにおいて，1行目の最初の点ptからだいたい右の点を見つける
 {
 	int i, ptr;
@@ -1010,7 +1008,7 @@ int FirstFirstRightPointCR(int pt, CvPoint *ps, int *nears[])
 	return -1;
 }
 
-int FirstRightPointCR(int pt, CvPoint *ps, int *nears[], double ang0)
+int FirstRightPointCR(int pt, cv::Point *ps, int *nears[], double ang0)
 // CRにおいて，2行目以降の最初の点ptからだいたい右の点を見つける
 {
 	int i, ptr;
@@ -1025,7 +1023,7 @@ int FirstRightPointCR(int pt, CvPoint *ps, int *nears[], double ang0)
 	return -1;
 }
 
-int RightPointCR(int pt, int pt0, CvPoint *ps, int nears[], long double ang0 )
+int RightPointCR(int pt, int pt0, cv::Point *ps, int nears[], long double ang0 )
 // CRにおいて，ptからangとほとんど同じ角度の点を見つける
 {
 	int i, ptr;
@@ -1041,7 +1039,7 @@ int RightPointCR(int pt, int pt0, CvPoint *ps, int nears[], long double ang0 )
 	return -1;
 }
 
-int LeftPointCR(int pt, CvPoint *ps, int nears[], double ang0 )
+int LeftPointCR(int pt, cv::Point *ps, int nears[], double ang0 )
 // CRにおいて，ptからang0と180度反対のものとやや同じ角度の点を見つける
 {
 	int i, ptr;
@@ -1059,7 +1057,7 @@ int LeftPointCR(int pt, CvPoint *ps, int nears[], double ang0 )
 	return -1;
 }
 
-int NextLineCR(int pt, CvPoint *ps, int *nears[], double ang0)
+int NextLineCR(int pt, cv::Point *ps, int *nears[], double ang0)
 // CRにおいて，ptから次の行の最初の点を見つける．（大体下の点）
 {
 	int i, ptr;
@@ -1078,13 +1076,13 @@ int NextLineCR(int pt, CvPoint *ps, int *nears[], double ang0)
 	return -1;
 }
 
-//long double GetPointsAngle(CvPoint p1, CvPoint p2)
+//long double GetPointsAngle(cv::Point p1, cv::Point p2)
 // p1から見たp2の角度を計算する（約-3.14から約3.14）
 //{
 //	return atan2(p2.y - p1.y, p2.x - p1.x);
 //}
 
-void Calc1NNDiscriptor(CvPoint *ps, int num, int *nears[], char disc[])
+void Calc1NNDiscriptor(cv::Point *ps, int num, int *nears[], char disc[])
 // 1NNでディスクリプタを計算し，discに書き込む
 {
 	int dp = 0, pt, pt0, rpt, *visited, connected, pt00;
@@ -1108,9 +1106,9 @@ void Calc1NNDiscriptor(CvPoint *ps, int num, int *nears[], char disc[])
 		while ( pt >= 0 ) {	// 行のループ
 			visited[pt] = 1;
 #ifdef DRAW_PIC
-			cvCircle( out_img, ps[pt], 2, cWhite, -1, 1, 0 );
-//			if ( pt00 >= 0 )	cvLine( out_img, ps[pt00], ps[pt], cWhite, 1, CV_AA, 0);
-			if ( connected > 1 )	cvLine( out_img, ps[pt00], ps[pt], cWhite, 4, CV_AA, 0);
+			cv::circle( out_img, ps[pt], 2, cWhite, -1, 1, 0 );
+//			if ( pt00 >= 0 )	cv::line( out_img, ps[pt00], ps[pt], cWhite, 1, cv::LINE_AA, 0);
+			if ( connected > 1 )	cv::line( out_img, ps[pt00], ps[pt], cWhite, 4, cv::LINE_AA, 0);
 #endif
 			rpt = RightPoint(pt, ps, num, nears[pt]);
 			if ( rpt < 0 ) {	// 
@@ -1153,7 +1151,7 @@ int IsConnected1NN(int p1, int p2, int *nears[])
 		return 0;
 }
 
-int IsConnectedWord(CvPoint p1, CvPoint p2, double *dist)
+int IsConnectedWord(cv::Point p1, cv::Point p2, double *dist)
 // p1とp2が接続されているか，単語の区切りで調べる
 {
 	double d0 = *dist;
@@ -1165,13 +1163,13 @@ int IsConnectedWord(CvPoint p1, CvPoint p2, double *dist)
 		return 0;
 }
 
-//double GetPointsDistance(CvPoint p1, CvPoint p2)
+//double GetPointsDistance(cv::Point p1, cv::Point p2)
 // 点のユークリッド距離を求める
 //{
 //		return sqrt((p1.x - p2.x)*(p1.x - p2.x)+(p1.y - p2.y)*(p1.y - p2.y));
 //}
 
-int FirstPoint(CvPoint *ps, int num)
+int FirstPoint(cv::Point *ps, int num)
 // 最初の点（左上の点）を得る
 {
 	int i, min_idx = -1;
@@ -1187,7 +1185,7 @@ int FirstPoint(CvPoint *ps, int num)
 	return min_idx;
 }
 
-int NextLine(int pt, CvPoint *ps, int num, int *nears[], int visited[])
+int NextLine(int pt, cv::Point *ps, int num, int *nears[], int visited[])
 // ptから次の行の最初の点を見つける（ptの下になければ右に進んでいって調べる．次の行に言ったら左に戻れるだけ戻る）
 {
 	int next, pt0;
@@ -1205,7 +1203,7 @@ int NextLine(int pt, CvPoint *ps, int num, int *nears[], int visited[])
 	return next;
 }
 
-int RightPoint(int pt, CvPoint *ps, int num, int nears[])
+int RightPoint(int pt, cv::Point *ps, int num, int nears[])
 // ptの右の点を見つける
 {
 	int i;
@@ -1217,7 +1215,7 @@ int RightPoint(int pt, CvPoint *ps, int num, int nears[])
 	return -1;
 }
 
-int LeftPoint(int pt, CvPoint *ps, int num, int nears[], int visited[])
+int LeftPoint(int pt, cv::Point *ps, int num, int nears[], int visited[])
 // ptの左の点を見つける
 {
 	int i;
@@ -1229,7 +1227,7 @@ int LeftPoint(int pt, CvPoint *ps, int num, int nears[], int visited[])
 	return -1;
 }
 
-int DownPoint(int pt, CvPoint *ps, int num, int nears[])
+int DownPoint(int pt, cv::Point *ps, int num, int nears[])
 // ptの下の点を見つける
 {
 	int i;
@@ -1241,7 +1239,7 @@ int DownPoint(int pt, CvPoint *ps, int num, int nears[])
 	return -1;
 }
 
-int IsOnRight( CvPoint *p1, CvPoint *p2 )
+int IsOnRight( cv::Point *p1, cv::Point *p2 )
 // p1の右にp2があるか調べる
 {
 	double deg = atan2(p2->y - p1->y, p2->x - p1->x);
@@ -1251,7 +1249,7 @@ int IsOnRight( CvPoint *p1, CvPoint *p2 )
 		return 0;
 }
 
-int IsOnLeft( CvPoint *p1, CvPoint *p2 )
+int IsOnLeft( cv::Point *p1, cv::Point *p2 )
 // p1の左にp2があるか調べる
 {
 	double deg = atan2(p2->y - p1->y, p2->x - p1->x);
@@ -1261,7 +1259,7 @@ int IsOnLeft( CvPoint *p1, CvPoint *p2 )
 		return 0;
 }
 
-int IsOnDown( CvPoint *p1, CvPoint *p2 )
+int IsOnDown( cv::Point *p1, cv::Point *p2 )
 // p1の下にp2があるか調べる（座標系が通常と違うことに注意！）
 {
 	double deg = atan2(p2->y - p1->y, p2->x - p1->x);
@@ -1275,7 +1273,7 @@ void JInvariantTest(void)
 // j-invariantのテスト
 {
 	int i, j, k, l;
-	CvPoint p[4];
+	cv::Point p[4];
 
 	p[0].x = 0;
 	p[0].y = 0;
@@ -1300,50 +1298,48 @@ void JInvariantTest(void)
 	}
 }
 
-int MakeCentresFromImage(CvPoint **ps, IplImage *img, CvSize *size, double **areas)
+int MakeCentresFromImage(cv::Point **ps, cv::Mat img, cv::Size *size, double **areas)
 // 画像のファイル名を与えて重心を計算し，重心の数を返す
 // 06/01/12	面積の計算を追加
 {
 	int num;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq *contours = 0;
+    std::vector<std::vector<cv::Point>> contours;
 
-	size->width = img->width;
-	size->height = img->height;
+    std::vector<cv::Vec4i> hierarchy;
 
-    cvFindContours( img, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0) );	// 連結成分を抽出する
+	size->width = img.cols;
+	size->height = img.rows;
 
-	num = CalcCentres(ps, contours, size, areas);	// 各連結成分の重心を計算する
+    ClearImageBorder( img );
+    cv::findContours(img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
 
-	if ( contours != NULL )	cvClearSeq( contours );
-	cvReleaseMemStorage( &storage );
+	num = CalcCentres(ps, contours, hierarchy, size, areas);	// 各連結成分の重心を計算する
 
 	return num;
 }
 
-int CalcCentres(CvPoint **ps0, CvSeq *contours, CvSize *size, double **areas0)
+int CalcCentres(cv::Point **ps0, std::vector<std::vector<cv::Point>> &contours, std::vector<cv::Vec4i> &hierarchy, cv::Size *size, double **areas0)
 // 重心を計算する
 // 06/01/12	面積の計算を追加
 {
 	int i, num;
 	double *areas = NULL;
-	CvSeq *con0;
-	CvMoments mom;
-	CvPoint *ps;
-	CvSize s;
-	IplImage *img;
+	cv::Moments mom;
+	cv::Point *ps;
+	cv::Size s;
+	cv::Mat img;
 
 	s.width = size->width;
 	s.height = size->height;
-	img = cvCreateImage( s, 8, 3);
+	img = cv::Mat::zeros(s, CV_8UC3);
 
 	// 点の数をカウント（暫定）
-	for ( i = 0, con0 = contours; con0 != 0; con0 = con0->h_next, i++ );
+	i = 0;
+	for ( int ci = FirstTopLevelContour( hierarchy ); ci >= 0; ci = hierarchy[ci][0] ) i++;
 //	num = i;
 	num = ( i >= kMaxPointNum ) ? kMaxPointNum - 1 : i;	// ゴミ等で連結成分が多すぎるとき（本来は大きさを調べたりすべき）
 	// 点を入れる配列を確保（numの値は正確ではないが，大きめということで）
-	ps = (CvPoint *)calloc(num, sizeof(CvPoint));
+	ps = (cv::Point *)calloc(num, sizeof(cv::Point));
 	*ps0 = ps;
 	// 面積を入れる配列を確保
 	if ( areas0 ) {
@@ -1351,50 +1347,50 @@ int CalcCentres(CvPoint **ps0, CvSeq *contours, CvSize *size, double **areas0)
 		*areas0 = areas;
 	}
 	// 連結成分を描画・重心を計算
-    for( i = 0, con0 = contours; con0 != 0 && i < num ; con0 = con0->h_next )
+    i = 0;
+    for( int ci = FirstTopLevelContour( hierarchy ); ci >= 0 && i < num; ci = hierarchy[ci][0] )
     {
 		double d00;
 #ifdef DRAW_PIC
-		CvScalar color;
+		cv::Scalar color;
 #endif
 
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );
+		mom = cv::moments(contours[ci]);
+		d00 = mom.m00;
 		if ( d00 < 0.00001 ) continue;	// 小さすぎる連結成分は除外
 
-		ps[i].x = (int)(cvGetSpatialMoment( &mom, 1, 0 ) / d00);
-		ps[i].y = (int)(cvGetSpatialMoment( &mom, 0, 1 ) / d00);
+		ps[i].x = (int)(mom.m10 / d00);
+		ps[i].y = (int)(mom.m01 / d00);
 		if ( areas ) {
 			areas[i] = d00;
 //			printf("%lf\n", areas[i]);
 		}
-//        cvDrawContours(img,con0,cWhite,cWhite,-1,1,8);	// replace CV_FILLED with 1 to see the outlines 
-		cvCircle( img, ps[i], 5, cWhite, -1, 1, 0 );
+//        cv::drawContours(img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
+		cv::circle( img, ps[i], 5, cWhite, -1, 1, 0 );
 
 #ifdef DRAW_PIC
 		color = cRandom;
-        cvDrawContours(dst,con0,color,color,-1,/*1*/CV_FILLED,8);	// replace CV_FILLED with 1 to see the outlines 
-        cvDrawContours(out_img,con0,cWhite,cWhite,-1,1,8);	// replace CV_FILLED with 1 to see the outlines 
-//        cvDrawContours(centre_img,con0,cWhite,cWhite,-1,1,8);	// replace CV_FILLED with 1 to see the outlines 
-		cvCircle( centre_img, ps[i], 0/*5*/, cWhite, -1, 1, 0 );
+        cv::drawContours(dst, contours, ci, color, cv::FILLED, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
+        cv::drawContours(out_img, contours, ci, cWhite, 1, 8, hierarchy, 1);	// replace cv::FILLED with 1 to see the outlines 
+//        cv::drawContours(centre_img, contours, ci, cWhite, 1, 8);	// replace cv::FILLED with 1 to see the outlines 
+		cv::circle( centre_img, ps[i], 0/*5*/, cWhite, -1, 1, 0 );
 #endif
 		i++;
     }
 
 	num = i;	// 連結成分数の更新
 
-	cvNot( img, img );
+	cv::bitwise_not( img, img );
 //	OutPutImage( img );
-	cvReleaseImage( &img );
 #ifdef SHOW_PIC
-	cvNamedWindow( "Components", 1 );
-    cvShowImage( "Components", dst );
+	cv::namedWindow( "Components", 1 );
+    cv::imshow( "Components", dst );
 #endif
 
 	return num;
 }
 
-void ReleaseCentres( CvPoint *ps )
+void ReleaseCentres( cv::Point *ps )
 {
 	free( ps );
 }
@@ -1408,14 +1404,14 @@ void ReleaseNears( int **nears, int num )
 	free(nears);
 }
 
-int OutPutImage(IplImage *img)
+int OutPutImage(cv::Mat img)
 // 画像をファイルに保存する．ファイル名は自動的に連番になる
 {
 	static int n = 0;
 	char filename[kFileNameLen];
 
 	sprintf(filename, "output%03d.jpg", n++);
-	return cvSaveImage(filename, img);
+	return cv::imwrite(filename, img);
 }
 
 void OutPutResult( int *s, int t, int disp, char *qname0 )
@@ -1519,14 +1515,14 @@ void OutPutResultSv( int *s, int t, int disp, char *result )
 
 #define	kScreenThr	(530)
 
-int ScreenPointsWithNears( CvPoint *ps, int num, int **nears )
+int ScreenPointsWithNears( cv::Point *ps, int num, int **nears )
 // 近傍点を用いて特徴点をふるいにかける
 {
 	int i, cnt;
-	CvPoint *ps0;
+	cv::Point *ps0;
 
 	// psをps0にコピー
-	ps0 = (CvPoint *)malloc( sizeof(CvPoint) * num );
+	ps0 = (cv::Point *)malloc( sizeof(cv::Point) * num );
 	for ( i = 0; i < num; i++ ) {
 		ps0[i].x = ps[i].x;
 		ps0[i].y = ps[i].y;
@@ -1552,13 +1548,13 @@ void DisplayPs( void )
 void CreatePointFile( char *in_fname, char *out_fname, int mode )
 // 画像ファイルif_fnameからmodeで特徴点を抽出し、特徴点ファイルとしてout_fnameに出力する。
 {
-	IplImage *img;
+	cv::Mat img;
 	int num;
 	double *areas;
-	CvPoint *ps;
-	CvSize img_size;
+	cv::Point *ps;
+	cv::Size img_size;
 	
-	if ( (img = GetConnectedImage( in_fname, mode )) == NULL ) {	// 結合画像を作成
+	if ( (img = GetConnectedImage( in_fname, mode )).empty() ) {	// 結合画像を作成
 		fprintf(stderr, "%sから結合画像を作成するのに失敗しました\n", in_fname);
 		return;
 	}
@@ -1574,9 +1570,9 @@ int RetrieveUSBCamServer( void )
 	int num, *numall = NULL, ret, res, *score = NULL, **nears = NULL;
 	int pcor[kMaxPointNum][2], pcornum = 0;
 	char fname[kMaxPathLen], doc_name[kMaxPathLen], **dbcors = NULL;
-	CvPoint *ps = NULL, **psall = NULL;
+	cv::Point *ps = NULL, **psall = NULL;
 	double *areas = NULL, **areaall = NULL;
-	CvSize img_size, *sizeall = NULL, res_size;
+	cv::Size img_size, *sizeall = NULL, res_size;
 	strDisc disc;
 	strProjParam param, zero_param;
 	SOCKET sid1, sid2, sidpt, sidres;
@@ -1647,7 +1643,7 @@ int RetrieveUSBCamServer( void )
 
 #ifdef	SHOW_SCORE_GRAPH	// スコアのグラフを表示
 #ifdef	WIN32	// Linuxでのウィンドウ表示のやり方がわからないので
-	cvNamedWindow( "Score", CV_WINDOW_AUTOSIZE );
+	cv::namedWindow( "Score", CV_WINDOW_AUTOSIZE );
 #endif
 #endif
 
@@ -1669,8 +1665,8 @@ int RetrieveUSBCamServer( void )
 			// 最小対応点数以上なら、射影変換パラメータを計算
 			if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, psall[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// 登録画像に上書き
 			else	param = zero_param;
-			if ( ps != NULL && num > 0 )	ReleaseCentres( ps );	// psの解放
-			if ( areas != NULL && num > 0 )	free( areas );
+			if (ps != NULL && num > 0 )	ReleaseCentres( ps );	// psの解放
+			if (areas != NULL && num > 0 )	free( areas );
 			ReleaseNears( nears, num );	// nearsの解放
 			// 計算時間の表示
 //			OutPutResultSv( score, end-start, 0/*5*/, doc_name );
@@ -1732,9 +1728,9 @@ int RetrieveUSBCamServerDualHash( void )
 	int res1, res2, *score1 = NULL, *score2 = NULL;
 	int **pcor, pcornum = 0, pcor1[kMaxPointNum][2], pcornum1, pcor2[kMaxPointNum][2], pcornum2;
 	char fname[kMaxPathLen], doc_name[kMaxPathLen], **dbcors = NULL, **dbcors1 = NULL, **dbcors2 = NULL;
-	CvPoint *ps = NULL, **psall = NULL, *ps1 = NULL, *ps2 = NULL, **psall1 = NULL, **psall2 = NULL;
+	cv::Point *ps = NULL, **psall = NULL, *ps1 = NULL, *ps2 = NULL, **psall1 = NULL, **psall2 = NULL;
 	double *areas = NULL, **areaall = NULL, *areas1 = NULL, *areas2 = NULL, **areaall1 = NULL, **areaall2 = NULL;
-	CvSize img_size, *sizeall = NULL, res_size, *sizeall1 = NULL, *sizeall2 = NULL;
+	cv::Size img_size, *sizeall = NULL, res_size, *sizeall1 = NULL, *sizeall2 = NULL;
 	strDisc disc, disc1, disc2;
 	strProjParam param, zero_param;
 	SOCKET sid1, sid2, sidpt, sidres;
@@ -1820,7 +1816,7 @@ int RetrieveUSBCamServerDualHash( void )
 
 #ifdef	SHOW_SCORE_GRAPH	// スコアのグラフを表示
 #ifdef	WIN32	// Linuxでのウィンドウ表示のやり方がわからないので
-	cvNamedWindow( "Score", CV_WINDOW_AUTOSIZE );
+	cv::namedWindow( "Score", CV_WINDOW_AUTOSIZE );
 #endif
 #endif
 
@@ -1881,11 +1877,11 @@ int RetrieveUSBCamServerDualHash( void )
 			} else {
 				param = zero_param;
 			}
-			if ( ps1 != NULL && num1 > 0 )	ReleaseCentres( ps1 );	// psの解放
-			if ( areas1 != NULL && num1 > 0 )	free( areas1 );
+			if (ps1 != NULL && num1 > 0 )	ReleaseCentres( ps1 );	// psの解放
+			if (areas1 != NULL && num1 > 0 )	free( areas1 );
 			ReleaseNears( nears1, num1 );	// nearsの解放
-			if ( ps2 != NULL && num2 > 0 )	ReleaseCentres( ps2 );	// psの解放
-			if ( areas2 != NULL && num2 > 0 )	free( areas2 );
+			if (ps2 != NULL && num2 > 0 )	ReleaseCentres( ps2 );	// psの解放
+			if (areas2 != NULL && num2 > 0 )	free( areas2 );
 			ReleaseNears( nears2, num2 );	// nearsの解放
 			// 計算時間の表示
 //			OutPutResultSv( score, end-start, 0/*5*/, doc_name );
@@ -1972,20 +1968,20 @@ double Calc12Diff( int *score )
 	return ((double) score_1st) / ((double) score_2nd);
 }
 
-IplImage *MakeFeaturePointImage( IplImage *orig, IplImage *connected, CvPoint *ps, int num )
+cv::Mat MakeFeaturePointImage( cv::Mat orig, cv::Mat connected, cv::Point *ps, int num )
 // 特徴点画像の作成（入力画像はグレイスケール）
 {
 	int i, j, p, con_flag = 0;
-	IplImage *fp_img;
+	cv::Mat fp_img;
 	unsigned char val[4];
 
-	cvNot( connected, connected );
-	fp_img = cvCreateImage( cvGetSize( orig ), IPL_DEPTH_8U, 3 );
-	cvZero( fp_img );
-	cvNot( fp_img, fp_img );
-	if ( fp_img == NULL )	return NULL;
-	for ( j = 0; j < orig->height; j++ ) {
-		for ( i = 0; i < orig->width; i++ ) {
+	cv::bitwise_not( connected, connected );
+	fp_img = cv::Mat::zeros(orig.size(), CV_8UC3);
+	fp_img.setTo(cv::Scalar::all(0));
+	cv::bitwise_not( fp_img, fp_img );
+	if (fp_img.empty())	return cv::Mat();
+	for ( j = 0; j < orig.rows; j++ ) {
+		for ( i = 0; i < orig.cols; i++ ) {
 			con_flag = 0;
 			GetPixU( connected, i, j, val );
 			if ( val[0] != 255 ) {
@@ -2012,7 +2008,7 @@ IplImage *MakeFeaturePointImage( IplImage *orig, IplImage *connected, CvPoint *p
 		}
 	}
 	for ( p = 0; p < num; p++ ) {
-		cvCircle( fp_img, ps[p], 4, cRed, CV_FILLED, CV_AA, 0 );
+		cv::circle( fp_img, ps[p], 4, cRed, cv::FILLED, cv::LINE_AA, 0 );
 	}
 
 	return fp_img;
@@ -2027,27 +2023,27 @@ int compare_int( const int *a, const int *b )
 void ShowScoreGraph( char *win_name, int *score, int doc_num )
 // スコアのグラフを表示
 {
-	static IplImage *img = NULL;
+	static cv::Mat img;
 	int i, key, score_sorted[kMaxDocNum], max_score, bar_len;
 
 	// 画像の作成
-	if ( img == NULL )	img = cvCreateImage( cvSize( 100, 200 ), IPL_DEPTH_8U, 3 );
+	if (img.empty())	img = cv::Mat::zeros(cv::Size( 100, 200 ), CV_8UC3);
 
 	// スコアのコピーとソート
 	memcpy( score_sorted, score, sizeof(int) * doc_num );
 	qsort( score_sorted, doc_num, sizeof(int), (int (*)(const void*, const void*))compare_int );
 
 	// 表示
-	cvZero( img );
+	img.setTo(cv::Scalar::all(0));
 	max_score = score_sorted[0];
 	for ( i = 0; i < 200 && i < doc_num; i++ ) {
 		bar_len = (int)((double)score_sorted[i] / (double)max_score * (double)100);
-		cvLine( img, cvPoint( 0, i ), cvPoint( bar_len, i ), CV_RGB(255,0,0), 1, 8, 0 );
+		cv::line( img, cv::Point( 0, i ), cv::Point( bar_len, i ), cv::Scalar(0,0,255), 1, 8, 0 );
 	}
 
 	// 画像のウィンドウ表示
-	cvShowImage( win_name, img );
-	key = cvWaitKey( 1 );	// ないとウィンドウが更新されない
+	cv::imshow( win_name, img );
+	key = cv::waitKey( 1 );	// ないとウィンドウが更新されない
 }
 
 int compare_int_asc( const int *a, const int *b )

@@ -30,19 +30,19 @@ SOCKET InitWinSockClTCP( u_short port, char *server_name )
 	if ( server.sin_addr.S_un.S_addr == 0xffffffff ) {	// inet_addrが失敗
 		struct hostent *host;
 		host = gethostbyname( server_name );	// ホスト名からアドレスを取得
-		if ( host == NULL ) {
+		if (host == NULL) {
 			if ( WSAGetLastError() == WSAHOST_NOT_FOUND )
 				fprintf( stderr, "Error : host %s not found\n", server_name );
 			else	fprintf( stderr, "Error : gethostbyname\n" );
 			return INVALID_SOCKET;
 		}
 		addrptr = (unsigned int **)host->h_addr_list;	// アドレスリストを取得
-		while ( *addrptr != NULL ) {	// すべてのアドレスについて
+		while ( *addrptr != NULL) {	// すべてのアドレスについて
 			server.sin_addr.S_un.S_addr = *(*addrptr);
 			if ( connect( sock, (struct sockaddr *)&server, sizeof(server) ) == 0 )	break;	// connect成功
 			addrptr++;	// 次のアドレスで試す
 		}
-		if ( *addrptr == NULL ) {	// connectがすべて失敗
+		if ( *addrptr == NULL) {	// connectがすべて失敗
 			fprintf( stderr, "Error : connect(%d)\n", WSAGetLastError() );
 			return INVALID_SOCKET;
 		}

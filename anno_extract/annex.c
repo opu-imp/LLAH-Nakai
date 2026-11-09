@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
+#include <vector>
 #include "def_general.h"
 #include "extern.h"
 #include "image.h"
@@ -28,21 +28,21 @@ unsigned char max3( unsigned char d1, unsigned char d2, unsigned char d3 )
 	}
 }
 
-void RGB2Gray( IplImage *diff, IplImage *gray )
+void RGB2Gray( cv::Mat diff, cv::Mat gray )
 // カラー画像をグレイスケールに変換する（RGBの最大値をセットする）
 {
 	int i, j, w, h, wstep_diff, wstep_gray;
 	unsigned char *diff_dat;
 	
-	w = diff->width;
-	h = diff->height;
-	wstep_diff = diff->widthStep;
-	wstep_gray = gray->widthStep;
+	w = diff.cols;
+	h = diff.rows;
+	wstep_diff = (int)diff.step[0];
+	wstep_gray = (int)gray.step[0];
 	
 	for ( j = 0; j < h; j++ ) {
 		for ( i = 0; i < w; i++ ) {
-			diff_dat = (unsigned char *)&diff->imageData[j*wstep_diff+i*3];
-			gray->imageData[j*wstep_gray+i] = max3( diff_dat[0], diff_dat[1], diff_dat[2] );
+			diff_dat = &diff.data[j*wstep_diff+i*3];
+			gray.data[j*wstep_gray+i] = max3( diff_dat[0], diff_dat[1], diff_dat[2] );
 		}
 	}
 }
@@ -269,13 +269,14 @@ int main( int argc, char *argv[] )
 	int cluster_count, start_all, start;
 	char fname[kMaxPathLen], base[kFileNameLen];
 	// 画像データへのポインタ。実体はo***, a***で確保
-	IplImage *orig, *anno, *orig_small, *anno_small, *anno_trans, *orig_erode, *anno_smth, *diff, *gray, *bin, *clean, *small_mask, *mask, *dil_mask, *anno_trans_big, *nand, *bin_erode, *bin_dil;
+	cv::Mat orig, anno, orig_small, anno_small, anno_trans, orig_erode, anno_smth, diff, gray, bin, clean, small_mask, mask, dil_mask, anno_trans_big, nand, bin_erode, bin_dil;
 	// 画像データの実体で、これらを使いまわす
 	// o***: 元画像側、a***: 書き込み画像側、*6**: 600dpi（元のサイズ）、*3**: 300dpi（縮小サイズ）、**3*: 3チャネル（カラー）、**1*: 1チャネル（グレースケール）
-	IplImage *o631, *o632, *o633, *o634, *a631, *o331, *o332, *o333, *a331, *o311, *o312;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq *contours = 0, *con0;
-	CvMoments mom;
+	cv::Mat o631, o632, o633, o634, a631, o331, o332, o333, a331, o311, o312;
+    std::vector<std::vector<cv::Point>> contours;
+
+    std::vector<cv::Vec4i> hierarchy;
+	cv::Moments mom;
 	double param[kMaxParamValNum];	// 相似/アフィン変換パラメータ
 
 	start_all = GetProcTimeMiliSec();
@@ -286,27 +287,27 @@ int main( int argc, char *argv[] )
 	}
 	// 画像のロード
 	start = GetProcTimeMiliSec();
-	if ( ( orig = cvLoadImage( eOrigFileName, 1 ) ) == NULL ) {
+	orig = cv::imread(eOrigFileName, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION); if ( orig.empty() ) {
 		fprintf( stderr, "Image file load error: %s\n", eOrigFileName );
 		return 1;
 	}
-	if ( ( anno = cvLoadImage( eAnnoFileName, 1 ) ) == NULL ) {
+	anno = cv::imread(eAnnoFileName, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION); if ( anno.empty() ) {
 		fprintf( stderr, "Image file load error: %s\n", eAnnoFileName );
 		return 1;
 	}
 	printf("Loading image: %d msec\n", GetProcTimeMiliSec() - start );
 	// 画像データの実体を作成
 	o631 = orig;
-	o632 = cvCreateImage( cvGetSize( o631 ), IPL_DEPTH_8U, 3 );
-	o633 = cvCreateImage( cvGetSize( o631 ), IPL_DEPTH_8U, 3 );
-	o634 = cvCreateImage( cvGetSize( o631 ), IPL_DEPTH_8U, 3 );
+	o632 = cv::Mat::zeros(o631.size(), CV_8UC3);
+	o633 = cv::Mat::zeros(o631.size(), CV_8UC3);
+	o634 = cv::Mat::zeros(o631.size(), CV_8UC3);
 	a631 = anno;
-	o331 = cvCreateImage( cvSize( (int)(o631->width * eResizeMainOrig), (int)(o631->height * eResizeMainOrig) ), IPL_DEPTH_8U, 3 );
-	o332 = cvCreateImage( cvGetSize( o331 ), IPL_DEPTH_8U, 3 );
-	o333 = cvCreateImage( cvGetSize( o331 ), IPL_DEPTH_8U, 3 );
-	a331 = cvCreateImage( cvSize( (int)(a631->width * eResizeMainAnno), (int)(a631->height * eResizeMainAnno) ), IPL_DEPTH_8U, 3 );
-	o311 = cvCreateImage( cvGetSize( o331 ), IPL_DEPTH_8U, 1 );
-	o312 = cvCreateImage( cvGetSize( o331 ), IPL_DEPTH_8U, 1 );
+	o331 = cv::Mat::zeros( cv::Size( (int)(o631.cols * eResizeMainOrig), (int)(o631.rows * eResizeMainOrig) ), CV_8UC3 );
+	o332 = cv::Mat::zeros(o331.size(), CV_8UC3);
+	o333 = cv::Mat::zeros(o331.size(), CV_8UC3);
+	a331 = cv::Mat::zeros( cv::Size( (int)(a631.cols * eResizeMainAnno), (int)(a631.rows * eResizeMainAnno) ), CV_8UC3 );
+	o311 = cv::Mat::zeros(o331.size(), CV_8UC1);
+	o312 = cv::Mat::zeros(o331.size(), CV_8UC1);
 	
 #ifdef	COR_PRESET_MODE	// 対応点手動設定モード（現在は無効）
 	if ( TransformAnnoPreset( anno_small, orig_small, &param_small ) == 0 ) {
@@ -333,10 +334,10 @@ int main( int argc, char *argv[] )
 	// 以降の処理の軽減のため縮小
 	orig_small = o331;
 //	anno_small = a331;
-	cvResize( orig, orig_small, CV_INTER_NN );
-//	cvResize( anno, anno_small, CV_INTER_NN );
+	cv::resize( orig, orig_small, orig_small.size(), 0, 0, cv::INTER_NEAREST );
+//	cv::resize( anno, anno_small, anno_small.size(), 0, 0, cv::INTER_NEAREST );
 	anno_trans = o332;
-	cvResize( anno_trans_big, anno_trans, CV_INTER_NN );
+	cv::resize( anno_trans_big, anno_trans, anno_trans.size(), 0, 0, cv::INTER_NEAREST );
 
 //	SimilarTransformation( anno_small, anno_trans, &param_small );
 	printf("Transforming image: %d msec\n", GetProcTimeMiliSec() - start );
@@ -344,25 +345,25 @@ int main( int argc, char *argv[] )
 	GetBasename( eAnnoFileName, kMaxPathLen, base );	// 処理過程の画像出力のためにファイル名を取得
 #ifdef	ANNEX_OUTPUT_IMAGE	// 処理過程の画像を出力
 	sprintf( fname, "%s%s06trans.jpg", eOutPutDir, base );
-	cvSaveImage( fname, anno_trans );
+	cv::imwrite( fname, anno_trans );
 #endif
 	// 元画像をerodeし、書き込み画像をスムージングする
 	start = GetProcTimeMiliSec();
 	orig_erode = o333;
-//	cvErode( orig_small, orig_erode, NULL, 15 );
+//	cv::erode(orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), 15);
 	if ( eOrigMode ) {	// 元画像がオリジナルの場合、にじみを再現するため太らせる必要がある
-		cvErode( orig_small, orig_erode, NULL, eOrigErodeIterMain );
+		cv::erode( orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), eOrigErodeIterMain );
 	}
 	else {	// 元画像がスキャンされたものの場合でも、ガウシアンフィルタでドットパターンをぼかす
-//		cvErode( orig_small, orig_erode, NULL, 10 );
-		cvSmooth( orig_small, orig_erode, CV_GAUSSIAN, eOrigGaussParamMain, 0, 0 );
+//		cv::erode(orig_small, orig_erode, cv::Mat(), cv::Point(-1,-1), 10);
+		cv::GaussianBlur(orig_small, orig_erode, cv::Size(eOrigGaussParamMain, eOrigGaussParamMain), 0, 0, cv::BORDER_REPLICATE);
 	}
-//		cvCopy( orig_small, orig_erode, NULL );
-//	cvSaveImage( "orig_erode.jpg", orig_erode );
+//		orig_small.copyTo(orig_erode);
+//	cv::imwrite( "orig_erode.jpg", orig_erode );
 	anno_smth = o331;
-	cvSmooth( anno_trans, anno_smth, CV_GAUSSIAN, eAnnoGaussPramMain, 0, 0 );
-//	cvCopy( anno_trans, anno_smth, NULL );
-//	cvSaveImage( "anno_smth.jpg", anno_smth );
+	cv::GaussianBlur(anno_trans, anno_smth, cv::Size(eAnnoGaussPramMain, eAnnoGaussPramMain), 0, 0, cv::BORDER_REPLICATE);
+//	anno_trans.copyTo(anno_smth);
+//	cv::imwrite( "anno_smth.jpg", anno_smth );
 	printf("Eroding image: %d msec\n", GetProcTimeMiliSec() - start);
 	// 差分を取る
 	start = GetProcTimeMiliSec();
@@ -371,94 +372,94 @@ int main( int argc, char *argv[] )
 	printf("Making diff image: %d msec\n", GetProcTimeMiliSec() - start );
 #ifdef	ANNEX_OUTPUT_IMAGE
 	sprintf( fname, "%s%s07diff.jpg", eOutPutDir, base );
-	cvSaveImage( fname, diff );
+	cv::imwrite( fname, diff );
 #endif
 	// グレイスケールに変換する（二値化のため）
 	start = GetProcTimeMiliSec();
 	gray = o311;
-//	cvCvtColor( diff, gray, CV_RGB2GRAY );
+//	cv::cvtColor( diff, gray, CV_RGB2GRAY );
 	RGB2Gray( diff, gray );
 	// 2値化する
 	bin = o312;
 	
-	cvThreshold( gray, bin, eBinThr, kBinMaxVal, CV_THRESH_BINARY );
+	cv::threshold( gray, bin, eBinThr, kBinMaxVal, cv::THRESH_BINARY );
 //	if ( eOrigMode ) {
-//		cvThreshold( gray, bin, kDefaultBinThrOrig, kBinMaxVal, CV_THRESH_BINARY );
+//		cv::threshold( gray, bin, kDefaultBinThrOrig, kBinMaxVal, cv::THRESH_BINARY );
 //	}
 //	else {
-//		cvThreshold( gray, bin, kDefaultBinThrScan, kBinMaxVal, CV_THRESH_BINARY );
+//		cv::threshold( gray, bin, kDefaultBinThrScan, kBinMaxVal, cv::THRESH_BINARY );
 //	}
 
 	printf("Binarizing image: %d msec\n", GetProcTimeMiliSec() - start);
 #ifdef	ANNEX_OUTPUT_IMAGE
 	sprintf( fname, "%s%s08bin.jpg", eOutPutDir, base );
-	cvSaveImage( fname, bin );
+	cv::imwrite( fname, bin );
 #endif
 	// モルフォロジ演算（Closing）によりばらばらになった書き込みを結合する
 	bin_dil = o311;
-	cvDilate( bin, bin_dil, NULL, eClosingIter );
-//	cvSaveImage( "dil.jpg", bin_dil );
+	cv::dilate( bin, bin_dil, cv::Mat(), cv::Point(-1,-1), eClosingIter );
+//	cv::imwrite( "dil.jpg", bin_dil );
 	bin_erode = o312;
-	cvErode( bin_dil, bin_erode, NULL, eClosingIter );
-//	cvSaveImage( "erode.jpg", bin_erode );
+	cv::erode( bin_dil, bin_erode, cv::Mat(), cv::Point(-1,-1), eClosingIter );
+//	cv::imwrite( "erode.jpg", bin_erode );
 	bin = bin_erode;
 	// 連結成分を抽出し、面積に基づいてノイズを除去する
 	start = GetProcTimeMiliSec();
 	clean = o311;
-	cvSetZero( clean );
-	cvFindContours( bin, storage, &contours, sizeof(CvContour),
-		CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0) );	// 連結成分を抽出する
-	for( con0 = contours; con0 != 0; con0 = con0->h_next ) {		// 連結成分を描画
-		cvMoments(con0, &mom, 1);
-		d00 = cvGetSpatialMoment( &mom, 0, 0 );	// 面積を求める
+	clean.setTo(0);
+	ClearImageBorder( bin );
+	cv::findContours(bin, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);	// 連結成分を抽出する
+	for( int _ci = FirstTopLevelContour( hierarchy ); _ci >= 0; _ci = hierarchy[_ci][0] ) {		// 連結成分を描画
+		mom = cv::moments(contours[_ci]);
+		d00 = mom.m00;	// 面積を求める
 		if ( d00 < eMinAreaMain ) continue;	// 小さすぎる連結成分は除外
-		cvDrawContours(clean, con0, cWhite, cWhite, kDrawContourMaxLevel, CV_FILLED, kDrawContourLineType);
+		cv::drawContours(clean, contours, _ci, cWhite, cv::FILLED, kDrawContourLineType, hierarchy, 1);
 	}
 	printf("Cleaning image: %d msec\n", GetProcTimeMiliSec() - start);
 #ifdef	ANNEX_OUTPUT_IMAGE
 	sprintf( fname, "%s%s09clean.jpg", eOutPutDir, base );
-	cvSaveImage( fname, clean );
+	cv::imwrite( fname, clean );
 #endif
 	// マスクを作成する
 	start = GetProcTimeMiliSec();
 	small_mask = o331;
-	cvCvtColor( clean, small_mask, CV_GRAY2RGB );	// 3チャネルに変換する
+	cv::cvtColor( clean, small_mask, cv::COLOR_GRAY2BGR );	// 3チャネルに変換する
 	mask = o631;
-	cvResize( small_mask, mask, CV_INTER_NN );
+	cv::resize( small_mask, mask, mask.size(), 0, 0, cv::INTER_NEAREST );
 	dil_mask = o632;
-	cvDilate( mask, dil_mask, NULL, eDilMaskIter );	// マスクをdilateで太らせる
+	cv::dilate( mask, dil_mask, cv::Mat(), cv::Point(-1,-1), eDilMaskIter );	// マスクをdilateで太らせる
 	printf("Making mask: %d msec\n", GetProcTimeMiliSec() - start);
-//	cvSaveImage( "dil_mask.jpg", dil_mask );
+//	cv::imwrite( "dil_mask.jpg", dil_mask );
 	// 600dpiのannoを作成する
 	start = GetProcTimeMiliSec();
 //	anno_trans_big = o631;
 //	SimilarTransformation( anno, anno_trans_big, &param );
-//	cvSaveImage( "anno_trans_big.jpg", anno_trans_big );
+//	cv::imwrite( "anno_trans_big.jpg", anno_trans_big );
 	printf("Transforming: %d msec\n", GetProcTimeMiliSec() - start);
 	// マスクを用いて書き込み抽出する
 	start = GetProcTimeMiliSec();
 	nand = o633;
 //	MaskImage( anno_trans_big, dil_mask, nand );
-	cvNot( anno_trans_big, anno_trans_big );
-	cvAnd( anno_trans_big, dil_mask, nand );
-	cvNot( nand, nand );
+	cv::bitwise_not( anno_trans_big, anno_trans_big );
+	cv::bitwise_and( anno_trans_big, dil_mask, nand );
+	cv::bitwise_not( nand, nand );
 	printf("And image: %d msec\n", GetProcTimeMiliSec() - start );
 	sprintf( fname, "%s%s10and.jpg", eOutPutDir, base );
-	cvSaveImage( fname, nand );
+	cv::imwrite( fname, nand );
 	printf("Total: %d msec\n", GetProcTimeMiliSec() - start_all );
 	
 	return 0;
 }
 
-void MaskImage( IplImage *img, IplImage *mask, IplImage *dst )
+void MaskImage( cv::Mat img, cv::Mat mask, cv::Mat dst )
 // マスク処理を行う（動作がおかしいため使用せず）
 {
 	int i;
 	
-	for ( i = 0; i < img->imageSize; i++ ) {
-		dst->imageData[i] = !(unsigned char) ( !((unsigned char)img->imageData[i]) & (unsigned char)mask->imageData[i] );
-		if ( dst->imageData[i] != 0 ) {
-			printf("%02x ", dst->imageData[i]);
+	for ( i = 0; i < (img.total() * img.elemSize()); i++ ) {
+		dst.data[i] = !(unsigned char) ( !((unsigned char)img.data[i]) & (unsigned char)mask.data[i] );
+		if ( dst.data[i] != 0 ) {
+			printf("%02x ", dst.data[i]);
 		}
 	}
 }

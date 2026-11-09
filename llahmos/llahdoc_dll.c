@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "disc.h"
 #include "hash.h"
 
@@ -79,14 +78,14 @@ int LlahDocExtractFpRegFile( const char *fname, int *width, int *height, int **x
 {
 	int i, num;
 	double *areas;
-	IplImage *img;
-	CvPoint *ps;
-	CvSize size;
+	cv::Mat img;
+	cv::Point *ps;
+	cv::Size size;
 
 	eHashGaussMaskSize = kDfltHashGaussMaskSize;
 
 	img = GetConnectedImage2( fname, CONST_HASH_MODE );	// 結像画像を作成
-	if ( img == NULL )	return -1;
+	if (img.empty())	return -1;
 	num = MakeCentresFromImage( &ps, img, &size, &areas );	// 特徴点を抽出
 	*width = size.width;
 	*height = size.height;
@@ -97,8 +96,6 @@ int LlahDocExtractFpRegFile( const char *fname, int *width, int *height, int **x
 		(*ys)[i] = ps[i].y;
 	}
 
-	cvReleaseImage( &img );
-
 	return num;
 }
 
@@ -106,8 +103,8 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 {
 	strDisc disc;
 	int i, ret;
-	CvPoint **reg_pss = NULL;
-	CvSize *reg_sizes = NULL;
+	cv::Point **reg_pss = NULL;
+	cv::Size *reg_sizes = NULL;
 	int *reg_nums = NULL;
 	char **dbcors = NULL;
 	double **reg_areass = NULL;
@@ -160,7 +157,7 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 	strcpy( argv[argc], "-c" );
 	argc++;
 	// ディレクトリ
-	if ( reg_dir != NULL && reg_dir[0] != '\0' ) {	// reg_dirが指定されている
+	if (reg_dir != NULL && reg_dir[0] != '\0' ) {	// reg_dirが指定されている
 		argv[argc] = (char *)calloc( strlen( reg_dir ) + 1, sizeof(char) );
 		strcpy( argv[argc], reg_dir );
 		argc++;
@@ -170,7 +167,7 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 		argc++;
 	}
 	// 拡張子
-	if ( reg_suffix != NULL && reg_suffix[0] != '\0' ) {	// reg_suffixが指定されている
+	if (reg_suffix != NULL && reg_suffix[0] != '\0' ) {	// reg_suffixが指定されている
 		argv[argc] = (char *)calloc( strlen( reg_suffix ) + 1, sizeof(char) );
 		strcpy( argv[argc], reg_suffix );
 		argc++;
@@ -180,7 +177,7 @@ int LlahDocConstructDb( char inv, int n, int m, int d, const char *reg_dir, cons
 		argc++;
 	}
 	// 出力先ディレクトリ
-	if ( db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dirが指定されている
+	if (db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dirが指定されている
 		argv[argc] = (char *)calloc( 3, sizeof(char) );
 		strcpy( argv[argc], "-h" );
 		argc++;
@@ -249,9 +246,9 @@ strLlahDocDb *LlahDocLoadDb( const char *db_dir )
 	char fname[kMaxPathLen], **dbcors = NULL;
 	strDisc disc;
 	int *numall = NULL;
-	CvPoint **psall = NULL;
+	cv::Point **psall = NULL;
 	double **areaall = NULL;
-	CvSize *sizeall = NULL;
+	cv::Size *sizeall = NULL;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
@@ -264,7 +261,7 @@ strLlahDocDb *LlahDocLoadDb( const char *db_dir )
 	strcpy( argv[argc], "llahdoc.dll" );
 	argc++;
 	// ハッシュのディレクトリ
-	if ( db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dirが指定されている
+	if (db_dir != NULL && db_dir[0] != '\0' ) {	// hash_dirが指定されている
 		argv[argc] = (char *)calloc( 3, sizeof(char) );
 		strcpy( argv[argc], "-h" );
 		argc++;
@@ -310,22 +307,22 @@ void LlahDocReleaseDb( strLlahDocDb *db )
 {
 	int i;
 
-	if ( db == NULL )	return;
+	if (db == NULL)	return;
 	ReleaseHash( db->hash );
 	ReleaseHash2( db->hash2 );
 	ReleaseHash3( db->hash3 );
-	if ( db->reg_nums != NULL )	free( db->reg_nums );
-	if ( db->reg_sizes != NULL )	free( db->reg_sizes );
-	if ( db->reg_pss != NULL )
+	if ( db->reg_nums != NULL)	free( db->reg_nums );
+	if ( db->reg_sizes != NULL)	free( db->reg_sizes );
+	if ( db->reg_pss != NULL)
 		for ( i = 0; i < eDbDocs; i++ )	free( db->reg_pss[i] );
 	free( db->reg_pss );
-	if ( db->reg_areass != NULL )
+	if ( db->reg_areass != NULL)
 		for ( i = 0; i < eDbDocs; i++ )	free( db->reg_areass[i] );
 	free( db->reg_areass );
-	if ( db->dbcors != NULL )
+	if ( db->dbcors != NULL)
 		for ( i = 0; i < eDbDocs; i++ )	free( db->dbcors[i] );
 	free( db->dbcors );
-	if ( db->disc.dat != NULL )	free( db->disc.dat );
+	if ( db->disc.dat != NULL)	free( db->disc.dat );
 
 	free( db );
 }
@@ -334,17 +331,17 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 // 静止画像検索
 {
 	int i, num, **nears = 0, *score, res, ret_time, res_score;
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img, *img_cap;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img, img_cap;
 	double *areas = NULL;
 	// db
 	char **dbcors = NULL;
 	strDisc disc;
 	int *reg_nums = NULL;
-	CvPoint **reg_pss = NULL;
+	cv::Point **reg_pss = NULL;
 	double **reg_areass = NULL;
-	CvSize *reg_sizes = NULL;
+	cv::Size *reg_sizes = NULL;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
@@ -366,17 +363,16 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 	// 結合画像を作成
 #ifdef	WIN	// OpenCVのバージョンが異なるため
 //	img = GetConnectedImage2( img_fname, eEntireMode );
-	img_cap = cvLoadImage( img_fname, 1 );
-	if ( img_cap == NULL )	return 0;
+	img_cap = cv::imread(img_fname, cv::IMREAD_COLOR | cv::IMREAD_IGNORE_ORIENTATION);
+	if (img_cap.empty())	return 0;
 	img = GetConnectedImageCam( img_cap );
 #else
 	if ( eIsJp ) 	img = GetConnectedImageJp2( query, eEntireMode );
 	else			img = GetConnectedImage2( query, eEntireMode );
 #endif
-	if ( img == NULL )	return 0;
+	if (img.empty())	return 0;
 	// 特徴点を抽出
 	num = MakeCentresFromImage( &ps, img, &img_size, &areas );
-	cvReleaseImage( &img );
 	// 近傍構造を計算
 	MakeNearsFromCentres( ps, num, &nears );
 	// 検索
@@ -392,31 +388,31 @@ int LlahDocRetrieveImage( const char *img_fname, strLlahDocDb *db, char *result,
 	return res_score;
 }
 
-int LlahDocRetrieveIplImage( IplImage *img_cap, strLlahDocDb *db, char *result, int result_len )
-// IplImage検索
+int LlahDocRetrieveIplImage( cv::Mat img_cap, strLlahDocDb *db, char *result, int result_len )
+// cv::Mat検索
 // リアルタイム検索用
 {
 	int i, num, **nears = 0, *score, res, ret_time, res_score;
-	CvPoint *ps = 0;
-	CvSize img_size;
-	IplImage *img;
+	cv::Point *ps = 0;
+	cv::Size img_size;
+	cv::Mat img;
 	double *areas = NULL;
 	// db
 	char **dbcors = NULL;
 	strDisc disc;
 	int *reg_nums = NULL;
-	CvPoint **reg_pss = NULL;
+	cv::Point **reg_pss = NULL;
 	double **reg_areass = NULL;
-	CvSize *reg_sizes = NULL;
+	cv::Size *reg_sizes = NULL;
 	strHList **hash = NULL;
 	strHList2 **hash2 = NULL;
 	HENTRY *hash3 = NULL;
 	// Webカメラ用
 	strProjParam param, zero_param;
-	CvSize res_size;
+	cv::Size res_size;
 	int pcor[kMaxPointNum][2], pcornum = 0;
 
-//	fprintf( stderr, "Retrieval from IplImage\n" );
+//	fprintf( stderr, "Retrieval from cv::Mat\n" );
 	// dbをローカル変数に代入
 	disc = db->disc;
 	hash = db->hash;
@@ -441,14 +437,13 @@ int LlahDocRetrieveIplImage( IplImage *img_cap, strLlahDocDb *db, char *result, 
 	fprintf( stderr, "This program currently support only Windows.\n" );
 	return 0;
 #endif
-	if ( img == NULL ) {
+	if (img.empty()) {
 		result[0] = '\0';
 		param = zero_param;	// 検索結果がないのにパラメータだけあるってのも変なので
 		return 0;
 	}
 	// 特徴点を抽出
 	num = MakeCentresFromImage( &ps, img, &img_size, &areas );
-	cvReleaseImage( &img );
 	// 近傍構造を計算
 //	MakeNearsFromCentres( ps, num, &nears );
 	if ( num >= kMinPoints ) {	// 特徴点数が最小値以上
@@ -458,8 +453,8 @@ int LlahDocRetrieveIplImage( IplImage *img_cap, strLlahDocDb *db, char *result, 
 		// 最小対応点数以上なら、射影変換パラメータを計算
 		if ( pcornum >= kMinPointsToCalcParam ) CalcProjParamTop( ps, reg_pss[res], pcor, pcornum, &param, PROJ_REVERSE, PARAM_RANSAC );	// 登録画像に上書き
 		else	param = zero_param;
-		if ( ps != NULL && num > 0 )	ReleaseCentres( ps );	// psの解放
-		if ( areas != NULL && num > 0 )	free( areas );
+		if (ps != NULL && num > 0 )	ReleaseCentres( ps );	// psの解放
+		if (areas != NULL && num > 0 )	free( areas );
 		ReleaseNears( nears, num );	// nearsの解放
 		// 計算時間の表示
 //			OutPutResultSv( score, end-start, 0/*5*/, doc_name );

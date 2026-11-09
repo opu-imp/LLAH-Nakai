@@ -9,8 +9,8 @@ typedef struct _strPointDist {	// ソートのための特徴点と距離の構造体
 	double	dist;	// 点までの距離
 } strPointDist;
 
-void MakeNearsFromCentres( CvPoint *ps, int num, int ***nears0 );
-void NearestPoint( int n, CvPoint *ps, int num, int nears[] );
-void MakeNearsFromCentresDiv( CvPoint *ps, int pnum, CvSize *size, int tx, int ty, int kn, int ***nears0 );
-double CalcDivDist( CvPoint pt1, CvSize *size, int tx, int ty, int x, int y, int div_x, int div_y );
+void MakeNearsFromCentres( cv::Point *ps, int num, int ***nears0 );
+void NearestPoint( int n, cv::Point *ps, int num, int nears[] );
+void MakeNearsFromCentresDiv( cv::Point *ps, int pnum, cv::Size *size, int tx, int ty, int kn, int ***nears0 );
+double CalcDivDist( cv::Point pt1, cv::Size *size, int tx, int ty, int x, int y, int div_x, int div_y );
 void MergePointDist( strPointDist *tmp0, int t0num, strPointDist *tmp1, int t1num, int kn, strPointDist **merge0, int *mnum0 );

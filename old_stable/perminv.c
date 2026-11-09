@@ -1,8 +1,7 @@
 #include "def_general.h"
 #include <stdio.h>
 #include <math.h>
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "disc.h"
 #include "perminv.h"
@@ -16,14 +15,14 @@
 int c6of8[kNum8C6][6];
 int c4of6[kNum6C4][4];
 
-void TestPerminv(CvSize size, CvPoint *ps, int num, int *nears[] )
+void TestPerminv(cv::Size size, cv::Point *ps, int num, int *nears[] )
 {
 	int i, j, k, l, idx[1024]/*, hindex[10]*/, flag, fail[8], points6[6], points4[4];
 //	char txt[10];
 	double /*rho, */fp, fd, i1[kNum6C4], i2[kNum6C4], sum1, sum2;
 	double i1min, i1max, i2min, i2max;
-	CvScalar color;
-	CvPoint p[kPNum];
+	cv::Scalar color;
+	cv::Point p[kPNum];
 
 	for ( i = 0; i < kPNum; i++ ) {
 		p[i].x = 0;
@@ -123,13 +122,13 @@ double CalcFd( double rho )
 	return (((double)3.0)*rho*rho*(1.0L-rho)*(1.0L-rho)) / (2.0L*pow(rho, 6) - 6.0L*(pow(rho, 5)) + 11.0L*(pow(rho, 4)) - 12.0L*(pow(rho,3)) + 11.0L*rho*rho - 6.0L*rho + 2.0L);
 }
 
-double CalcFdashp( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
+double CalcFdashp( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
 // F'+‚ðŒvŽZ‚·‚é
 {
 	return CalcPsi(CalcRho(p1, p2, p3, p4, p5)) + CalcPsi(CalcRho(p1, p2, p3, p5, p4)) + CalcPsi(CalcRho(p1, p2, p4, p5, p3));
 }
 
-double CalcFdashd( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
+double CalcFdashd( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
 // F'.‚ðŒvŽZ‚·‚é
 {
 	return CalcPsi(CalcRho(p1, p2, p3, p4, p5)) * CalcPsi(CalcRho(p1, p2, p3, p5, p4)) * CalcPsi(CalcRho(p1, p2, p4, p5, p3));
@@ -141,13 +140,13 @@ double CalcPsi( double rho )
 	return (2*rho)/(rho*rho+1);
 }
 
-double CalcRho( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
+double CalcRho( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
 // rho‚ðŒvŽZ‚·‚é
 {
 	return (CalcP(p1, p2, p3) * CalcP(p1, p4, p5)) / (CalcP(p1, p2, p4) * CalcP(p1, p3, p5));
 }
 
-double CalcP( CvPoint p1, CvPoint p2, CvPoint p3 )
+double CalcP( cv::Point p1, cv::Point p2, cv::Point p3 )
 // P‚ðŒvŽZ‚·‚é
 {
 	double ab, ac, abac;

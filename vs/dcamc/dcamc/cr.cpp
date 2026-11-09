@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #include "cr.h"
 #include "dirs.h"
 #include "def_general.h"
 
-double CalcCR5ByArea( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5 )
+double CalcCR5ByArea( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point p5 )
 // 面積に基づいて平面上の5点で複比を計算する
 {
 	double s;
@@ -15,13 +14,13 @@ double CalcCR5ByArea( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4, CvPoint p5
 	return (CalcArea(p1, p2, p3) * CalcArea(p1, p4, p5)) / s ;
 }
 
-double CalcArea( CvPoint p1, CvPoint p2, CvPoint p3 )
+double CalcArea( cv::Point p1, cv::Point p2, cv::Point p3 )
 // 指定された3点で囲まれた三角形の面積を計算する
 {
 	return fabs((double)((p1.x-p3.x)*(p2.y-p3.y)-(p1.y-p3.y)*(p2.x-p3.x))) / (double)2.0L;
 }
 
-double CalcAffineInv( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
+double CalcAffineInv( cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4 )
 // 平面上の4点でアフィン変換の不変量を計算する
 {
 //	旧バージョン
@@ -33,13 +32,13 @@ double CalcAffineInv( CvPoint p1, CvPoint p2, CvPoint p3, CvPoint p4 )
 	return CalcArea(p1, p3, p4) / s ;
 }
 
-long double GetPointsAngle(CvPoint p1, CvPoint p2)
+long double GetPointsAngle(cv::Point p1, cv::Point p2)
 // p1から見たp2の角度を計算する（約-3.14から約3.14）
 {
 	return atan2((long double)(p2.y - p1.y), (long double)(p2.x - p1.x));
 }
 
-double CalcAngleFromThreePoints( CvPoint p1, CvPoint p2, CvPoint p3 )
+double CalcAngleFromThreePoints( cv::Point p1, cv::Point p2, cv::Point p3 )
 // p1を頂点としたp2とp3の角度を求める
 {
 	double ang;
@@ -49,7 +48,7 @@ double CalcAngleFromThreePoints( CvPoint p1, CvPoint p2, CvPoint p3 )
 	return ang;
 }
 
-double CalcSimilarInv( CvPoint p1, CvPoint p2, CvPoint p3 )
+double CalcSimilarInv( cv::Point p1, cv::Point p2, cv::Point p3 )
 // 平面上の3点で相似変換の不変量を計算する
 {
 	double s;

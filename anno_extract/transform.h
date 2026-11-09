@@ -8,15 +8,15 @@
 #define	kDrawCorLineThick	(8)	/* 対応点を描画する際の線の太さ */
 #define	kMinCorNum	(2)	/* パラメータ推定を行う最小対応点数 */
 
-int TransformAnno( IplImage *anno, IplImage *orig, int cluster_count, double *param );
-int MakeFeaturePointsFromColorImage( CvPoint **ps, IplImage *img, int mode );
+int TransformAnno( cv::Mat anno, cv::Mat orig, int cluster_count, double *param );
+int MakeFeaturePointsFromColorImage( cv::Point **ps, cv::Mat img, int mode );
 void MakeClusterCor( int cluster_count, double avgsa[][3], double avgso[][3], int *clcor );
 
-int OutPutPoints( char *fname, CvPoint *ps, int num, CvSize size );
-int OutPutImage( IplImage *img );
+int OutPutPoints( char *fname, cv::Point *ps, int num, cv::Size size );
+int OutPutImage( cv::Mat img );
 
 int IsExist( char *fname );
 
 #ifdef	COR_PRESET_MODE
-int TransformAnnoPreset( IplImage *anno, IplImage *orig, IplImage *anno2 );
+int TransformAnnoPreset( cv::Mat anno, cv::Mat orig, cv::Mat anno2 );
 #endif
