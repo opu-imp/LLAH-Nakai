@@ -807,10 +807,10 @@ void DrawPoint( IplImage *img, CvPoint p, CvScalar color )
 #ifdef DRAW_BY_NUM
 	static n = 0;
 	char tmp[10];
-	// CvFont removed in OpenCV 4.x
+	CvFont font;
 	sprintf(tmp, "%d", n++);
-	// cvInitFont removed - use cv::putText directly
-    cv::putText(img, tmp, p, cv::FONT_HERSHEY_PLAIN, 1.0, color);
+	cvInitFont( &font, 7, 1.0, 1.0, 0.1, 0, 1);
+    cvPutText( img, tmp, p, &font, color);
 #endif
 #ifndef DRAW_BY_NUM
 	cvCircle( img, p, 5, color, -1, 1, 0 );

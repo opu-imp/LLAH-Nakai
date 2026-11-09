@@ -758,7 +758,7 @@ void DrawCor( void )
 	strCorList *cl;
 
 	for ( i = 3; i < 4; i++ ) {
-		img.setTo(cv::Scalar::all(0));
+		cvZero(img);
 		for ( cm = GetCM(i); cm != NULL; cm = cm->next ) {
 			p1.x = cm->x;
 			p1.y = cm->y;
@@ -793,7 +793,7 @@ void DrawCor( CvPoint *ps, int num, CvSize img_size, int res, CvPoint *corps, in
 	height_all = kDrawCorVMargin * 2 + max( img_size.height, (int)(corsize.height * kDrawCorScale) );
 //	printf( "%d,%d\n", width_all, height_all );
 	img = cvCreateImage( cvSize( width_all, height_all ), IPL_DEPTH_8U, 3 );
-	img.setTo(cWhite);	// îíÇ≈ìhÇËÇ¬Ç‘Ç∑
+	cvSet( img, cWhite, NULL );	// îíÇ≈ìhÇËÇ¬Ç‘Ç∑
 
 	// åüçıéøñ‚ÇÃògÇï`âÊ
 	cvRectangle( img, cvPoint( kDrawCorHMargin, kDrawCorVMargin ), \
@@ -1005,7 +1005,7 @@ void CalcCRDiscriptorNN5Test(CvPoint *ps, int num, int *nears[])
 	CvPoint p1, p2, p3, p4, p5, p1325, p1425;
 	IplImage *img = cvCreateImage( cvSize(150, 150), 8, 3 );
 
-	img.setTo(cv::Scalar::all(0));
+	cvZero(img);
 
 	p1.x = 50;
 	p1.y = 10;
@@ -1572,7 +1572,7 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 	IplImage *img = cvLoadImage("04s.bmp", 1);
 #endif
 	CvScalar color;
-	// CvFont removed in OpenCV 4.x
+	CvFont font;
 	CvPoint p[kPNum], mid;
 
 	for ( i = 0; i < kPNum; i++ ) {
@@ -1615,7 +1615,7 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 	p[7].y = 800;
 #endif
 
-//	img.setTo(cv::Scalar::all(0));
+//	cvZero(img);
 	for ( i = 0; i < num; i++ ) {
 		color = cWhite;
 //		cvCircle(img, ps[i], 2, color, 2, 8, 0);
@@ -1679,8 +1679,8 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 			sprintf(txt, "%d", j+1);
 			mid.x = (ps[idx[j]].x + ps[i].x)/2;
 			mid.y = (ps[idx[j]].y + ps[i].y)/2;
-			// cvInitFont removed - use cv::putText directly
-//			cv::putText(img, txt, mid, cv::FONT_HERSHEY_PLAIN, 1.0, cGreen );
+			cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0.1, 0, 1);
+//			cvPutText( img, txt, mid, &font, cGreen );
 			cvCircle(img, ps[idx[j]], 8, cBlack, -1, 8, 0);
 			cvCircle(img, ps[idx[j]], 8, cWhite, 2, 8, 0);
 //			cvCircle(img, ps[idx[j]], 5, cWhite, 1, 8, 0);
@@ -1691,8 +1691,8 @@ void DrawNeighbor( CvSize size, CvPoint *ps, int num, int *nears[] )
 			sprintf(txt, "%d", j+1);
 			mid.x = (ps[nears[i][j]].x + ps[i].x)/2;
 			mid.y = (ps[nears[i][j]].y + ps[i].y)/2;
-			// cvInitFont removed - use cv::putText directly
-			cv::putText(img, txt, mid, cv::FONT_HERSHEY_PLAIN, 1.0, cGreen );
+			cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0.1, 0, 1);
+			cvPutText( img, txt, mid, &font, cGreen );
 		}
 */	}
 	for ( j = 0; j < eNumCom1; j++ ) {
@@ -1913,7 +1913,7 @@ void DrawP2P( CvPoint *ps, int num, int cor_doc, CvSize size )
 	size_all.width = size.width + size2.width;
 	size_all.height = max(size.height, size2.height);
 	img = cvCreateImage(size_all, 8, 3);
-	img.setTo(cv::Scalar::all(0));
+	cvZero(img);
 
 	cvRectangle( img, cvPoint(1, 1), cvPoint(size.width-5, size.height-5), cWhite, 3, 8, 0 );
 	// ëSì_ÇÃï`âÊÅiÉNÉGÉäÅj
@@ -2421,7 +2421,7 @@ void DrawPoints( CvSize img_size, CvPoint *ps, int num )
 	height_all = kDrawCorVMargin * 2 + img_size.height;
 //	printf( "%d,%d\n", width_all, height_all );
 	pt = cvCreateImage( cvSize( width_all, height_all ), IPL_DEPTH_8U, 3 );
-	pt.setTo(cWhite);	// îíÇ≈ìhÇËÇ¬Ç‘Ç∑
+	cvSet( pt, cWhite, NULL );	// îíÇ≈ìhÇËÇ¬Ç‘Ç∑
 
 	// åüçıéøñ‚ÇÃògÇï`âÊ
 	cvRectangle( pt, cvPoint( kDrawCorHMargin, kDrawCorVMargin ), \

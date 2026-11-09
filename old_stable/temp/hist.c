@@ -56,7 +56,7 @@ void OutPutHist( strHist *hist, int width, int height )
 	CvPoint p1, p2;
 
 	IplImage *img = cvCreateImage( cvSize(width, height), 8, 1);
-	img.setTo(cv::Scalar::all(0));
+	cvZero(img);
 
 	for ( i = 0; i < hist->size; i++ ) {
 		p1.x = (int)(((double)width / (double)hist->size)*(double)i);
@@ -105,7 +105,7 @@ void HistTest( void )
         hist = cvCreateHist( 2, hist_size, CV_HIST_ARRAY, ranges, 1 );
         cvCalcHist( planes, hist, 0, 0 );
         cvGetMinMaxHistValue( hist, 0, &max_value, 0, 0 );
-        hist_img.setTo(cv::Scalar::all(0));
+        cvZero( hist_img );
 
         for( h = 0; h < h_bins; h++ )
         {
