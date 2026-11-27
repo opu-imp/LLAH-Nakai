@@ -7,7 +7,7 @@
 #   bash test/run_tests.sh
 #
 # 前提:
-#   - OpenCV 4.x が pkg-config opencv4 で利用可能
+#   - OpenCV 5.x または 4.x が pkg-config (opencv5 / opencv4) で利用可能
 #   - Python 3 + opencv-python (テスト画像生成用)
 #
 

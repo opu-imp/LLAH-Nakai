@@ -20,6 +20,31 @@ bash test/golden/run_golden.sh
 | `--keep` | 作業ディレクトリを残す (中身を調べたいとき) |
 | `--update` | 正解データを作り直す。基準にするビルドでだけ使う |
 
+## OpenCV のバージョンを切り替えて確かめる
+
+Makefile は、pkg-config で `opencv5` が見つかれば OpenCV 5 を、なければ OpenCV 4 を使う。
+`make OPENCV=opencv4` のように指定もできる。
+切り替えたときは必ず `make clean` する。`.o` はヘッダが変わっても作り直されない。
+
+```sh
+for d in demo_server old_stable llahmos anno_extract; do make -C $d clean; make -C $d OPENCV=opencv5; done
+bash test/golden/run_golden.sh
+```
+
+Homebrew の OpenCV を入れ替えずに OpenCV 5 で試すときは、OpenCV 5 のソースから必要なモジュールだけをビルドする。
+次の手順は、2026-11-27 に OpenCV 5.1.0 で確認した。
+
+```sh
+cmake opencv-5.1.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/opencv5 \
+  -DCMAKE_INSTALL_NAME_DIR=$HOME/opencv5/lib -DCMAKE_MACOSX_RPATH=OFF \
+  -DBUILD_LIST=core,imgproc,imgcodecs,highgui,videoio -DOPENCV_GENERATE_PKGCONFIG=ON \
+  -DWITH_IPP=OFF -DWITH_FFMPEG=OFF -DWITH_OPENEXR=OFF -DWITH_AVIF=OFF -DWITH_PROTOBUF=OFF \
+  -DWITH_OPENCL=OFF -DWITH_ADE=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF \
+  -DBUILD_opencv_apps=OFF -DBUILD_JAVA=OFF -DBUILD_opencv_python3=OFF
+make -j8 install
+export PKG_CONFIG_PATH=$HOME/opencv5/lib/pkgconfig   # この後の make で opencv5 が選ばれる
+```
+
 ## 何を比べるか
 
 | プログラム | ケース | 比べる出力 |
