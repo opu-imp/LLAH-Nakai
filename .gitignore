@@ -27,3 +27,6 @@ test/annex_output/
 
 # Golden data for test/golden/run_golden.sh (must be tracked)
 !test/golden/**
+
+# CMake build directory (vs/dcamc, see vs/dcamc/README.md)
+/build/
