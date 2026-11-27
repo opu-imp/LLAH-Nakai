@@ -1,0 +1,3 @@
+warning: server.ini cannot be opened
+Retrieval from Static Image
+in/query/q_rot_page01.png

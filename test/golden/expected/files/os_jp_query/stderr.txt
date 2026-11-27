@@ -1,0 +1,3 @@
+warning: server.ini cannot be opened
+Retrieval from Static Image
+in/jp_query/jq_rot_jpage01.png

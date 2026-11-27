@@ -1,0 +1,2 @@
+in/jp_query/jq_rot_jpage01.png
+in/jp_reg/jpage01.png : 30

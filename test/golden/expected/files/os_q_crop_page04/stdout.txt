@@ -1,0 +1,2 @@
+in/query/q_crop_page04.png
+in/reg/page04.png : 54

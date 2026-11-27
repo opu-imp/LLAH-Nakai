@@ -24,3 +24,6 @@ test/annex_output/
 *.swo
 *~
 .!*
+
+# Golden data for test/golden/run_golden.sh (must be tracked)
+!test/golden/**
