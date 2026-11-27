@@ -1,0 +1,2 @@
+in/query/q_rot_page01.png
+in/reg/page01.png : 158

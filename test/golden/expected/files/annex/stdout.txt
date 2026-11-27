@@ -1,0 +1,6 @@
+original image
+cluster 0 : 608 points
+cluster 1 : 1 points
+annotated image
+cluster 0 : 3 points
+cluster 1 : 571 points

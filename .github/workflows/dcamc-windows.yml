@@ -1,0 +1,111 @@
+# Build vs/dcamc (Windows-only) with Visual Studio against OpenCV 4 and OpenCV 5.
+#
+# dcamc needs a camera, so this only checks that it compiles and links.
+# Two ways of getting OpenCV are checked:
+#   official: the opencv-X-windows.exe package from the OpenCV release page (x64 only),
+#             which is what vs/dcamc/README.md tells users to use
+#   source:   OpenCV built from source with just the modules dcamc uses (cached).
+#             Needed for Win32, the architecture of the original Visual Studio 2005 project.
+
+name: dcamc (Windows build)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'vs/dcamc/**'
+      - '.github/workflows/dcamc-windows.yml'
+  pull_request:
+    paths:
+      - 'vs/dcamc/**'
+      - '.github/workflows/dcamc-windows.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: OpenCV ${{ matrix.opencv }} ${{ matrix.arch }} (${{ matrix.source }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - opencv: 5.1.0
+            arch: x64
+            source: official
+          - opencv: 4.13.0
+            arch: x64
+            source: official
+          # OpenCV 5 moved goodFeaturesToTrack to the features module.
+          - opencv: 5.1.0
+            arch: x64
+            source: source
+            modules: core,imgproc,imgcodecs,highgui,videoio,features
+            cache: minimal-features-v1
+          - opencv: 4.13.0
+            arch: x64
+            source: source
+            modules: core,imgproc,imgcodecs,highgui,videoio
+            cache: minimal-v1
+          # 32-bit, like the original Visual Studio 2005 project
+          - opencv: 4.13.0
+            arch: Win32
+            source: source
+            modules: core,imgproc,imgcodecs,highgui,videoio
+            cache: minimal-v1
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Get the official OpenCV ${{ matrix.opencv }} package
+        if: matrix.source == 'official'
+        shell: bash
+        run: |
+          curl -sSL -o opencv-windows.exe \
+            "https://github.com/opencv/opencv/releases/download/${{ matrix.opencv }}/opencv-${{ matrix.opencv }}-windows.exe"
+          # The package is a 7-Zip self-extracting archive.
+          7z x opencv-windows.exe -oopencv-official -y > /dev/null
+          echo "OPENCV_DIR_FOR_DCAMC=$PWD/opencv-official/opencv/build" >> "$GITHUB_ENV"
+
+      - name: Restore OpenCV
+        if: matrix.source == 'source'
+        id: opencv-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: opencv-install
+          key: opencv-${{ matrix.opencv }}-${{ matrix.arch }}-${{ matrix.cache }}
+
+      - name: Build OpenCV ${{ matrix.opencv }}
+        if: matrix.source == 'source' && steps.opencv-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          curl -sSL -o opencv.tar.gz "https://github.com/opencv/opencv/archive/refs/tags/${{ matrix.opencv }}.tar.gz"
+          tar -xzf opencv.tar.gz
+          cmake -S "opencv-${{ matrix.opencv }}" -B opencv-build -A ${{ matrix.arch }} \
+            -DCMAKE_INSTALL_PREFIX="$PWD/opencv-install" \
+            -DBUILD_LIST=${{ matrix.modules }} \
+            -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_opencv_apps=OFF \
+            -DBUILD_JAVA=OFF -DBUILD_opencv_python3=OFF \
+            -DWITH_IPP=OFF -DWITH_FFMPEG=OFF -DWITH_OPENEXR=OFF -DWITH_AVIF=OFF \
+            -DWITH_PROTOBUF=OFF -DWITH_OPENCL=OFF -DWITH_ADE=OFF
+          cmake --build opencv-build --config Release --parallel 4
+          cmake --install opencv-build --config Release
+
+      # Save right away, so a failing dcamc build does not throw the OpenCV build away.
+      - name: Save OpenCV
+        if: matrix.source == 'source' && steps.opencv-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: opencv-install
+          key: opencv-${{ matrix.opencv }}-${{ matrix.arch }}-${{ matrix.cache }}
+
+      - name: Use the source-built OpenCV
+        if: matrix.source == 'source'
+        shell: bash
+        run: echo "OPENCV_DIR_FOR_DCAMC=$PWD/opencv-install" >> "$GITHUB_ENV"
+
+      - name: Configure dcamc
+        shell: bash
+        run: cmake -S vs/dcamc -B build -A ${{ matrix.arch }} -DOpenCV_DIR="$OPENCV_DIR_FOR_DCAMC"
+
+      - name: Build dcamc
+        shell: bash
+        run: cmake --build build --config Release --parallel 4

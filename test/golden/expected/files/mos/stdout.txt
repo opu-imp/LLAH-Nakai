@@ -1,0 +1,4 @@
+Num of points 1: 302
+Num of points 2: 329
+Num of cor points: 107
+0(107)

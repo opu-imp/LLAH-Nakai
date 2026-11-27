@@ -1,0 +1,10 @@
+generated: 2026-11-27T20:16:12Z
+commit: 7ecdd8e1edff7ac3b3e45212e4002c31693a9c84
+source dirs modified: no
+os: Darwin arm64 26.5
+compiler: Apple clang version 21.0.0 (clang-2100.1.1.101)
+pkg-config: opencv4 4.13.0, opencv5 -
+opencv: demo_server/llahdoc -> libopencv_core.413.dylib
+opencv: old_stable/llahdoc -> libopencv_core.413.dylib
+opencv: llahmos/llahmos -> libopencv_core.413.dylib
+opencv: anno_extract/annex -> libopencv_core.413.dylib

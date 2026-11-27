@@ -1,0 +1,26 @@
+warning: server.ini cannot be opened
+Hash Constraction
+Extracting Feature Points...
+in/reg/page00.png(1/6)
+in/reg/page01.png(2/6)
+in/reg/page02.png(3/6)
+in/reg/page03.png(4/6)
+in/reg/page04.png(5/6)
+in/reg/page05.png(6/6)
+Making disc.txt...
+(1/6)
+(2/6)
+(3/6)
+(4/6)
+(5/6)
+(6/6)
+Constructing Hash Table...
+(1/6)[0]
+(2/6)[163527]
+(3/6)[325689]
+(4/6)[484575]
+(5/6)[644280]
+(6/6)[804531]
+Saving Hash Table...
+Calculating Prop...
+Saving Config...

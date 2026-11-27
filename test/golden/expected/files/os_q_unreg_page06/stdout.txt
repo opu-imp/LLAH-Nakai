@@ -1,0 +1,2 @@
+in/query/q_unreg_page06.png
+in/reg/page00.png : -29
