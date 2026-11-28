@@ -4,10 +4,10 @@ CXX = g++ -Wall -g -DLINUX -std=c++17
 #CXX = g++ -Wall -O2 -DLINUX -std=c++17
 
 # Use OpenCV 5 if pkg-config finds it, otherwise OpenCV 4.
-# To choose explicitly: make OPENCV=opencv4 (or OPENCV=opencv5)
-OPENCV := $(shell pkg-config --exists opencv5 && echo opencv5 || echo opencv4)
-CXXFLAGS = `pkg-config --cflags $(OPENCV)`
-LDFLAGS = `pkg-config --libs $(OPENCV)`
+# To choose explicitly: make OPENCV_PC=opencv4 (or OPENCV_PC=opencv5)
+OPENCV_PC ?= $(shell pkg-config --exists opencv5 && echo opencv5 || echo opencv4)
+CXXFLAGS = `pkg-config --cflags $(OPENCV_PC)`
+LDFLAGS = `pkg-config --libs $(OPENCV_PC)`
 
 PACKAGE = llahdoc
 
