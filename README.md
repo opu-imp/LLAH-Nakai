@@ -4,6 +4,54 @@ This repository contains the source codes of Locally Likely Arrangement Hashing 
 Related papers are found in [the publication database of Intelligent Media Processing Laboratory, Department of Computer Science and Intelligent Systems
 Graduate School of Engineering, Osaka Prefecture University](http://www.m.cs.osakafu-u.ac.jp/cgi-bin/publication_public.cgi?func=search_result&research_field=17&lang=en).
  
+## Building on macOS
+
+### Prerequisites
+
+The programs build with either OpenCV 5 or OpenCV 4, and need a C++17 compiler.
+
+```bash
+# OpenCV 5 (Homebrew's `opencv` formula is OpenCV 5)
+brew install opencv
+pkg-config --modversion opencv5
+
+# Or OpenCV 4. Homebrew's `opencv@4` is keg-only, so tell pkg-config where it is.
+brew install opencv@4
+export PKG_CONFIG_PATH="$(brew --prefix opencv@4)/lib/pkgconfig:$PKG_CONFIG_PATH"
+pkg-config --modversion opencv4
+```
+
+### Build
+
+Run `make` in each program's directory:
+
+```bash
+for d in demo_server old_stable llahmos anno_extract; do make -C $d; done
+```
+
+| Directory | Program |
+|---|---|
+| `demo_server` | `llahdoc` |
+| `old_stable` | `llahdoc` |
+| `llahmos` | `llahmos` |
+| `anno_extract` | `annex`, and `acr2` in `anno_extract/acr2` |
+
+`make` in `anno_extract` also builds `anno_extract/acr2`, the helper program that `annex` runs (see its `-P` option).
+
+### Choosing the OpenCV version
+
+The Makefiles use OpenCV 5 when `pkg-config` finds `opencv5`, and OpenCV 4 otherwise. To choose explicitly, run `make clean && make OPENCV_PC=opencv4` (or `opencv5`) in each directory.
+
+Run `make clean` whenever you switch versions. The object files are not rebuilt when the OpenCV headers change, so `make` alone would reuse objects built against the other version.
+
+### Windows demo client (dcamc)
+
+The demo client in `vs/dcamc` is built with CMake and Visual Studio, not with `make`. Pass the location of OpenCV with `OpenCV_DIR`. See [vs/dcamc/README.md](vs/dcamc/README.md) (in Japanese).
+
+### Regression test
+
+To check that the programs still give the same results, for example after changing the OpenCV version, see [test/golden/README.md](test/golden/README.md) (in Japanese).
+
 ## Old stable LLAH source code
 Directory: ./old_stable
 Visual Studio Project: ./vs/llahdoc080620/
