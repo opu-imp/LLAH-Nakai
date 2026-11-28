@@ -23,11 +23,11 @@ bash test/golden/run_golden.sh
 ## OpenCV のバージョンを切り替えて確かめる
 
 Makefile は、pkg-config で `opencv5` が見つかれば OpenCV 5 を、なければ OpenCV 4 を使う。
-`make OPENCV=opencv4` のように指定もできる。
+`make OPENCV_PC=opencv4` のように指定もできる。
 切り替えたときは必ず `make clean` する。`.o` はヘッダが変わっても作り直されない。
 
 ```sh
-for d in demo_server old_stable llahmos anno_extract; do make -C $d clean; make -C $d OPENCV=opencv5; done
+for d in demo_server old_stable llahmos anno_extract; do make -C $d clean; make -C $d OPENCV_PC=opencv5; done
 bash test/golden/run_golden.sh
 ```
 
